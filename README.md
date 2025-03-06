@@ -11,5 +11,10 @@ ELEVATE is a platform that centralizes local Egyptian clothing brands in one pla
 * Integrating augmented reality technology with artificial intelligence via mobile application for easier usability.
 * Enabling brand owners to manage their brands through an interactive website experience through a dashboard of useful insights.
 
+## Running the app
+1. Ensure that you have `flutter` and `vscode` installed on your machine.
+2. Clone the repo locally through running the command `git clone https://github.com/iSeFz/ELEVATE.git`.
+3. Choose the target device (whether a physical device or an emulator).
+4. Execute `flutter run` in the terminal or from vscode GUI run the [lib/main.dart](https://github.com/iSeFz/ELEVATE/blob/main/lib/main.dart) file to start the application.
 
 > #### Know more about the team and find the detailed description of the project [here](https://bit.ly/ELEVATE-GP).
