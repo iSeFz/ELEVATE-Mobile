@@ -1,0 +1,244 @@
+import 'package:flutter/material.dart';
+import 'sign_up_page.dart';
+
+// Create Account Page
+class CreateAccountPage extends StatefulWidget {
+  const CreateAccountPage({super.key});
+
+  @override
+  State<CreateAccountPage> createState() => _CreateAccountPageState();
+}
+
+// Display different ways to create an account
+// Using email, Google, or Apple
+class _CreateAccountPageState extends State<CreateAccountPage> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(
+                  'ELEVATE',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFA51930),
+                    fontSize: 46,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Arial',
+                  ),
+                ),
+                const SizedBox(height: 60),
+                Text(
+                  'Create an account',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Arial',
+                  ),
+                ),
+                const SizedBox(height: 30),
+                TextFormField(
+                  keyboardType: TextInputType.emailAddress,
+                  onChanged: (value) => print(value),
+                  decoration: InputDecoration(
+                    label: Text(
+                      'Enter your email',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    floatingLabelAlignment: FloatingLabelAlignment.start,
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    hintText: 'email@domain.com',
+                    hintTextDirection: TextDirection.ltr,
+                    hintStyle: TextStyle(
+                      fontFamily: 'Arial',
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation, secondaryAnimation) =>
+                                const SignUpPage(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 1500),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Continue',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(height: 1, color: Color(0xFFE6E6E6)),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'or',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(height: 1, color: Color(0xFFE6E6E6)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () => print('Continue with Google'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.secondaryContainer,
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/google.png', width: 24, height: 24),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Continue with Google',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                ElevatedButton(
+                  onPressed: () => print('Continue with Apple'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[100],
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/apple.png', width: 24, height: 24),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Continue with Apple',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Text.rich(
+                  textAlign: TextAlign.center,
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'By clicking continue, you agree to our ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Terms of Service',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' and ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Privacy Policy',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
