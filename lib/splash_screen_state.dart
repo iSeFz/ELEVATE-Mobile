@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'create_account_page.dart';
 
 // Splash screen at the start of the app.
 class SplashScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     }
     // Wait for logo to appear then show text
-    await Future.delayed(const Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 3));
 
     if (mounted) {
       setState(() {
@@ -42,6 +43,28 @@ class _SplashScreenState extends State<SplashScreen> {
         setState(() {
           _showSubtext = true;
         });
+
+        // Wait for 5 seconds after showing subtext, then navigate
+        await Future.delayed(const Duration(milliseconds: 3500));
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder:
+                  (context, animation, secondaryAnimation) =>
+                      const CreateAccountPage(),
+              transitionsBuilder: (
+                context,
+                animation,
+                secondaryAnimation,
+                child,
+              ) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(seconds: 1),
+            ),
+          );
+        }
       }
     }
   }
