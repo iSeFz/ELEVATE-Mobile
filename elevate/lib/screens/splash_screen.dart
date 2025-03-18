@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'create_account_page.dart';
+import 'registration/create_account_page.dart';
 
 // Splash screen at the start of the app.
 class SplashScreen extends StatefulWidget {

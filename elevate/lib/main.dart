@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'splash_screen_state.dart';
+import 'screens/splash_screen.dart';
 
 // Main function to start the run
 void main() {

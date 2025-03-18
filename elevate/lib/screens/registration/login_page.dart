@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'sign_up_page.dart';
-import 'main_page.dart';
+import '../main_page.dart';
 
 // Login Page
 class LoginPage extends StatefulWidget {
