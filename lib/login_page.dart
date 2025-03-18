@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'sign_up_page.dart';
+import 'main_page.dart';
 
 // Login Page
 class LoginPage extends StatefulWidget {
@@ -98,7 +99,27 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {
-                    print('Login');
+                    // TEMPORARY PLACEHOLDER
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation, secondaryAnimation) =>
+                                const MainPage(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(seconds: 1),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
