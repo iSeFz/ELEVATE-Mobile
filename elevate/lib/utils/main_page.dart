@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'notifications_page.dart';
-import 'profile_page.dart';
+import '/screens/notifications_page.dart';
+import '/screens/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
