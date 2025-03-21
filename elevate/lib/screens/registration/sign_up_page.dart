@@ -22,6 +22,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  String jsonResponse = "";
 
   @override
   void dispose() {
@@ -30,55 +31,107 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   // Send a POST request to the server to sign up a new customer
-  Future<String> signUpRequest(customer) async {
+  Future<bool> signUpRequest(Customer customer) async {
     final response = await http.post(
       Uri.parse('https://elevate-gp.vercel.app/api/v1/signup'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Body': jsonEncode(<String, String>{
-          'username': customer.username,
-          'email': customer.email,
-          'firstName': customer.firstName,
-          'lastName': customer.lastName,
-          'phoneNumber': customer.phoneNumber,
-          'password': customer.password,
-        }),
       },
+      body: jsonEncode(<String, String>{
+        'username': customer.username!,
+        'email': customer.email!,
+        'firstName': customer.firstName!,
+        'lastName': customer.lastName!,
+        'phoneNumber': customer.phoneNumber!,
+        'password': customer.password!,
+      }),
     );
 
+    // Store the response in a variable to access it later
+    jsonResponse = response.body;
+
+    // Check if the response is successful
     if (response.statusCode == 200) {
-      return jsonDecode(response.body.toString());
-    } else {
-      // If the server did not return a 200 OK response, then throw an exception.
-      throw Exception('Failed to sign up customer');
+      return jsonDecode(response.body.toString())['status'] == 'success';
     }
+    return false;
   }
 
   // Validate the form and send the saved customer object to the main page
   Future<void> _submitForm(Customer customer) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      // Send a POST request to the server to sign up the customer
+      bool successfulResponse = await signUpRequest(customer);
+
+      // Check if the widget is mounted before showing the dialog
       if (mounted) {
-        // Send a POST request to the server to sign up the customer
-        // signUpRequest(customer); // To be tested
-        // Navigate to the main page if signed up successfully
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
-            transitionsBuilder: (
-              context,
-              animation,
-              secondaryAnimation,
-              child,
-            ) {
-              // Add fade transition to the main page
-              return FadeTransition(opacity: animation, child: child);
+        if (successfulResponse) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                  'Success ✅',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                content: Text(
+                  'Account created successfuly!\nWelcome, ${jsonDecode(jsonResponse)['data']['firstName']}!',
+                  style: TextStyle(fontSize: 20),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to the main page if signed up successfully
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
+                          transitionsBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
+                            // Add fade transition to the main page
+                            return FadeTransition(opacity: animation, child: child);
+                          },
+                          transitionDuration: const Duration(seconds: 1),
+                          settings: RouteSettings(arguments: customer),
+                        ),
+                      );
+                    },
+                    child: Text('OK', style: TextStyle(fontSize: 20)),
+                  ),
+                ],
+              );
             },
-            transitionDuration: const Duration(seconds: 1),
-            settings: RouteSettings(arguments: customer),
-          ),
-        );
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                  'Error ❌',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                content: Text(
+                  jsonDecode(jsonResponse)['error'],
+                  style: TextStyle(fontSize: 20),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK', style: TextStyle(fontSize: 20)),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       }
     }
   }
