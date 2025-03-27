@@ -1,26 +1,9 @@
 import 'package:flutter/material.dart';
-
-class Item {
-  String image;
-  String name;
-  String brand;
-  double price;
-  String size;
-  int quantity;
-  List<String> colors;
-
-  Item({
-    required this.image,
-    required this.name,
-    required this.brand,
-    required this.price,
-    required this.size,
-    required this.quantity,
-    required this.colors,
-  });
-}
+import '/models/item.dart';
 
 class CartPage extends StatefulWidget {
+  const CartPage({super.key});
+
   @override
   State<CartPage> createState() => _CartPageState();
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '/screens/notifications_page.dart';
 import '/screens/profile_page.dart';
+import '/screens/favorites_page.dart';
+import '/screens/cart_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -15,8 +17,8 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = [
     Center(child: Text('Home Page')), // Placeholder for Home Page
-    Center(child: Text('Favorites Page')), // Placeholder for Favorites Page
-    Center(child: Text('Cart Page')), // Placeholder for Cart Page
+    FavoritesPage(),
+    CartPage(),
     NotificationsPage(),
     ProfilePage(),
   ];

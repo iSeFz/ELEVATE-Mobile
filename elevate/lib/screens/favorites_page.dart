@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
-
-class Product {
-  final String image;
-  final String name;
-  final String brand;
-  final String price;
-
-  Product({
-    required this.image,
-    required this.name,
-    required this.brand,
-    required this.price,
-  });
-}
+import '/models/product.dart';
 
 class FavoritesPage extends StatefulWidget {
+  const FavoritesPage({super.key});
+
   @override
   State<FavoritesPage> createState() => _FavoritesPageState();
 }
