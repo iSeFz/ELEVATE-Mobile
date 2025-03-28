@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'account_page.dart';
+import '/utils/google_sign_in_util.dart';
 
 // Profile Page
 class ProfilePage extends StatefulWidget {
@@ -250,7 +251,8 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/logout');
+                  signOutGoogle();
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
