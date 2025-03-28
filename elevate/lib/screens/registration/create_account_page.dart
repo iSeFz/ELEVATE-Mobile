@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'sign_up_page.dart';
 import '/custom_widgets/custom_text_form_field.dart';
 import '/utils/validations.dart';
+import '/utils/google_sign_in_util.dart';
+import '/utils/main_page.dart';
 import '/models/customer.dart';
 
 // Create Account Page
@@ -134,7 +136,71 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: () => print('Continue with Google'),
+                    onPressed: () async {
+                      // Sign in with Google and save the returned credentials
+                      final userCredential = await signInWithGoogle();
+                      // Set customer info based on the returned user credentials
+                      setCustomerInfo(userCredential, customer);
+                      // Show a success message
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Success ✅',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Text(
+                              'Account created successfuly!\nWelcome, ${customer.firstName}!',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  // Navigate to the main page if signed up successfully
+                                  Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder:
+                                          (
+                                            context,
+                                            animation,
+                                            secondaryAnimation,
+                                          ) => MainPage(),
+                                      transitionsBuilder: (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                        child,
+                                      ) {
+                                        // Add fade transition to the main page
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: child,
+                                        );
+                                      },
+                                      transitionDuration: const Duration(
+                                        seconds: 1,
+                                      ),
+                                      settings: RouteSettings(
+                                        arguments: customer,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'OK',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).colorScheme.secondaryContainer,

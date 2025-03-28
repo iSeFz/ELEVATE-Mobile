@@ -6,6 +6,7 @@ import 'sign_up_page.dart';
 import '/models/customer.dart';
 import '/utils/main_page.dart';
 import '/utils/validations.dart';
+import '/utils/google_sign_in_util.dart';
 import '/custom_widgets/custom_text_form_field.dart';
 
 // Login Page
@@ -74,7 +75,9 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushReplacement(
                         context,
                         PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  MainPage(),
                           transitionsBuilder: (
                             context,
                             animation,
@@ -82,7 +85,10 @@ class _LoginPageState extends State<LoginPage> {
                             child,
                           ) {
                             // Add fade transition to the main page
-                            return FadeTransition(opacity: animation, child: child);
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
                           },
                           transitionDuration: const Duration(seconds: 1),
                           settings: RouteSettings(arguments: customer),
@@ -126,7 +132,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    Customer customer = ModalRoute.of(context)!.settings.arguments as Customer? ?? Customer();
+    Customer customer =
+        ModalRoute.of(context)!.settings.arguments as Customer? ?? Customer();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -223,7 +230,71 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: () => print('Continue with Google'),
+                    onPressed: () async {
+                      // Sign in with Google and save the returned credentials
+                      final userCredential = await signInWithGoogle();
+                      // Set customer info based on the returned user credentials
+                      setCustomerInfo(userCredential, customer);
+                      // Show a success message
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Success ✅',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Text(
+                              'Logged In successfuly!\nWelcome, ${customer.firstName}!',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  // Navigate to the main page if logged in successfully
+                                  Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder:
+                                          (
+                                            context,
+                                            animation,
+                                            secondaryAnimation,
+                                          ) => MainPage(),
+                                      transitionsBuilder: (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                        child,
+                                      ) {
+                                        // Add fade transition to the main page
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: child,
+                                        );
+                                      },
+                                      transitionDuration: const Duration(
+                                        seconds: 1,
+                                      ),
+                                      settings: RouteSettings(
+                                        arguments: customer,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'OK',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).colorScheme.secondaryContainer,
