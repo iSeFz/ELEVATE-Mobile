@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/notification_item.dart';
 
 // Notifications Page
 class NotificationsPage extends StatefulWidget {
@@ -9,6 +10,25 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
+  final List<NotificationItem> _notifications = [
+    NotificationItem(title: 'Your order has been shipped!', isRead: false),
+    NotificationItem(
+      title:
+          'A chance to gain 2000 points only for loyal customers if you purchase an order before New Year\'s Eve! Hurry up!',
+      isRead: true,
+    ),
+    NotificationItem(
+      title:
+          'You have gained 200 free points for purchasing an order above 1500 EGP.\nDouble them now!',
+      isRead: true,
+    ),
+    NotificationItem(
+      title:
+          'A new discount has been added for your favorite items, make an order NOW!',
+      isRead: true,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,175 +48,110 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 15,
-            bottom: 30,
-            left: 30,
-            right: 30,
-          ),
-          child: Column(
-            children: [
-              Container(
-                height: 2,
-                color: Colors.grey[300],
-                width: double.infinity,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 15, bottom: 30),
+              height: 2,
+              color: Colors.grey[300],
+              width: double.infinity,
+            ),
+            Expanded(
+              child: ListView.separated(
+                itemCount: _notifications.length,
+                separatorBuilder: (context, index) => SizedBox(height: 20),
+                itemBuilder: (context, index) {
+                  final notification = _notifications[index];
+                  return _buildNotificationCard(context, notification);
+                },
               ),
-              SizedBox(height: 30),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+            ),
+            SizedBox(height: 30), // Add padding at the bottom if needed
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget to build each notification card
+  Widget _buildNotificationCard(
+    BuildContext context,
+    NotificationItem notification,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+        color:
+            notification.isRead
+                ? Colors.grey[200]
+                : Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                if (!notification.isRead) {
+                  setState(() {
+                    notification.isRead = true;
+                  });
+                }
+              },
+              child: Row(
+                children: [
+                  if (!notification.isRead) ...[
                     Container(
-                      width: 6,
-                      height: 6,
+                      width: 8,
+                      height: 8,
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color:
+                            Theme.of(
+                              context,
+                            ).colorScheme.primary, // Unread indicator
                         shape: BoxShape.circle,
                       ),
                     ),
-                    SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'Your order has been shipped!',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
+                    const SizedBox(width: 10),
                   ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'A chance to gain 2000 points only for loyal customers if you purchase an order before New Year\'s Eve! Hurry up!',
-                        style: TextStyle(fontSize: 16),
+                  Expanded(
+                    child: Text(
+                      notification.title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight:
+                            notification.isRead
+                                ? FontWeight.normal
+                                : FontWeight.w500,
+                        color:
+                            notification.isRead
+                                ? Colors.grey[600]
+                                : Colors.black87,
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'You have gained 200 free points for purchasing an order above 1500 EGP.\nDouble them now!',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'A new discount has been added for your favorite items, make an order NOW!',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      shape: BoxShape.circle,
                     ),
                   ),
-                  Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade400,
-                      shape: BoxShape.circle,
+                  const SizedBox(width: 10),
+                  if (!notification.isRead)
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          notification.isRead = true;
+                        });
+                      },
+                      child: Icon(
+                        Icons.mark_email_read_rounded,
+                        size: 20,
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
-                  Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
                 ],
               ),
-              SizedBox(height: 10),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
