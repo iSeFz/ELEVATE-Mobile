@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '/models/item.dart';
+import 'checkout_page.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -157,7 +158,24 @@ class _CartPageState extends State<CartPage> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),),
                     ),
                     onPressed: () {
-                      print('Checkout');
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => 
+                            CheckoutScreen(
+                              cartItems: cartItems,
+                              subtotal: subtotal,
+                            ),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
+                            return SlideTransition(position: offsetAnimation, child: child);
+                          },
+                        ),
+                      );
                     },
                     child: Text(
                       "Proceed to Checkout",
