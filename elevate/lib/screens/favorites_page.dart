@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import '/models/product.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../constants/app_constants.dart';
+import '../providers/user_provider.dart';
+import '../models/wishlist_product.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -9,57 +14,53 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  List<Product> favoriteProducts = [
-    Product(
-      image:
-          'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
-      brand: 'شوقي للملابس',
-      price: '120',
-    ),
-    Product(
-      image:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
-      name: 'Black T-Shirt',
-      brand: 'شوقي للملابس',
-      price: '150',
-    ),
-    Product(
-      image:
-          'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awy',
-      brand: 'شوقي للملابس',
-      price: '120',
-    ),
-    Product(
-      image:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
-      name: 'Black T-Shirt',
-      brand: 'شوقي للملابس',
-      price: '150',
-    ),
-    Product(
-      image:
-          'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awy',
-      brand: 'شوقي للملابس',
-      price: '120',
-    ),
-    Product(
-      image:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
-      name: 'Black T-Shirt',
-      brand: 'شوقي للملابس',
-      price: '150',
-    ),
-    Product(
-      image:
-          'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awy',
-      brand: 'شوقي للملابس',
-      price: '120',
-    ),
-  ];
+  List<WishlistProduct> favoriteProducts = [];
+  bool isLoading = true;
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchWishlist();
+  }
+
+  Future<void> fetchWishlist() async {
+    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+    if (userId == null) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'User not logged in.';
+      });
+      return;
+    }
+    final url = "http://elevate-gp.vercel.app/api/v1/customers/me/wishlist?userId=$userId";
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {testAuthHeader: testAuthValue},
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> productsJson = data['data'] ?? [];
+        setState(() {
+          favoriteProducts = productsJson
+              .map((json) => WishlistProduct.fromJson(json))
+              .toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Failed to load wishlist.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error: $e';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,31 +76,37 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: (favoriteProducts.length / 2).ceil(),
-          itemBuilder: (context, index) {
-            final int firstIndex = index * 2;
-            final int secondIndex = firstIndex + 1;
-            final double screenTotalWidth = MediaQuery.of(context).size.width;
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : errorMessage != null
+              ? Center(child: Text(errorMessage!))
+              : favoriteProducts.isEmpty
+                  ? Center(child: Text('No favorites found.'))
+                  : Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: ListView.builder(
+                        itemCount: (favoriteProducts.length / 2).ceil(),
+                        itemBuilder: (context, index) {
+                          final int firstIndex = index * 2;
+                          final int secondIndex = firstIndex + 1;
+                          final double screenTotalWidth = MediaQuery.of(context).size.width;
 
-            return Row(
-              children: [
-                _buildProductCard(favoriteProducts[firstIndex]),
-                if (secondIndex < favoriteProducts.length)
-                  _buildProductCard(favoriteProducts[secondIndex])
-                else
-                  SizedBox(width: screenTotalWidth / 2 - 8),
-              ],
-            );
-          },
-        ),
-      ),
+                          return Row(
+                            children: [
+                              _buildProductCard(favoriteProducts[firstIndex]),
+                              if (secondIndex < favoriteProducts.length)
+                                _buildProductCard(favoriteProducts[secondIndex])
+                              else
+                                SizedBox(width: screenTotalWidth / 2 - 8),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
     );
   }
 
-  Widget _buildProductCard(Product product) {
+  Widget _buildProductCard(WishlistProduct product) {
     return Expanded(
       child: Card(
         color: Colors.white,
@@ -110,10 +117,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
-                product.image,
+                product.imageURL,
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 120,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[300],
+                  height: 120,
+                  child: Icon(Icons.broken_image, size: 40),
+                ),
               ),
             ),
             Row(
@@ -134,7 +146,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Brand: ${product.brand}',
+                          'Brand: ${product.brandName}',
                           style: TextStyle(color: Colors.grey),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -158,7 +170,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       icon: Icon(Icons.favorite, color: Colors.red),
                       onPressed: () {
                         setState(() {
-                          print('Product Removed Successfully');
                           favoriteProducts.remove(product);
                         });
                       },
@@ -166,7 +177,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     IconButton(
                       icon: Icon(Icons.shopping_bag_outlined),
                       onPressed: () {
-                        print('Product Added to cart');
+                        
                       },
                     ),
                   ],
