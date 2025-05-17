@@ -33,7 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
   // Send a POST request to the server to sign up a new customer
   Future<bool> signUpRequest(Customer customer) async {
     final response = await http.post(
-      Uri.parse('https://elevate-gp.vercel.app/api/v1/signup'),
+      Uri.parse('https://elevate-gp.vercel.app/api/v1/customers/signup'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

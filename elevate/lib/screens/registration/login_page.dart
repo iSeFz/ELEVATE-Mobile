@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   // Send a POST request to the server to login an existing customer
   Future<bool> loginRequest(Customer customer) async {
     final response = await http.post(
-      Uri.parse('https://elevate-gp.vercel.app/api/v1/login'),
+      Uri.parse('https://elevate-gp.vercel.app/api/v1/customers/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
