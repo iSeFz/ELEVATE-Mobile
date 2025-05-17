@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
+import '../../providers/user_provider.dart';
 import 'sign_up_page.dart';
 import '/models/customer.dart';
 import '/utils/main_page.dart';
@@ -56,6 +58,11 @@ class _LoginPageState extends State<LoginPage> {
       // Check if the widget is mounted before showing the dialog
       if (mounted) {
         if (successfulResponse) {
+          final responseMap = jsonDecode(jsonResponse);
+          final customerId = responseMap['data']?['user']?['id'];
+          if (customerId != null) {
+            Provider.of<UserProvider>(context, listen: false).setUserId(customerId);
+          }
           showDialog(
             context: context,
             builder: (BuildContext context) {

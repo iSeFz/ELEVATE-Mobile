@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 // Main function to start the run
 void main() async {
@@ -15,13 +17,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ELEVATE',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFA51930)),
+    return ChangeNotifierProvider(
+      create: (_) => UserProvider(),
+      child: MaterialApp(
+        title: 'ELEVATE',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFA51930)),
+        ),
+        home: const SplashScreen(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: const SplashScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
