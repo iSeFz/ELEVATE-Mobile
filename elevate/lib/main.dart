@@ -1,5 +1,7 @@
+import 'package:elevate/screens/slidingCard.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
+import 'screens/BrandProfile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFA51930)),
         ),
-        home: const SplashScreen(),
+        home:  SlidingCardApp(),
         debugShowCheckedModeBanner: false,
       ),
     );
