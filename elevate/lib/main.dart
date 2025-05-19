@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'providers/user_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'cubits/customer_cubit.dart';
 
 // Main function to start the run
 void main() async {
@@ -17,8 +17,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserProvider(),
+    return BlocProvider<CustomerCubit>(
+      create: (_) => CustomerCubit(),
       child: MaterialApp(
         title: 'ELEVATE',
         theme: ThemeData(

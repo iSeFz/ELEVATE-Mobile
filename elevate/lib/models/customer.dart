@@ -1,5 +1,6 @@
 // Model class for the customer object
 class Customer {
+  String? id; // Added id field
   String? email;
   String? firstName;
   String? lastName;
@@ -9,6 +10,7 @@ class Customer {
 
   // Default constructor
   Customer({
+    this.id, // Added id to constructor
     this.email,
     this.firstName,
     this.lastName,
@@ -19,6 +21,7 @@ class Customer {
 
   // Parameterized constructor
   Customer.fromMap(Map<dynamic, dynamic> map) {
+    id = map['id']?.toString() ?? map['_id']?.toString(); // Handle 'id' or '_id'
     email = map['email'];
     firstName = map['firstName'];
     lastName = map['lastName'];
@@ -30,6 +33,7 @@ class Customer {
   // Getter to return a map of the converted customer object
   Map<String, dynamic> toMap() {
     return {
+      'id': id, // Added id to map
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
