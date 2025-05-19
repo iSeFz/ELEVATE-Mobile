@@ -1,4 +1,5 @@
-import 'package:elevate/screens/slidingCard.dart';
+import 'package:elevate/screens/Product_Details.dart';
+import 'package:elevate/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'screens/BrandProfile.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return ChangeNotifierProvider(
       create: (_) => UserProvider(),
       child: MaterialApp(
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFA51930)),
         ),
-        home:  SlidingCardApp(),
+        home:  ProductDetails(),
         debugShowCheckedModeBanner: false,
       ),
     );
