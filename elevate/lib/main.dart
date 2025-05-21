@@ -1,4 +1,5 @@
 import 'package:elevate/screens/Product_Details.dart';
+import 'package:elevate/screens/Reviews.dart';
 import 'package:elevate/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
