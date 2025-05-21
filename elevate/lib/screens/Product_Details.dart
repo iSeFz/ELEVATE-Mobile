@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:elevate/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
+import 'package:elevate/screens/Rate_Card.dart';
+
 
 void main() => runApp(ProductDetails());
 
@@ -209,6 +211,40 @@ class SlidingProductScreen extends StatelessWidget {
                                 ),
 
                                 Divider(color: Colors.grey.shade300, height: 1),
+                                ExpansionTile(
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons.reviews_outlined, color: Colors.black), // size/ruler icon
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Reviews",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Icon(Icons.expand_more),
+                                  children: [
+                                    Padding(padding:const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
+                                    child:Column(
+                                      children: [
+                                        RateCard(
+                                          username: 'Adham_Immortal',
+                                          avatarUrl:
+                                          'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                                          comment: 'Loved the material!',
+                                        ),
+                                        const SizedBox(height: 30),
+                                        RateCard(
+                                          username: 'Belal_Ahmedd',
+                                          avatarUrl:
+                                          'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                                          comment: 'Had fun AR',
+                                        ),
+                                      ],
+                                    ),)
+
+                                  ],
+                                ),
                               ],
                             ),
                           ),
