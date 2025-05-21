@@ -31,7 +31,7 @@ class SlidingProductScreen extends StatelessWidget {
   final Map<String, String> product = {
     'name': 'N008 Knitted Crewneck',
     'brand': 'NAVY',
-    'price': 'EGP 450',
+    'price': 'EGP 750',
     'desc': 'High-quality cotton shirt, ideal for summer.',
     'image': 'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
   };
@@ -132,7 +132,7 @@ class SlidingProductScreen extends StatelessWidget {
                         _buildColorCircle(Color(0xFFA51930)), // your custom color
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 20* SizeConfig.verticalBlock),
                     ElevatedButton(
                       onPressed: () {},
                       child: Text('ADD TO CART',style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
@@ -142,14 +142,86 @@ class SlidingProductScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),)
                       ),
-                    )
+                    ),
+                    SizedBox(height: 30* SizeConfig.verticalBlock),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0), // same as box
+                          child: Text(
+                            "About product",
+                            style: TextStyle(fontSize: 18 * SizeConfig.textRatio, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        SizedBox(height: 20* SizeConfig.verticalBlock),
+                        Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                ExpansionTile(
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons.checkroom, color: Colors.black), // size/ruler icon
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Description",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),trailing: Icon(Icons.expand_more),
+                                  children: [
+                                      // padding: const EdgeInsets.all(8.0),
+                                      Text("High-quality cotton shirt..."),
+
+                                  ],
+                                ),
+                                Divider(color: Colors.grey.shade300, height: 1),
+                                ExpansionTile(
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons.straighten, color: Colors.black), // size/ruler icon
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Size Chart",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Icon(Icons.expand_more),
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text("S: Chest 36-38 in"),
+                                          Text("M: Chest 39-41 in"),
+                                          Text("L: Chest 42-44 in"),
+                                          Text("XL: Chest 45-47 in"),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Divider(color: Colors.grey.shade300, height: 1),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+
                   ],
                 ),
               );
             },
           ),
         ],
-      ),
+    )
     );
   }
 }
