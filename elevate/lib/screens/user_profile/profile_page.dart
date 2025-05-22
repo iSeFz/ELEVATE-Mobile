@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubits/customer_cubit.dart';
+import '../../cubits/customer_cubit.dart';
 import 'account_page.dart';
 import '/utils/google_utils.dart';
 import 'change_password_page.dart';
-import 'registration/login_page.dart';
+import '../registration/login_page.dart';
 
 // Profile Page
 class ProfilePage extends StatefulWidget {

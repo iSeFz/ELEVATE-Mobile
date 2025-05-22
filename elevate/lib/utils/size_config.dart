@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:math';
-import 'package:flutter/widgets.dart';
+
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
-  Set<PointerDeviceKind> get dragDevices => { 
+  Set<PointerDeviceKind> get dragDevices => {
     PointerDeviceKind.touch,
     PointerDeviceKind.mouse,
   };
@@ -28,5 +28,5 @@ class SizeConfig {
     horizontalBlock = (_mediaQueryData.size.width) / designWidth;
     verticalBlock = (screenHeight - statusBarHeight) / (designHeight);
     textRatio = min(verticalBlock, horizontalBlock);
-    }
+  }
 }

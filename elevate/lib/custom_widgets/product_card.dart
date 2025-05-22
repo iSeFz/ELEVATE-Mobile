@@ -1,9 +1,6 @@
-import 'package:elevate/models/wishlist_product.dart';
-import 'package:elevate/utils/SizeConfig.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../models/wishlist_product.dart';
+import 'package:elevate/models/wishlist_product.dart';
+import 'package:elevate/utils/size_config.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product});
@@ -11,12 +8,12 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  return Container(
-      width: SizeConfig.screenWidth*0.5 - 20,
+    return Container(
+      width: SizeConfig.screenWidth * 0.5 - 20,
       // height: 20*SizeConfig.verticalBlock,
-        child:Card(
-          color: Colors.white,
-          elevation: 3,
+      child: Card(
+        color: Colors.white,
+        elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
@@ -27,11 +24,12 @@ class ProductCard extends StatelessWidget {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 // height: 120*SizeConfig.verticalBlock,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  height: 120,
-                  child: Icon(Icons.broken_image, size: 40),
-                ),
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      height: 120,
+                      child: Icon(Icons.broken_image, size: 40),
+                    ),
               ),
             ),
             Row(
@@ -46,15 +44,17 @@ class ProductCard extends StatelessWidget {
                           product.name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 14*SizeConfig.textRatio,
+                            fontSize: 14 * SizeConfig.textRatio,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(height: 2),
                         Text(
                           'Brand: ${product.brandName}',
-                          style: TextStyle(color: Colors.grey,
-                          fontSize: 14*SizeConfig.textRatio,),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14 * SizeConfig.textRatio,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(height: 4),
@@ -62,7 +62,7 @@ class ProductCard extends StatelessWidget {
                           'EGP ${product.price}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 15*SizeConfig.textRatio,
+                            fontSize: 15 * SizeConfig.textRatio,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -83,9 +83,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.shopping_bag_outlined),
-                      onPressed: () {
-
-                      },
+                      onPressed: () {},
                     ),
                   ],
                 ),
@@ -93,8 +91,7 @@ class ProductCard extends StatelessWidget {
             ),
           ],
         ),
-        )
-  );
-
+      ),
+    );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/address.dart';
+import '../../models/address.dart';
 
 class ManageAddressesPage extends StatefulWidget {
   const ManageAddressesPage({super.key});

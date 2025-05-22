@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RateCard extends StatelessWidget {
@@ -14,6 +13,7 @@ class RateCard extends StatelessWidget {
     required this.comment,
     required this.stars,
   });
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -22,7 +22,12 @@ class RateCard extends StatelessWidget {
         // Comment box
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(top: 24, left: 12, right: 12, bottom: 16),
+          padding: const EdgeInsets.only(
+            top: 24,
+            left: 12,
+            right: 12,
+            bottom: 16,
+          ),
           margin: const EdgeInsets.only(top: 16),
           decoration: BoxDecoration(
             color: const Color(0xFFF2F2F2),
@@ -55,7 +60,7 @@ class RateCard extends StatelessWidget {
                 ),
                 // SizedBox(width: 46),
                 Container(
-                  padding:  EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: const BorderRadius.only(
@@ -71,13 +76,11 @@ class RateCard extends StatelessWidget {
                       // left: BorderSide(color: Colors.transparent), // ignore left border
                     ),
                   ),
-                  child:Text(
+                  child: Text(
                     username,
-                    style:  TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF160202),
-                    ),
-                  ),),
+                    style: TextStyle(fontSize: 10, color: Color(0xFF160202)),
+                  ),
+                ),
               ],
             ),
           ),
@@ -97,13 +100,17 @@ class RateCard extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ...List.generate(stars,
-                        (index) =>  Icon(Icons.star, size: 12, color: Colors.amber)),
-                ...List.generate(5-stars,
-                        (index) =>  Icon(Icons.star, size: 12, color: Colors.grey[300]!)),
+                ...List.generate(
+                  stars,
+                  (index) => Icon(Icons.star, size: 12, color: Colors.amber),
+                ),
+                ...List.generate(
+                  5 - stars,
+                  (index) =>
+                      Icon(Icons.star, size: 12, color: Colors.grey[300]!),
+                ),
               ],
             ),
-
           ),
         ),
       ],

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubits/customer_cubit.dart';
-import '../models/customer.dart';
+import '../../cubits/customer_cubit.dart';
+import '../../models/customer.dart';
 import 'profile_page.dart';
 import 'manage_addresses_page.dart';
 
-// Converted to StatefulWidget
+
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
