@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../constants/app_constants.dart';
-import '../providers/user_provider.dart';
+import '../cubits/customer_cubit.dart';
 import '../models/wishlist_product.dart';
 
 class FavoritesPage extends StatefulWidget {
@@ -25,7 +25,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Future<void> fetchWishlist() async {
-    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+
+    if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    }
+
     if (userId == null) {
       setState(() {
         isLoading = false;
@@ -76,33 +84,35 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
         centerTitle: true,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : errorMessage != null
+      body:
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : errorMessage != null
               ? Center(child: Text(errorMessage!))
               : favoriteProducts.isEmpty
-                  ? Center(child: Text('No favorites found.'))
-                  : Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: ListView.builder(
-                        itemCount: (favoriteProducts.length / 2).ceil(),
-                        itemBuilder: (context, index) {
-                          final int firstIndex = index * 2;
-                          final int secondIndex = firstIndex + 1;
-                          final double screenTotalWidth = MediaQuery.of(context).size.width;
+              ? Center(child: Text('No favorites found.'))
+              : Padding(
+                padding: const EdgeInsets.all(8),
+                child: ListView.builder(
+                  itemCount: (favoriteProducts.length / 2).ceil(),
+                  itemBuilder: (context, index) {
+                    final int firstIndex = index * 2;
+                    final int secondIndex = firstIndex + 1;
+                    final double screenTotalWidth =
+                        MediaQuery.of(context).size.width;
 
-                          return Row(
-                            children: [
-                              _buildProductCard(favoriteProducts[firstIndex]),
-                              if (secondIndex < favoriteProducts.length)
-                                _buildProductCard(favoriteProducts[secondIndex])
-                              else
-                                SizedBox(width: screenTotalWidth / 2 - 8),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
+                    return Row(
+                      children: [
+                        _buildProductCard(favoriteProducts[firstIndex]),
+                        if (secondIndex < favoriteProducts.length)
+                          _buildProductCard(favoriteProducts[secondIndex])
+                        else
+                          SizedBox(width: screenTotalWidth / 2 - 8),
+                      ],
+                    );
+                  },
+                ),
+              ),
     );
   }
 
@@ -121,11 +131,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 120,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  height: 120,
-                  child: Icon(Icons.broken_image, size: 40),
-                ),
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      height: 120,
+                      child: Icon(Icons.broken_image, size: 40),
+                    ),
               ),
             ),
             Row(
@@ -176,9 +187,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     ),
                     IconButton(
                       icon: Icon(Icons.shopping_bag_outlined),
-                      onPressed: () {
-                        
-                      },
+                      onPressed: () {},
                     ),
                   ],
                 ),

@@ -27,11 +27,7 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    _pageController.jumpToPage(index); // Changed from animateToPage
   }
 
   @override
@@ -42,50 +38,58 @@ class _MainPageState extends State<MainPage> {
         physics: const NeverScrollableScrollPhysics(),
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
+      bottomNavigationBar: Padding(
+        // Added Padding widget
+        padding: const EdgeInsets.only(bottom: 5), // Added bottom padding
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          iconSize: 30,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(
+                _selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
+              ),
+              label: '',
+              tooltip: 'Home',
             ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 1
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_outline_rounded,
+            BottomNavigationBarItem(
+              icon: Icon(
+                _selectedIndex == 1
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_outline_rounded,
+              ),
+              label: '',
+              tooltip: 'Favorites',
             ),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 2
-                  ? Icons.shopping_bag_rounded
-                  : Icons.shopping_bag_outlined,
+            BottomNavigationBarItem(
+              icon: Icon(
+                _selectedIndex == 2
+                    ? Icons.shopping_bag_rounded
+                    : Icons.shopping_bag_outlined,
+              ),
+              label: '',
+              tooltip: 'Cart',
             ),
-            label: 'Cart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 3
-                  ? Icons.notifications_rounded
-                  : Icons.notifications_none_rounded,
+            BottomNavigationBarItem(
+              icon: Icon(
+                _selectedIndex == 3
+                    ? Icons.notifications_rounded
+                    : Icons.notifications_none_rounded,
+              ),
+              label: '',
+              tooltip: 'Notifications',
             ),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        onTap: _onItemTapped,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded),
+              label: '',
+              tooltip: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          unselectedItemColor: Colors.black,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

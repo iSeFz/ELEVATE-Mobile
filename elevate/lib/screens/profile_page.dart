@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/customer_cubit.dart';
 import 'account_page.dart';
-import '/utils/google_sign_in_util.dart';
+import '/utils/google_utils.dart';
+import 'change_password_page.dart';
+import 'registration/login_page.dart';
 
 // Profile Page
 class ProfilePage extends StatefulWidget {
@@ -13,277 +17,262 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context); // Get theme data
+
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Padding(
-          padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
+        toolbarHeight: 70,
+        centerTitle: true,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.07,
+            vertical: screenHeight * 0.01,
+          ),
+          child: Column(
             children: [
-              Positioned(
-                left: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.stars_rounded, color: Colors.yellow[700]),
-                      SizedBox(width: 5),
-                      Text(
-                        '1108 points',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+              CircleAvatar(
+                radius: screenWidth * 0.2,
+                backgroundColor:
+                    theme.colorScheme.primaryContainer, // Theme color
+                child: Icon(
+                  Icons.person,
+                  size: screenWidth * 0.2,
+                  color: theme.colorScheme.onPrimaryContainer,
                 ),
               ),
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Profile',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+              SizedBox(height: screenHeight * 0.02),
+              BlocBuilder<CustomerCubit, CustomerState>(
+                builder: (context, state) {
+                  if (state is CustomerLoaded) {
+                    // Combine firstName and lastName for fullName
+                    final fullName =
+                        '${state.customer.firstName ?? ''} ${state.customer.lastName ?? ''}';
+                    return Text(
+                      fullName.trim().isNotEmpty
+                          ? fullName.trim()
+                          : 'User Name', // Display full name or a default
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: theme.textTheme.titleLarge?.color,
+                      ),
+                    );
+                  } else if (state is CustomerLoading) {
+                    return const CircularProgressIndicator();
+                  } else if (state is CustomerError) {
+                    return Text(
+                      state.message,
+                      style: TextStyle(color: Colors.red),
+                    );
+                  }
+                  return Text(
+                    'John Doe', // Default text if no state matches or in initial state
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: theme.textTheme.titleLarge?.color,
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              // Container for Loyalty Points
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.04,
+                  vertical: screenHeight * 0.01,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.star_rounded, size: 24),
+                    SizedBox(width: screenWidth * 0.02),
+                    Text(
+                      '1250 Points', // TODO: Replace with actual loyalty points
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.04),
+
+              // Removed Expanded, Container will size to its children (ListView with shrinkWrap: true)
+              Container(
+                decoration: BoxDecoration(
+                  color: theme.cardColor, // Theme color for card background
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.005),
+                  children: <Widget>[
+                    _buildProfileOption(
+                      context,
+                      icon: Icons.edit_outlined,
+                      text: 'Edit Profile',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AccountPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildProfileOption(
+                      context,
+                      icon: Icons.lock_outline_rounded,
+                      text: 'Change Password', // Changed from Add Pin
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePasswordPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildProfileOption(
+                      context,
+                      icon:
+                          Icons
+                              .history_outlined, // Changed icon for Order History
+                      text: 'Order History', // Changed from Invite a friend
+                      onTap: () {
+                        // TODO: Implement Order History navigation/action
+                      },
+                    ),
+                    _buildProfileOption(
+                      context,
+                      icon: Icons.settings_outlined,
+                      text: 'Settings',
+                      onTap: () {
+                        // TODO: Implement Settings navigation/action
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.03,
+              ), // Spacing before logout button
+              // Logout Button
+              SizedBox(
+                width:
+                    double
+                        .infinity, // Make button take full width available in padding
+                child: ElevatedButton.icon(
+                  icon: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                    size: screenWidth * 0.06,
                   ),
-                  textAlign: TextAlign.center,
+                  label: Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.015,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  onPressed: () {
+                    signOutGoogle();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                const LoginPage(), // TODO: Replace with actual login page
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 15,
-            bottom: 30,
-            left: 30,
-            right: 30,
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 20),
-                height: 2,
-                color: Colors.grey[300],
-                width: double.infinity,
-              ),
-              CircleAvatar(
-                radius: 70,
-                child: Icon(Icons.person_rounded, size: 100),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Username',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder:
-                          (context, animation, secondaryAnimation) =>
-                              const AccountPage(),
-                      transitionsBuilder: (
-                        context,
-                        animation,
-                        secondaryAnimation,
-                        child,
-                      ) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.easeInOut;
+    );
+  }
 
-                        var tween = Tween(
-                          begin: begin,
-                          end: end,
-                        ).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
+  Widget _buildProfileOption(
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context); // Get theme data
 
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[200],
-                  foregroundColor: Colors.black,
-                  padding: EdgeInsets.only(
-                    top: 12,
-                    bottom: 12,
-                    left: 150,
-                    right: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Account',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Icon(Icons.arrow_forward_ios_rounded),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/orders');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[200],
-                  foregroundColor: Colors.black,
-                  padding: EdgeInsets.only(
-                    top: 12,
-                    bottom: 12,
-                    left: 155,
-                    right: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Orders',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Icon(Icons.arrow_forward_ios_rounded),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/track_orders');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[200],
-                  foregroundColor: Colors.black,
-                  padding: EdgeInsets.only(
-                    top: 12,
-                    bottom: 12,
-                    left: 135,
-                    right: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Track Orders',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Icon(Icons.arrow_forward_ios_rounded),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/settings');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[200],
-                  foregroundColor: Colors.black,
-                  padding: EdgeInsets.only(
-                    top: 12,
-                    bottom: 12,
-                    left: 150,
-                    right: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Settings',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Icon(Icons.arrow_forward_ios_rounded),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  signOutGoogle();
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.only(
-                    top: 12,
-                    bottom: 12,
-                    left: 150,
-                    right: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Logout',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: theme.colorScheme.primary, // Simplified color logic
+        size: screenWidth * 0.07,
+      ),
+      title: Text(
+        text,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+          color: theme.textTheme.bodyLarge?.color, // Simplified color logic
         ),
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: screenWidth * 0.05,
+        color: Colors.grey,
+      ),
+      onTap: onTap,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05,
+        vertical: screenHeight * 0.005,
       ),
     );
   }
