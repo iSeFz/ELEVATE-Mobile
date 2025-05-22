@@ -133,12 +133,12 @@ class SlidingProductScreen extends StatelessWidget {
                     SizedBox(height: 12*SizeConfig.verticalBlock),
                     Text(product['price']!,
                         style: TextStyle(fontSize: 20*SizeConfig.textRatio, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 20* SizeConfig.verticalBlock),
+                    SizedBox(height: 13* SizeConfig.verticalBlock),
                     // Text(product['desc']!,
                     //     style: TextStyle(fontSize: 16, color: Colors.grey[800])),
                     // SizedBox(height: 24),
-                    // Text('Available Colors:', style: TextStyle(fontSize: 16)),
-                    // SizedBox(height: 8),
+                    Text('Colors :', style: TextStyle(fontSize: 13*SizeConfig.textRatio)),
+                    SizedBox(height: 8),
                     Row(
                       // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
