@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:elevate/screens/Rate_Card.dart';
+import 'package:elevate/widgets/Rate_Card.dart';
 
 class ReviewsBar extends StatefulWidget {
   const ReviewsBar({super.key});
@@ -42,6 +42,7 @@ class _ReviewsBarState extends State<ReviewsBar> {
               avatarUrl:
               'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
               comment: 'Loved the material!',
+              stars: 5,
             ),
             const SizedBox(height: 40),
             RateCard(
@@ -49,6 +50,7 @@ class _ReviewsBarState extends State<ReviewsBar> {
               avatarUrl:
               'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
               comment: 'Had fun AR',
+              stars: 3,
             ),
           ],
         ),

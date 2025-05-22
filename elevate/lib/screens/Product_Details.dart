@@ -1,8 +1,11 @@
 import 'dart:ui';
 
+import 'package:elevate/screens/Reviews.dart';
 import 'package:elevate/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
-import 'package:elevate/screens/Rate_Card.dart';
+import 'package:elevate/widgets/Rate_Card.dart';
+
+import '../widgets/FullScreenImage.dart';
 
 
 void main() => runApp(ProductDetails());
@@ -19,8 +22,8 @@ class ProductDetails extends StatelessWidget {
 Widget _buildColorCircle(Color color) {
   return Container(
     margin: EdgeInsets.only(right: 10),
-    width: 30,
-    height: 30,
+    width: 30* SizeConfig.horizontalBlock,
+    height: 30* SizeConfig.verticalBlock,
     decoration: BoxDecoration(
       color: color,
       shape: BoxShape.circle,
@@ -56,7 +59,7 @@ class SlidingProductScreen extends StatelessWidget {
       bottom: PreferredSize(
       preferredSize: Size.fromHeight(4),
       child: Container(
-      height: 4,
+      height: 4* SizeConfig.verticalBlock,
       decoration: BoxDecoration(
         boxShadow: [
         BoxShadow(
@@ -75,13 +78,23 @@ class SlidingProductScreen extends StatelessWidget {
     body: Stack(
         children: [
           // Background Product Image
-          Image.network(
+        GestureDetector(
+        onTap: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+            builder: (_) => FullScreenImage(imageUrl:
+            product['image']!),),
+            );
+            },
+            child:Image.network(
             product['image']!,
             width: double.infinity,
             height: MediaQuery.of(context).size.height,
             fit: BoxFit.fitWidth,
             alignment: Alignment.topCenter, // ⬅️ ensures image starts from top
           )
+        )
           ,
 
           // Draggable Card
@@ -91,7 +104,7 @@ class SlidingProductScreen extends StatelessWidget {
             maxChildSize: 0.9,
             builder: (context, scrollController) {
               return Container(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(16* SizeConfig.verticalBlock),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -103,8 +116,8 @@ class SlidingProductScreen extends StatelessWidget {
                     Container(
                       alignment: Alignment.center,
                       child: Container(
-                        width: 50,
-                        height: 5,
+                        width: 50* SizeConfig.horizontalBlock,
+                        height: 5* SizeConfig.verticalBlock,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
@@ -120,7 +133,7 @@ class SlidingProductScreen extends StatelessWidget {
                     SizedBox(height: 12*SizeConfig.verticalBlock),
                     Text(product['price']!,
                         style: TextStyle(fontSize: 20*SizeConfig.textRatio, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 20),
+                    SizedBox(height: 20* SizeConfig.verticalBlock),
                     // Text(product['desc']!,
                     //     style: TextStyle(fontSize: 16, color: Colors.grey[800])),
                     // SizedBox(height: 24),
@@ -140,7 +153,7 @@ class SlidingProductScreen extends StatelessWidget {
                       child: Text('ADD TO CART',style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: Size(double.infinity, 50*SizeConfig.textRatio),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),)
                       ),
@@ -150,7 +163,7 @@ class SlidingProductScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0), // same as box
+                          padding: EdgeInsets.symmetric(horizontal: 8.0* SizeConfig.horizontalBlock), // same as box
                           child: Text(
                             "About product",
                             style: TextStyle(fontSize: 18 * SizeConfig.textRatio, fontWeight: FontWeight.w500),
@@ -160,7 +173,7 @@ class SlidingProductScreen extends StatelessWidget {
                         Container(
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8* SizeConfig.verticalBlock),
                             ),
                             child: Column(
                               children: [
@@ -181,12 +194,12 @@ class SlidingProductScreen extends StatelessWidget {
 
                                   ],
                                 ),
-                                Divider(color: Colors.grey.shade300, height: 1),
+                                Divider(color: Colors.grey.shade300, height: 1* SizeConfig.verticalBlock),
                                 ExpansionTile(
                                   title: Row(
                                     children: [
                                       Icon(Icons.straighten, color: Colors.black), // size/ruler icon
-                                      SizedBox(width: 8),
+                                      SizedBox(width: 8* SizeConfig.horizontalBlock),
                                       Text(
                                         "Size Chart",
                                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -196,7 +209,7 @@ class SlidingProductScreen extends StatelessWidget {
                                   trailing: Icon(Icons.expand_more),
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(8.0 * SizeConfig.verticalBlock),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -210,12 +223,12 @@ class SlidingProductScreen extends StatelessWidget {
                                   ],
                                 ),
 
-                                Divider(color: Colors.grey.shade300, height: 1),
+                                Divider(color: Colors.grey.shade300, height: 1* SizeConfig.verticalBlock),
                                 ExpansionTile(
                                   title: Row(
                                     children: [
                                       Icon(Icons.reviews_outlined, color: Colors.black), // size/ruler icon
-                                      SizedBox(width: 8),
+                                      SizedBox(width: 8* SizeConfig.horizontalBlock),
                                       Text(
                                         "Reviews",
                                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -224,7 +237,7 @@ class SlidingProductScreen extends StatelessWidget {
                                   ),
                                   trailing: Icon(Icons.expand_more),
                                   children: [
-                                    Padding(padding:const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
+                                    Padding(padding: EdgeInsets.symmetric(horizontal: 24* SizeConfig.horizontalBlock, vertical: 10* SizeConfig.verticalBlock),
                                     child:Column(
                                       children: [
                                         RateCard(
@@ -232,14 +245,49 @@ class SlidingProductScreen extends StatelessWidget {
                                           avatarUrl:
                                           'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
                                           comment: 'Loved the material!',
+                                          stars: 5,
                                         ),
-                                        const SizedBox(height: 30),
+                                         SizedBox(height: 30* SizeConfig.verticalBlock),
                                         RateCard(
                                           username: 'Belal_Ahmedd',
                                           avatarUrl:
                                           'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
                                           comment: 'Had fun AR',
+                                          stars: 3,
                                         ),
+                                        SizedBox(height:20*SizeConfig.verticalBlock),
+                                        Container(
+                                          // margin: const EdgeInsets.all(16),
+                                          padding:  EdgeInsets.symmetric(vertical: 10* SizeConfig.verticalBlock),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(color: Colors.grey[300]!, width: 1),
+                                              // bottom: BorderSide(color: Colors.grey, width: 1),
+                                            ),
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (_) => ReviewsBar()),
+                                              );
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  "See more >>",
+                                                  style: TextStyle(
+                                                    color: Color(0xFFA51930),
+                                                    fontSize: 10* SizeConfig.textRatio,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+
                                       ],
                                     ),)
 

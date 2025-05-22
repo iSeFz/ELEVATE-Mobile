@@ -5,12 +5,14 @@ class RateCard extends StatelessWidget {
   final String username;
   final String avatarUrl;
   final String comment;
+  final int stars;
 
   const RateCard({
     super.key,
     required this.username,
     required this.avatarUrl,
     required this.comment,
+    required this.stars,
   });
   @override
   Widget build(BuildContext context) {
@@ -94,11 +96,14 @@ class RateCard extends StatelessWidget {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                5,
-                    (index) => const Icon(Icons.star, size: 12, color: Colors.amber),
-              ),
+              children: [
+                ...List.generate(stars,
+                        (index) =>  Icon(Icons.star, size: 12, color: Colors.amber)),
+                ...List.generate(5-stars,
+                        (index) =>  Icon(Icons.star, size: 12, color: Colors.grey[300]!)),
+              ],
             ),
+
           ),
         ),
       ],
