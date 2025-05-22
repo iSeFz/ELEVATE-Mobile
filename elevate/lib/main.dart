@@ -1,5 +1,9 @@
+import 'package:elevate/screens/Product_Details.dart';
+import 'package:elevate/screens/Reviews.dart';
+import 'package:elevate/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
+import 'screens/BrandProfile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/customer_cubit.dart';
@@ -17,6 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return BlocProvider<CustomerCubit>(
       create: (_) => CustomerCubit(),
       child: MaterialApp(
@@ -24,7 +29,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFA51930)),
         ),
-        home: const SplashScreen(),
+        home:  ProductDetails(),
         debugShowCheckedModeBanner: false,
       ),
     );
