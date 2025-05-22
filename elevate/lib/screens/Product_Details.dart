@@ -2,8 +2,11 @@ import 'dart:ui';
 
 import 'package:elevate/screens/Reviews.dart';
 import 'package:elevate/utils/SizeConfig.dart';
+import 'package:elevate/widgets/Product_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:elevate/widgets/Rate_Card.dart';
+import 'package:elevate/widgets/Product_Card.dart';
+import 'package:elevate/models/wishlist_product.dart';
 
 import '../widgets/FullScreenImage.dart';
 
@@ -293,12 +296,45 @@ class SlidingProductScreen extends StatelessWidget {
 
                                   ],
                                 ),
+                                Divider(color: Colors.grey.shade300, height: 1* SizeConfig.verticalBlock),
+
                               ],
                             ),
                           ),
+
                       ],
                     ),
+                    SizedBox(height: 20* SizeConfig.verticalBlock),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0* SizeConfig.horizontalBlock), // same as box
+                      child: Text(
+                        "You might like",
+                        style: TextStyle(fontSize: 18 * SizeConfig.textRatio, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    SizedBox(height: 20* SizeConfig.verticalBlock),
+                    Row(
+                      children: [
+                    ProductCard(
+                    product: WishlistProduct(
+                    productId: '1',
+                      brandName: 'NAVY',
+                      name: 'Sweatshirt',
+                      imageURL:'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                      price: 799,
+                    ),),
 
+                        ProductCard(
+                          product: WishlistProduct(
+                            productId: '1',
+                            brandName: 'NAVY',
+                            name: 'Sweatshirt',
+                            imageURL:'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                            price: 799,
+                          ),)
+                      ],
+
+                    )
                   ],
                 ),
               );
