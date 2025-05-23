@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../constants/app_constants.dart';
 
 // Helper to get UserCredential from Google
 Future<UserCredential?> _getGoogleUserCredential() async {
@@ -36,9 +37,7 @@ Future<UserCredential?> signUpWithGoogle() async {
   if (isNewUser) {
     // Call the dedicated API for new user registration via third-party
     await http.post(
-      Uri.parse(
-        'https://elevate-gp.vercel.app/api/v1/customers/third-party-signup',
-      ),
+      Uri.parse('$apiBaseURL/v1/customers/third-party-signup'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -51,5 +50,5 @@ Future<UserCredential?> signUpWithGoogle() async {
 // Sign out of Google
 Future<void> signOutGoogle() async {
   await GoogleSignIn().signOut();
-  await FirebaseAuth.instance.signOut();
+  // await FirebaseAuth.instance.signOut();
 }
