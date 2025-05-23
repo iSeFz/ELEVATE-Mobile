@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '/screens/notifications_page.dart';
-import '/screens/profile_page.dart';
+import '/screens/user_profile/profile_page.dart';
 import '/screens/favorites_page.dart';
 import '/screens/cart_page.dart';
 

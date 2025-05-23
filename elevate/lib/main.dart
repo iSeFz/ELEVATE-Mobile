@@ -1,9 +1,8 @@
-import 'package:elevate/screens/Product_Details.dart';
+import 'package:elevate/screens/Product_Details_Page.dart';
 import 'package:elevate/screens/Reviews.dart';
-import 'package:elevate/utils/SizeConfig.dart';
+import 'package:elevate/utils/Size_Config.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
-import 'screens/BrandProfile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/customer_cubit.dart';
