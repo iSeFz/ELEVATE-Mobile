@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
+import '../models/product.dart';
 import '/screens/reviews.dart';
 import '/utils/size_config.dart';
 import '/custom_widgets/product_card.dart';
 import '/custom_widgets/rate_card.dart';
 import '/models/wishlist_product.dart';
 import '../custom_widgets/full_screen_image.dart';
-
-void main() => runApp(ProductDetails());
-
-class ProductDetails extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SlidingProductScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
 
 Widget _buildColorCircle(Color color) {
   return Container(
@@ -31,15 +20,19 @@ Widget _buildColorCircle(Color color) {
   );
 }
 
-class SlidingProductScreen extends StatelessWidget {
-  final Map<String, String> product = {
+class ProductDetails extends StatelessWidget {
+  @override
+  ProductDetails({super.key, required this.productID});
+  final String productID;
+  final Map<String, String> pproduct = {
     'name': 'N008 Knitted Crewneck',
     'brand': 'NAVY',
     'price': 'EGP 750',
     'desc': 'High-quality cotton shirt, ideal for summer.',
     'image':
-        'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+    'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
   };
+  // Product product= new Product(image: image, name: name, brand: brand, category: category, department: department, description: description, material: material, averageRating: averageRating, totalReviews: totalReviews, variants: variants);
 
   @override
   Widget build(BuildContext context) {
@@ -79,17 +72,17 @@ class SlidingProductScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => FullScreenImage(imageUrl: product['image']!),
+                  builder: (_) => FullScreenImage(imageUrl: pproduct['image']!),
                 ),
               );
             },
             child: Image.network(
-              product['image']!,
+              pproduct['image']!,
               width: double.infinity,
               height: MediaQuery.of(context).size.height,
               fit: BoxFit.fitWidth,
               alignment:
-                  Alignment.topCenter, // ⬅️ ensures image starts from top
+              Alignment.topCenter, // ⬅️ ensures image starts from top
             ),
           ),
 
@@ -122,7 +115,7 @@ class SlidingProductScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      product['name']!,
+                      "product.name",
                       style: TextStyle(
                         fontSize: 18 * SizeConfig.textRatio,
                         fontWeight: FontWeight.bold,
@@ -130,7 +123,7 @@ class SlidingProductScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8 * SizeConfig.verticalBlock),
                     Text(
-                      product['brand']!,
+                      "product.brand",
                       style: TextStyle(
                         fontSize: 15 * SizeConfig.textRatio,
                         fontWeight: FontWeight.bold,
@@ -139,7 +132,7 @@ class SlidingProductScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 12 * SizeConfig.verticalBlock),
                     Text(
-                      product['price']!,
+                      pproduct['price']!,
                       style: TextStyle(
                         fontSize: 20 * SizeConfig.textRatio,
                         fontWeight: FontWeight.bold,
@@ -222,7 +215,8 @@ class SlidingProductScreen extends StatelessWidget {
                                     Text(
                                       "Description",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18 * SizeConfig.textRatio
                                       ),
                                     ),
                                   ],
@@ -250,7 +244,9 @@ class SlidingProductScreen extends StatelessWidget {
                                     Text(
                                       "Size Chart",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18 * SizeConfig.textRatio
+
                                       ),
                                     ),
                                   ],
@@ -263,7 +259,7 @@ class SlidingProductScreen extends StatelessWidget {
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text("S: Chest 36-38 in"),
                                         Text("M: Chest 39-41 in"),
@@ -292,7 +288,9 @@ class SlidingProductScreen extends StatelessWidget {
                                     Text(
                                       "Reviews",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18 * SizeConfig.textRatio
+
                                       ),
                                     ),
                                   ],
@@ -302,7 +300,7 @@ class SlidingProductScreen extends StatelessWidget {
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal:
-                                          24 * SizeConfig.horizontalBlock,
+                                      24 * SizeConfig.horizontalBlock,
                                       vertical: 10 * SizeConfig.verticalBlock,
                                     ),
                                     child: Column(
@@ -310,7 +308,7 @@ class SlidingProductScreen extends StatelessWidget {
                                         RateCard(
                                           username: 'Adham_Immortal',
                                           avatarUrl:
-                                              'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                                          'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
                                           comment: 'Loved the material!',
                                           stars: 5,
                                         ),
@@ -320,7 +318,7 @@ class SlidingProductScreen extends StatelessWidget {
                                         RateCard(
                                           username: 'Belal_Ahmedd',
                                           avatarUrl:
-                                              'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                                          'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
                                           comment: 'Had fun AR',
                                           stars: 3,
                                         ),
@@ -331,7 +329,7 @@ class SlidingProductScreen extends StatelessWidget {
                                           // margin: const EdgeInsets.all(16),
                                           padding: EdgeInsets.symmetric(
                                             vertical:
-                                                10 * SizeConfig.verticalBlock,
+                                            10 * SizeConfig.verticalBlock,
                                           ),
                                           decoration: BoxDecoration(
                                             border: Border(
@@ -353,14 +351,14 @@ class SlidingProductScreen extends StatelessWidget {
                                             },
                                             child: Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                              MainAxisAlignment.end,
                                               children: [
                                                 Text(
                                                   "See more >>",
                                                   style: TextStyle(
                                                     color: Color(0xFFA51930),
                                                     fontSize:
-                                                        10 *
+                                                    10 *
                                                         SizeConfig.textRatio,
                                                     fontWeight: FontWeight.bold,
                                                   ),
@@ -405,7 +403,7 @@ class SlidingProductScreen extends StatelessWidget {
                             brandName: 'NAVY',
                             name: 'Sweatshirt',
                             imageURL:
-                                'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                            'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
                             price: 799,
                           ),
                         ),
@@ -416,7 +414,7 @@ class SlidingProductScreen extends StatelessWidget {
                             brandName: 'NAVY',
                             name: 'Sweatshirt',
                             imageURL:
-                                'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                            'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
                             price: 799,
                           ),
                         ),
