@@ -14,4 +14,22 @@ class Review {
     required this.rating,
     required this.updatedAt,
   });
+
+  factory Review.fromJson(Map<String, dynamic> json) => Review(
+    productID: json['productID'] as String,
+    customerID: json['customerID'] as String,
+    title: json['title'] as String,
+    content: json['content'] as String,
+    rating: json['rating'] as int,
+    updatedAt: json['updatedAt'] as String,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'productID': productID,
+    'customerID': customerID,
+    'title': title,
+    'content': content,
+    'rating': rating,
+    'updatedAt': updatedAt,
+  };
 }

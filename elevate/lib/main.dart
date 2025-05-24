@@ -1,6 +1,7 @@
-import 'package:elevate/screens/Product_Details_Page.dart';
+import 'package:elevate/screens/home_page.dart';
+import 'package:elevate/screens/product_details_page.dart';
 import 'package:elevate/screens/Reviews.dart';
-import 'package:elevate/utils/Size_Config.dart';
+import 'package:elevate/utils/size_config.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFA51930)),
         ),
-        home:  SplashScreen(),
+        home:  HomePage(),
         debugShowCheckedModeBanner: false,
       ),
     );

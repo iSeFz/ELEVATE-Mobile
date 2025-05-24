@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                       label: 'Password',
                       hint: 'Enter your password',
                       onSaved: (value) => customer.password = value,
-                      validationFunc: validatePassword,
+                      // validationFunc: validatePassword,
                       suffixIcon: IconButton(
                         icon: Icon(
                           _isPasswordVisible

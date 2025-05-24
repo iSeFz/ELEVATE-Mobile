@@ -1,3 +1,5 @@
+import 'package:elevate/screens/home_page.dart';
+import 'package:elevate/utils/Size_Config.dart';
 import 'package:flutter/material.dart';
 import '/screens/notifications_page.dart';
 import '/screens/user_profile/profile_page.dart';
@@ -16,7 +18,7 @@ class _MainPageState extends State<MainPage> {
   final PageController _pageController = PageController(initialPage: 4);
 
   final List<Widget> _pages = [
-    Center(child: Text('Home Page')), // Placeholder for Home Page
+    HomePage(), // Placeholder for Home Page
     FavoritesPage(),
     CartPage(),
     NotificationsPage(),
@@ -40,16 +42,23 @@ class _MainPageState extends State<MainPage> {
       ),
       bottomNavigationBar: Padding(
         // Added Padding widget
-        padding: const EdgeInsets.only(bottom: 5), // Added bottom padding
+        padding:  EdgeInsets.only(bottom: 5*SizeConfig.verticalBlock), // Added bottom padding
+        child: Theme(
+        data: Theme.of(context).copyWith(
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        elevation: 0, // removes top border/shadow
+        backgroundColor: Colors.white, // optional
+        ),
+        ),
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          iconSize: 30,
+          iconSize: 30*SizeConfig.verticalBlock,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(
                 _selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
               ),
-              label: '',
+              label: 'Home',
               tooltip: 'Home',
             ),
             BottomNavigationBarItem(
@@ -90,7 +99,7 @@ class _MainPageState extends State<MainPage> {
           selectedItemColor: Theme.of(context).colorScheme.primary,
           onTap: _onItemTapped,
         ),
-      ),
+      ),)
     );
   }
 }

@@ -22,8 +22,8 @@ Widget _buildColorCircle(Color color) {
 
 class ProductDetails extends StatelessWidget {
   @override
-  ProductDetails({super.key, required this.productID});
-  final String productID;
+  ProductDetails({super.key});
+  // final String productID;
   final Map<String, String> pproduct = {
     'name': 'N008 Knitted Crewneck',
     'brand': 'NAVY',
@@ -397,27 +397,27 @@ class ProductDetails extends StatelessWidget {
                     SizedBox(height: 20 * SizeConfig.verticalBlock),
                     Row(
                       children: [
-                        ProductCard(
-                          product: WishlistProduct(
-                            productId: '1',
-                            brandName: 'NAVY',
-                            name: 'Sweatshirt',
-                            imageURL:
-                            'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-                            price: 799,
-                          ),
-                        ),
-
-                        ProductCard(
-                          product: WishlistProduct(
-                            productId: '1',
-                            brandName: 'NAVY',
-                            name: 'Sweatshirt',
-                            imageURL:
-                            'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-                            price: 799,
-                          ),
-                        ),
+                        // ProductCard(
+                        //   product: WishlistProduct(
+                        //     productId: '1',
+                        //     brandName: 'NAVY',
+                        //     name: 'Sweatshirt',
+                        //     imageURL:
+                        //     'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                        //     price: 799,
+                        //   ),
+                        // ),
+                        //
+                        // ProductCard(
+                        //   product: WishlistProduct(
+                        //     productId: '1',
+                        //     brandName: 'NAVY',
+                        //     name: 'Sweatshirt',
+                        //     imageURL:
+                        //     'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+                        //     price: 799,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],
