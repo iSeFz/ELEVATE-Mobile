@@ -1,5 +1,5 @@
 // Model class for the item object
-class Item {
+class CartItem {
   String image;
   String name;
   String brand;
@@ -9,7 +9,7 @@ class Item {
   List<String> colors;
 
   // Default constructor
-  Item({
+  CartItem({
     required this.image,
     required this.name,
     required this.brand,

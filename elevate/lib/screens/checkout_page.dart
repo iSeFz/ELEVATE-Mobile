@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '/models/item.dart';
+import '/models/cart_item.dart';
 import 'dart:math';
 
 enum DeliveryType { standard, express, pickup }
 
 class CheckoutScreen extends StatefulWidget {
-  final List<Item> cartItems;
+  final List<CartItem> cartItems;
   final double subtotal;
 
   const CheckoutScreen({

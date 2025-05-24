@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/models/item.dart';
+import '/models/cart_item.dart';
 import 'checkout_page.dart';
 
 class CartPage extends StatefulWidget {
@@ -10,8 +10,8 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  final List<Item> cartItems = [
-    Item(
+  final List<CartItem> cartItems = [
+    CartItem(
       image:
           'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
       name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
@@ -21,7 +21,7 @@ class _CartPageState extends State<CartPage> {
       colors: ["White"],
       quantity: 1,
     ),
-    Item(
+    CartItem(
       image:
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
       name: 'Black T-Shirt',
@@ -31,7 +31,7 @@ class _CartPageState extends State<CartPage> {
       colors: ["Black", "Blue"],
       quantity: 2,
     ),
-    Item(
+    CartItem(
       image:
           'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
       name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
@@ -41,7 +41,7 @@ class _CartPageState extends State<CartPage> {
       colors: ["White"],
       quantity: 1,
     ),
-    Item(
+    CartItem(
       image:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
       name: 'Black T-Shirt',
@@ -51,7 +51,7 @@ class _CartPageState extends State<CartPage> {
       colors: ["Black", "Blue"],
       quantity: 2,
     ),
-    Item(
+    CartItem(
       image:
       'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
       name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
@@ -61,7 +61,7 @@ class _CartPageState extends State<CartPage> {
       colors: ["White"],
       quantity: 1,
     ),
-    Item(
+    CartItem(
       image:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
       name: 'Black T-Shirt',
@@ -71,7 +71,7 @@ class _CartPageState extends State<CartPage> {
       colors: ["Black", "Blue"],
       quantity: 2,
     ),
-    Item(
+    CartItem(
       image:
       'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
       name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
@@ -209,7 +209,7 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  Widget buildCartItem(Item item, int index) {
+  Widget buildCartItem(CartItem item, int index) {
     return Card(
       color: Colors.white,
       elevation: 3,
