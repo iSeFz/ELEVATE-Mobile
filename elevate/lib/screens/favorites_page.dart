@@ -41,7 +41,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       });
       return;
     }
-    final url = "http://elevate-gp.vercel.app/api/v1/customers/me/wishlist?userId=$userId";
+    final url =
+        "https://elevate-gp.vercel.app/api/v1/customers/me/wishlist?userId=$userId";
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -51,9 +52,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
         final data = json.decode(response.body);
         final List<dynamic> productsJson = data['data'] ?? [];
         setState(() {
-          favoriteProducts = productsJson
-              .map((json) => WishlistProduct.fromJson(json))
-              .toList();
+          favoriteProducts =
+              productsJson
+                  .map((json) => WishlistProduct.fromJson(json))
+                  .toList();
           isLoading = false;
         });
       } else {
@@ -66,6 +68,56 @@ class _FavoritesPageState extends State<FavoritesPage> {
       setState(() {
         isLoading = false;
         errorMessage = 'Error: $e';
+      });
+    }
+  }
+
+  Future<void> removeFromWishlist(String productId) async {
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+
+    if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    }
+
+    if (userId == null) {
+      setState(() {
+        errorMessage = 'User not logged in.';
+      });
+      return;
+    }
+
+    final url = "https://elevate-gp.vercel.app/api/v1/customers/me/wishlist/items/$productId?userId=$userId";
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: {testAuthHeader: testAuthValue,},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          favoriteProducts.removeWhere(
+            (product) => product.productId == productId,
+          );
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Failed to remove from wishlist.';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error: $e';
+        isLoading = false;
       });
     }
   }
@@ -180,9 +232,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     IconButton(
                       icon: Icon(Icons.favorite, color: Colors.red),
                       onPressed: () {
-                        setState(() {
-                          favoriteProducts.remove(product);
-                        });
+                          removeFromWishlist(product.productId);
                       },
                     ),
                     IconButton(
