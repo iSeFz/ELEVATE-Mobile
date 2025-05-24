@@ -1,21 +1,25 @@
-// Model class for the item object
 class CartItem {
-  String image;
-  String name;
-  String brand;
-  double price;
-  String size;
+  String? id;
+  String productId;
+  String variantId;
   int quantity;
-  List<String> colors;
+  String brandName;
+  String productName;
+  String size; 
+  String color;
+  double price;
+  String imageURL;
 
-  // Default constructor
   CartItem({
-    required this.image,
-    required this.name,
-    required this.brand,
-    required this.price,
-    required this.size,
+    this.id,
+    required this.productId,
+    required this.variantId,
     required this.quantity,
-    required this.colors,
+    required this.brandName,
+    required this.productName,
+    required this.size,
+    required this.color,
+    required this.price,
+    required this.imageURL,
   });
 }

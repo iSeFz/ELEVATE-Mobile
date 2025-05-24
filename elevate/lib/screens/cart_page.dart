@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '/models/cart_item.dart';
+import '/cubits/customer_cubit.dart';
+import '/constants/app_constants.dart';
 import 'checkout_page.dart';
 
 class CartPage extends StatefulWidget {
@@ -10,84 +15,154 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  final List<CartItem> cartItems = [
-    CartItem(
-      image:
-          'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
-      brand: 'شوقي للملابس',
-      price: 100.777,
-      size: "L",
-      colors: ["White"],
-      quantity: 1,
-    ),
-    CartItem(
-      image:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
-      name: 'Black T-Shirt',
-      brand: 'شوقي للملابس',
-      price: 200,
-      size: "XL",
-      colors: ["Black", "Blue"],
-      quantity: 2,
-    ),
-    CartItem(
-      image:
-          'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
-      brand: 'شوقي للملابس',
-      price: 100,
-      size: "L",
-      colors: ["White"],
-      quantity: 1,
-    ),
-    CartItem(
-      image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
-      name: 'Black T-Shirt',
-      brand: 'شوقي للملابس',
-      price: 200,
-      size: "XL",
-      colors: ["Black", "Blue"],
-      quantity: 2,
-    ),
-    CartItem(
-      image:
-      'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
-      brand: 'شوقي للملابس',
-      price: 100,
-      size: "L",
-      colors: ["White"],
-      quantity: 1,
-    ),
-    CartItem(
-      image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyfFUztxIyItyyvdCwHNm60RpFbSRuN9h3g&s',
-      name: 'Black T-Shirt',
-      brand: 'شوقي للملابس',
-      price: 200,
-      size: "XL",
-      colors: ["Black", "Blue"],
-      quantity: 2,
-    ),
-    CartItem(
-      image:
-      'https://plus.unsplash.com/premium_photo-1718913936342-eaafff98834b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dCUyMHNoaXJ0fGVufDB8fDB8fHww',
-      name: 'T-shirt Gamed awyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
-      brand: 'شوقي للملابس',
-      price: 100,
-      size: "L",
-      colors: ["White"],
-      quantity: 1,
-    ),
-  ];
-  late double subtotal;
+  List<CartItem> cartItems = [];
+  late double subtotal = 0.0;
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    calculateSubtotal();
+    fetchCartItems();
+  }
+
+  Future<void> fetchCartItems() async {
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+
+    if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    }
+
+    if (userId == null) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'User not logged in.';
+      });
+      return;
+    }
+
+    final url = "https://elevate-fcai-cu.vercel.app/api/v1/customers/me/cart?userId=$userId";
+    
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {testAuthHeader: testAuthValue},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final cartData = data['data'];
+        final List<dynamic> itemsJson = cartData['items'] ?? [];
+        
+        setState(() {
+          cartItems = itemsJson.map((json) => CartItem(
+            id: json['id'],
+            productId: json['productId'],
+            variantId: json['variantId'],
+            quantity: json['quantity'],
+            brandName: json['brandName'],
+            productName: json['productName'],
+            size: json['size'],
+            color: json['color'],
+            price: (json['price'] as num).toDouble(),
+            imageURL: json['imageURL'],
+          )).toList();
+          subtotal = (cartData['subtotal'] as num?)?.toDouble() ?? 0.0;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Failed to load cart items.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error: $e';
+      });
+    }
+  }
+
+  Future<void> updateQuantity(int index, int change) async {
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+
+    if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    }
+
+    if (userId == null) {
+      setState(() {
+        errorMessage = 'User not logged in.';
+      });
+      return;
+    }
+
+    final cartItem = cartItems[index];
+    final newQuantity = cartItem.quantity + change;
+
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      if (newQuantity > 0) {
+        final url = "https://elevate-fcai-cu.vercel.app/api/v1/customers/me/cart/items/${cartItem.id}?userId=$userId";
+        final response = await http.put(
+          Uri.parse(url),
+          headers: {
+            testAuthHeader: testAuthValue,
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'quantity': newQuantity,
+            'color': cartItem.color,
+          }),
+        );
+        if (response.statusCode == 200) {
+          setState(() {
+            cartItems[index].quantity = newQuantity;
+            calculateSubtotal();
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            errorMessage = 'Failed to update quantity.';
+            isLoading = false;
+          });
+        }
+      } else {
+        final url = "https://elevate-fcai-cu.vercel.app/api/v1/customers/me/cart/items/${cartItem.id}?userId=$userId";
+        final response = await http.delete(
+          Uri.parse(url),
+          headers: {testAuthHeader: testAuthValue},
+        );
+        if (response.statusCode == 200) {
+          setState(() {
+            cartItems.removeAt(index);
+            calculateSubtotal();
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            errorMessage = 'Failed to remove item.';
+            isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error: $e';
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -104,90 +179,95 @@ class _CartPageState extends State<CartPage> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(12),
-              itemCount: cartItems.length,
-              itemBuilder: (context, index) {
-                return buildCartItem(cartItems[index], index);
-              },
-            ),
-          ),
-
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey,
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "SubTotal",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      "EGP ${subtotal.toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 9),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => 
-                            CheckoutScreen(
-                              cartItems: cartItems,
-                              subtotal: subtotal,
-                            ),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
-                            return SlideTransition(position: offsetAnimation, child: child);
-                          },
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : errorMessage != null
+              ? Center(child: Text(errorMessage!))
+              : cartItems.isEmpty
+                  ? Center(child: Text('Your cart is empty.'))
+                  : Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            padding: EdgeInsets.all(12),
+                            itemCount: cartItems.length,
+                            itemBuilder: (context, index) {
+                              return buildCartItem(cartItems[index], index);
+                            },
+                          ),
                         ),
-                      );
-                    },
-                    child: Text(
-                      "Proceed to Checkout",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey,
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "SubTotal",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "EGP ${subtotal.toStringAsFixed(2)}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 9),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.black,
+                                    padding: EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),),
+                                  ),
+                                  onPressed: cartItems.isEmpty ? null : () {
+                                    Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation, secondaryAnimation) => 
+                                          CheckoutScreen(
+                                            cartItems: cartItems,
+                                            subtotal: subtotal,
+                                          ),
+                                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                          const begin = Offset(1.0, 0.0);
+                                          const end = Offset.zero;
+                                          const curve = Curves.easeInOut;
+                                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                          var offsetAnimation = animation.drive(tween);
+                                          return SlideTransition(position: offsetAnimation, child: child);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Proceed to Checkout",
+                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -196,17 +276,6 @@ class _CartPageState extends State<CartPage> {
     for (var item in cartItems) {
       subtotal += item.price * item.quantity;
     }
-  }
-
-  void updateQuantity(int index, int change) {
-    setState(() {
-      if (cartItems[index].quantity + change > 0) {
-        cartItems[index].quantity += change;
-      } else {
-        cartItems.remove(cartItems[index]);
-      }
-      calculateSubtotal();
-    });
   }
 
   Widget buildCartItem(CartItem item, int index) {
@@ -236,8 +305,12 @@ class _CartPageState extends State<CartPage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  item.image,
+                  item.imageURL,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey[300],
+                    child: Icon(Icons.broken_image, size: 40),
+                  ),
                 ),
               ),
             ),
@@ -247,14 +320,14 @@ class _CartPageState extends State<CartPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.name,
+                    item.productName,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Brand: ${item.brand}',
+                    'Brand: ${item.brandName}',
                     style: TextStyle(color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -266,7 +339,7 @@ class _CartPageState extends State<CartPage> {
                     maxLines: 1,
                   ),
                   Text(
-                    'Colors: ${cartItems[index].colors.join("/")}',
+                    'Colors: ${cartItems[index].color}',
                     style: TextStyle(color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

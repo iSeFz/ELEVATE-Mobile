@@ -312,11 +312,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           itemBuilder: (context, index) {
             final item = widget.cartItems[index];
             return CheckoutItemCard(
-              image: item.image,
-              brand: item.brand,
-              name: item.name,
+              image: item.imageURL,
+              brand: item.brandName,
+              name: item.productName,
               description:
-                  'Size: ${item.size}, Colors: ${item.colors.join("/")}',
+                  'Size: ${item.size}, Colors: ${item.color}',
               quantity: item.quantity.toString(),
               price: 'EGP ${(item.price * item.quantity).toStringAsFixed(2)}',
             );
