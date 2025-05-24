@@ -24,8 +24,7 @@ class HomePage extends StatelessWidget {
               return Center(child: CircularProgressIndicator());
             } else if (state is ProductLoaded) {
               final products = state.products;
-              return Center(
-                child: SingleChildScrollView(
+              return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -36,7 +35,7 @@ class HomePage extends StatelessWidget {
                     ))
                         .toList(),
                   ),
-                ),
+
               );
             } else if (state is ProductError) {
               return Center(child: Text(state.message));

@@ -1,35 +1,29 @@
 class ProductVariant {
-  final List<String> colors;
-  final double discount;
-  final List<String> images;
-  final double price;
+  final String id;
   final String size;
   final int stock;
+  final double price;
+  final int discount;
+  final List<String> colors;
+  final List<String> images;
 
   ProductVariant({
-    required this.colors,
-    required this.discount,
-    required this.images,
-    required this.price,
+    required this.id,
     required this.size,
     required this.stock,
+    required this.price,
+    required this.discount,
+    required this.colors,
+    required this.images,
   });
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) => ProductVariant(
-    colors: List<String>.from(json['colors'] as List<dynamic>),
-    discount: (json['discount'] as num).toDouble(),
-    images: List<String>.from(json['images'] as List<dynamic>),
-    price: (json['price'] as num).toDouble(),
+    id: json['id'] as String,
     size: json['size'] as String,
     stock: json['stock'] as int,
+    price: (json['price'] as num).toDouble(),
+    discount: json['discount'] as int,
+    colors: List<String>.from(json['colors']),
+    images: List<String>.from(json['images']),
   );
-
-  Map<String, dynamic> toJson() => {
-    'colors': colors,
-    'discount': discount,
-    'images': images,
-    'price': price,
-    'size': size,
-    'stock': stock,
-  };
 }

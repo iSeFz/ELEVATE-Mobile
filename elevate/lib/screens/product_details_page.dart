@@ -22,18 +22,8 @@ Widget _buildColorCircle(Color color) {
 
 class ProductDetails extends StatelessWidget {
   @override
-  ProductDetails({super.key});
-  // final String productID;
-  final Map<String, String> pproduct = {
-    'name': 'N008 Knitted Crewneck',
-    'brand': 'NAVY',
-    'price': 'EGP 750',
-    'desc': 'High-quality cotton shirt, ideal for summer.',
-    'image':
-    'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-  };
-  // Product product= new Product(image: image, name: name, brand: brand, category: category, department: department, description: description, material: material, averageRating: averageRating, totalReviews: totalReviews, variants: variants);
-
+  ProductDetails({required this.product,super.key});
+  final Product product;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,12 +62,12 @@ class ProductDetails extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => FullScreenImage(imageUrl: pproduct['image']!),
+                  builder: (_) => FullScreenImage(imageUrl: product.image),
                 ),
               );
             },
             child: Image.network(
-              pproduct['image']!,
+              product.image,
               width: double.infinity,
               height: MediaQuery.of(context).size.height,
               fit: BoxFit.fitWidth,
@@ -115,7 +105,7 @@ class ProductDetails extends StatelessWidget {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      "product.name",
+                      product.name,
                       style: TextStyle(
                         fontSize: 18 * SizeConfig.textRatio,
                         fontWeight: FontWeight.bold,
@@ -123,7 +113,7 @@ class ProductDetails extends StatelessWidget {
                     ),
                     SizedBox(height: 8 * SizeConfig.verticalBlock),
                     Text(
-                      "product.brand",
+                      product.brandName,
                       style: TextStyle(
                         fontSize: 15 * SizeConfig.textRatio,
                         fontWeight: FontWeight.bold,
@@ -132,7 +122,7 @@ class ProductDetails extends StatelessWidget {
                     ),
                     SizedBox(height: 12 * SizeConfig.verticalBlock),
                     Text(
-                      pproduct['price']!,
+                      product.price.toString(),
                       style: TextStyle(
                         fontSize: 20 * SizeConfig.textRatio,
                         fontWeight: FontWeight.bold,
