@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import '/models/cart_item.dart';
 import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/customer_cubit.dart';
+import '../constants/app_constants.dart';
 
 enum DeliveryType { standard, express, pickup }
 
@@ -23,16 +28,64 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String? selectedAddress;
   double shippingFee = 0;
 
-
-  final List<String> userAddresses = [
-    'Home: 123 Main St, Cairo',
-    'Work: 456 Office Blvd, Giza',
-  ];
+  List<String> userAddresses = [];
+  int loyaltyPoints = 0;
 
   @override
   void initState() {
     super.initState();
+    fetchCustomerData();
     calculateShippingFee();
+  }
+
+  Future<void> fetchCustomerData() async {
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+    if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    }
+    if (userId == null) {
+      setState(() {
+        userAddresses = [];
+        loyaltyPoints = 0;
+      });
+      return;
+    }
+
+    final url = "$apiBaseURL/v1/customers/me?userId=$userId";
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {testAuthHeader: testAuthValue},
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final addresses = data['data']['addresses'] as List<dynamic>? ?? [];
+        final points = data['data']['loyaltyPoints'] ?? 0;
+        setState(() {
+          userAddresses =
+              addresses.map((addr) {
+                final city = addr['city'] ?? '';
+                final street = addr['street'] ?? '';
+                final building = addr['building']?.toString() ?? '';
+                return "$city, $street, Building $building";
+              }).toList();
+          loyaltyPoints = points;
+        });
+      } else {
+        setState(() {
+          userAddresses = [];
+          loyaltyPoints = 0;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        userAddresses = [];
+        loyaltyPoints = 0;
+      });
+    }
   }
 
   void calculateShippingFee() {
@@ -241,6 +294,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildCheckoutSections() {
+
     final sections = [
       {
         'label': 'ADDRESS',
@@ -261,22 +315,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         'onTap': _showDeliveryOptions,
       },
       {'label': 'PAYMENT', 'content': 'Cash on delivery'},
-      {'label': 'PROMOS', 'content': 'Apply promo code', 'placeholder': true},
+      // {
+      //   'label': 'LOYALTY POINTS',
+      //   'content': loyaltyPoints > 0
+      //       ? '$loyaltyPoints points (EGP ${pointsValue.toStringAsFixed(2)})'
+      //       : 'No points available',
+      //   'placeholder': loyaltyPoints == 0,
+      // },
     ];
 
     return Column(
-      children:
-          sections.map((section) {
-            return GestureDetector(
-              onTap: section['onTap'] as void Function()?,
-              child: CheckoutSection(
-                label: section['label'] as String,
-                content: section['content'],
-                isPlaceholder: section['placeholder'] == true,
-                showArrow: section['label'] != 'PAYMENT',
-              ),
-            );
-          }).toList(),
+      children: sections.map((section) {
+        return GestureDetector(
+          onTap: section['onTap'] as void Function()?,
+          child: CheckoutSection(
+            label: section['label'] as String,
+            content: section['content'],
+            isPlaceholder: section['placeholder'] == true,
+            showArrow: section['label'] != 'PAYMENT',
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -307,7 +366,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ListView.builder(
           shrinkWrap: true,
           physics:
-              const NeverScrollableScrollPhysics(), // This ensures it scrolls with parent
+              const NeverScrollableScrollPhysics(), // To scroll with parent
           itemCount: widget.cartItems.length,
           itemBuilder: (context, index) {
             final item = widget.cartItems[index];
@@ -315,14 +374,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               image: item.imageURL,
               brand: item.brandName,
               name: item.productName,
-              description:
-                  'Size: ${item.size}, Colors: ${item.color}',
+              description: 'Size: ${item.size}, Colors: ${item.color}',
               quantity: item.quantity.toString(),
               price: 'EGP ${(item.price * item.quantity).toStringAsFixed(2)}',
             );
           },
         ),
-        const SizedBox(height: 16), // Add some bottom padding
+        const SizedBox(height: 16),
       ],
     );
   }
