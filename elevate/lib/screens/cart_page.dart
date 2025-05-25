@@ -66,7 +66,7 @@ class _CartPageState extends State<CartPage> {
             brandName: json['brandName'],
             productName: json['productName'],
             size: json['size'],
-            color: json['color'],
+            colors: (json['colors'] as List<dynamic>?)?.map((c) => c.toString()).toList() ?? [],
             price: (json['price'] as num).toDouble(),
             imageURL: json['imageURL'],
           )).toList();
@@ -123,7 +123,6 @@ class _CartPageState extends State<CartPage> {
           },
           body: jsonEncode({
             'quantity': newQuantity,
-            'color': cartItem.color,
           }),
         );
         if (response.statusCode == 200) {
@@ -339,7 +338,7 @@ class _CartPageState extends State<CartPage> {
                     maxLines: 1,
                   ),
                   Text(
-                    'Colors: ${cartItems[index].color}',
+                    'Colors: ${item.colors.join(", ")}',
                     style: TextStyle(color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

@@ -374,7 +374,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               image: item.imageURL,
               brand: item.brandName,
               name: item.productName,
-              description: 'Size: ${item.size}, Colors: ${item.color}',
+              description: 'Size: ${item.size}\nColors: ${item.colors.join(", ")}',
               quantity: item.quantity.toString(),
               price: 'EGP ${(item.price * item.quantity).toStringAsFixed(2)}',
             );

@@ -5,8 +5,8 @@ class CartItem {
   int quantity;
   String brandName;
   String productName;
-  String size; 
-  String color;
+  String size;
+  List<String> colors;
   double price;
   String imageURL;
 
@@ -18,7 +18,7 @@ class CartItem {
     required this.brandName,
     required this.productName,
     required this.size,
-    required this.color,
+    required this.colors,
     required this.price,
     required this.imageURL,
   });
