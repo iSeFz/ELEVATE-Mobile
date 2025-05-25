@@ -22,13 +22,16 @@ class _ProfilePageState extends State<ProfilePage> {
     final theme = Theme.of(context); // Get theme data
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 70,
         centerTitle: true,
-        title: const Text(
+        backgroundColor: Colors.white,                // add shadow below
+        shadowColor: Colors.black.withOpacity(0.25), // subtle black shadow
+        title: Text(
           'Profile',
           style: TextStyle(
-            color: Colors.black,
+            color: theme.colorScheme.secondary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -46,7 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
               CircleAvatar(
                 radius: screenWidth * 0.2,
                 backgroundColor:
-                    theme.colorScheme.primaryContainer, // Theme color
+                    theme.colorScheme.tertiary, // Theme color
                 child: Icon(
                   Icons.person,
                   size: screenWidth * 0.2,
@@ -96,13 +99,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   vertical: screenHeight * 0.01,
                 ),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
+                  color: Color(0xFFECECEC),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.shade200,
-                      spreadRadius: 1,
-                      blurRadius: 3,
+                      // spreadRadius: 1,
+                      // blurRadius: 3,
                       offset: Offset(0, 2),
                     ),
                   ],
@@ -110,13 +113,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.star_rounded, size: 24),
+                    Icon(Icons.star_rounded, size: 24, color: Color(0xFFFFD700)),
                     SizedBox(width: screenWidth * 0.02),
                     Text(
                       '1250 Points', // TODO: Replace with actual loyalty points
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.secondary
                       ),
                     ),
                   ],
@@ -127,8 +131,8 @@ class _ProfilePageState extends State<ProfilePage> {
               // Removed Expanded, Container will size to its children (ListView with shrinkWrap: true)
               Container(
                 decoration: BoxDecoration(
-                  color: theme.cardColor, // Theme color for card background
-                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.grey[100], // Theme color for card background
+                  borderRadius: BorderRadius.circular(5),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.shade200,
@@ -194,9 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ), // Spacing before logout button
               // Logout Button
               SizedBox(
-                width:
-                    double
-                        .infinity, // Make button take full width available in padding
+                width:double.infinity, // Make button take full width available in padding
                 child: ElevatedButton.icon(
                   icon: Icon(
                     Icons.logout,
@@ -212,12 +214,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
+                    backgroundColor: theme.colorScheme.secondary,
                     padding: EdgeInsets.symmetric(
                       vertical: screenHeight * 0.015,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                   onPressed: () {

@@ -17,7 +17,8 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (_) => ProductCubit()..fetchProducts(),
       child: Scaffold(
-        appBar: AppBar(title: Text('Home')),
+        backgroundColor: Colors.white,
+        appBar: AppBar(title: Text('Home'), backgroundColor: Colors.white,),
         body: BlocBuilder<ProductCubit, ProductState>(
           builder: (context, state) {
             if (state is ProductLoading) {
