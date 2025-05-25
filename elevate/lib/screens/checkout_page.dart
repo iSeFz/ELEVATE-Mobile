@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '/models/item.dart';
+import '/models/cart_item.dart';
 import 'dart:math';
 
 enum DeliveryType { standard, express, pickup }
 
 class CheckoutScreen extends StatefulWidget {
-  final List<Item> cartItems;
+  final List<CartItem> cartItems;
   final double subtotal;
 
   const CheckoutScreen({
@@ -312,11 +312,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           itemBuilder: (context, index) {
             final item = widget.cartItems[index];
             return CheckoutItemCard(
-              image: item.image,
-              brand: item.brand,
-              name: item.name,
+              image: item.imageURL,
+              brand: item.brandName,
+              name: item.productName,
               description:
-                  'Size: ${item.size}, Colors: ${item.colors.join("/")}',
+                  'Size: ${item.size}, Colors: ${item.color}',
               quantity: item.quantity.toString(),
               price: 'EGP ${(item.price * item.quantity).toStringAsFixed(2)}',
             );

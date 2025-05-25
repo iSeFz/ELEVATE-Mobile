@@ -1,12 +1,9 @@
-import 'package:elevate/screens/home_page.dart';
-import 'package:elevate/screens/product_details_page.dart';
-import 'package:elevate/screens/Reviews.dart';
-import 'package:elevate/utils/size_config.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/customer_cubit.dart';
+import 'utils/size_config.dart';
 
 // Main function to start the run
 void main() async {

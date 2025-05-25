@@ -60,33 +60,34 @@ class _MainPageState extends State<MainPage> {
               ),
               label: 'Home',
               tooltip: 'Home',
+
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                _selectedIndex == 1
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_outline_rounded,
-              ),
-              label: '',
-              tooltip: 'Favorites',
+            label: '',
+            tooltip: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              _selectedIndex == 1
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_outline_rounded,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                _selectedIndex == 2
-                    ? Icons.shopping_bag_rounded
-                    : Icons.shopping_bag_outlined,
-              ),
-              label: '',
-              tooltip: 'Cart',
+            label: '',
+            tooltip: 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              _selectedIndex == 2
+                  ? Icons.shopping_bag_rounded
+                  : Icons.shopping_bag_outlined,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                _selectedIndex == 3
-                    ? Icons.notifications_rounded
-                    : Icons.notifications_none_rounded,
-              ),
-              label: '',
-              tooltip: 'Notifications',
+            label: '',
+            tooltip: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              _selectedIndex == 3
+                  ? Icons.notifications_rounded
+                  : Icons.notifications_none_rounded,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_rounded),
@@ -100,6 +101,7 @@ class _MainPageState extends State<MainPage> {
           onTap: _onItemTapped,
         ),
       ),)
+
     );
   }
 }
