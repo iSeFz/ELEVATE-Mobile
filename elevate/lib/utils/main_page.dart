@@ -1,3 +1,5 @@
+import 'package:elevate/screens/home_page.dart';
+import 'package:elevate/utils/Size_Config.dart';
 import 'package:flutter/material.dart';
 import '/screens/notifications_page.dart';
 import '/screens/user_profile/profile_page.dart';
@@ -16,7 +18,7 @@ class _MainPageState extends State<MainPage> {
   final PageController _pageController = PageController(initialPage: 4);
 
   final List<Widget> _pages = [
-    Center(child: Text('Home Page')), // Placeholder for Home Page
+    HomePage(), // Placeholder for Home Page
     FavoritesPage(),
     CartPage(),
     NotificationsPage(),
@@ -38,13 +40,27 @@ class _MainPageState extends State<MainPage> {
         physics: const NeverScrollableScrollPhysics(),
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        iconSize: 30,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
+      bottomNavigationBar: Padding(
+        // Added Padding widget
+        padding:  EdgeInsets.only(bottom: 5*SizeConfig.verticalBlock), // Added bottom padding
+        child: Theme(
+        data: Theme.of(context).copyWith(
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        elevation: 0, // removes top border/shadow
+        backgroundColor: Colors.white, // optional
+        ),
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          iconSize: 30*SizeConfig.verticalBlock,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(
+                _selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
+              ),
+              label: 'Home',
+              tooltip: 'Home',
+
             ),
             label: '',
             tooltip: 'Home',
@@ -73,20 +89,19 @@ class _MainPageState extends State<MainPage> {
                   ? Icons.notifications_rounded
                   : Icons.notifications_none_rounded,
             ),
-            label: '',
-            tooltip: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: '',
-            tooltip: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        onTap: _onItemTapped,
-      ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded),
+              label: '',
+              tooltip: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          unselectedItemColor: Colors.black,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          onTap: _onItemTapped,
+        ),
+      ),)
+
     );
   }
 }

@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:elevate/models/wishlist_product.dart';
 import 'package:elevate/utils/size_config.dart';
+import 'package:elevate/screens/product_details_page.dart';
+import '../models/product.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product});
-  final WishlistProduct product;
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+        onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProductDetails(product: product),
+        ),
+      );
+    },
+    child: Container(
       width: SizeConfig.screenWidth * 0.5 - 20,
-      // height: 20*SizeConfig.verticalBlock,
+      height: 350*SizeConfig.verticalBlock,
       child: Card(
         color: Colors.white,
         elevation: 3,
@@ -20,15 +31,17 @@ class ProductCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
-                product.imageURL,
+                "product.imageURL",
                 fit: BoxFit.cover,
                 width: double.infinity,
-                // height: 120*SizeConfig.verticalBlock,
+                height: 220*SizeConfig.verticalBlock,
                 errorBuilder:
                     (context, error, stackTrace) => Container(
-                      color: Colors.grey[300],
-                      height: 120,
-                      child: Icon(Icons.broken_image, size: 40),
+                      color: Colors.grey[100],
+                      width: double.infinity,
+                      height: 220*SizeConfig.verticalBlock,
+                      child: Icon(Icons.broken_image_rounded, size: 100*SizeConfig.verticalBlock,color: Color(
+                          0xFFE8BBC2),),
                     ),
               ),
             ),
@@ -50,9 +63,9 @@ class ProductCard extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Brand: ${product.brandName}',
+                          product.brandName,
                           style: TextStyle(
-                            color: Colors.grey,
+                            color: Color(0xFFA51930),
                             fontSize: 14 * SizeConfig.textRatio,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -74,7 +87,7 @@ class ProductCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.favorite, color: Colors.red),
+                      icon: Icon(Icons.favorite_outline_rounded),
                       onPressed: () {
                         // setState(() {
                         //   // favoriteProducts.remove(product);
@@ -91,7 +104,7 @@ class ProductCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ),)
     );
   }
 }
