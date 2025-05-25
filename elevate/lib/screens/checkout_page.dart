@@ -6,28 +6,31 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/customer_cubit.dart';
 import '../constants/app_constants.dart';
+import 'dart:async';
 
 enum DeliveryType { standard, express, pickup }
 
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> cartItems;
   final double subtotal;
-
+  final String orderId;
   const CheckoutScreen({
     super.key,
     required this.cartItems,
     required this.subtotal,
+    required this.orderId,
   });
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
+class _CheckoutScreenState extends State<CheckoutScreen>
+    with WidgetsBindingObserver {
   DeliveryType selectedDeliveryType = DeliveryType.standard;
   String? selectedAddress;
   double shippingFee = 0;
-
+  String? userId;
   List<String> userAddresses = [];
   int loyaltyPoints = 0;
 
@@ -36,11 +39,69 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.initState();
     fetchCustomerData();
     calculateShippingFee();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    releaseItems();
+    super.dispose();
+  }
+
+  // Called when app lifecycle state changes (backgrounded/closed)
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      releaseItems();
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<void> releaseItems() async {
+    if (userId == null || widget.orderId.isEmpty) return;
+    final url =
+        "$apiBaseURL/v1/customers/me/orders/${widget.orderId}/cancel?userId=$userId";
+    try {
+      await http.patch(
+        Uri.parse(url),
+        headers: {testAuthHeader: testAuthValue},
+      );
+    } catch (e) {}
+  }
+
+  // Intercept back navigation
+  Future<bool> _onWillPop() async {
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Leave Checkout?'),
+        content: const Text(
+          'If you leave now, you will lose your reserved items. Do you want to continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    if (shouldLeave == true) {
+      await releaseItems();
+      return true;
+    }
+    return false;
   }
 
   Future<void> fetchCustomerData() async {
     final customerState = context.read<CustomerCubit>().state;
-    String? userId;
     if (customerState is CustomerLoaded) {
       userId = customerState.customer.id;
     } else if (customerState is CustomerLoggedIn) {
@@ -188,43 +249,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading:
-            Navigator.canPop(context)
-                ? IconButton(
-                  icon: const Icon(Icons.chevron_left, size: 24),
-                  onPressed: () => Navigator.pop(context),
-                )
-                : null,
-        title: const Text(
-          'Checkout',
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: const Color(0xFFE6E6E6), height: 0.5),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [_buildCheckoutSections(), _buildItems()],
-              ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          leading:
+              Navigator.canPop(context)
+                  ? IconButton(
+                    icon: const Icon(Icons.chevron_left, size: 24),
+                    onPressed: () => Navigator.maybePop(context),
+                  )
+                  : null,
+          title: const Text(
+            'Checkout',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
             ),
           ),
-          _buildBottomBar(),
-        ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(color: const Color(0xFFE6E6E6), height: 0.5),
+          ),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [_buildCheckoutSections(), _buildItems()],
+                ),
+              ),
+            ),
+            _buildBottomBar(),
+          ],
+        ),
       ),
     );
   }
@@ -294,7 +358,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildCheckoutSections() {
-
     final sections = [
       {
         'label': 'ADDRESS',
@@ -325,17 +388,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     ];
 
     return Column(
-      children: sections.map((section) {
-        return GestureDetector(
-          onTap: section['onTap'] as void Function()?,
-          child: CheckoutSection(
-            label: section['label'] as String,
-            content: section['content'],
-            isPlaceholder: section['placeholder'] == true,
-            showArrow: section['label'] != 'PAYMENT',
-          ),
-        );
-      }).toList(),
+      children:
+          sections.map((section) {
+            return GestureDetector(
+              onTap: section['onTap'] as void Function()?,
+              child: CheckoutSection(
+                label: section['label'] as String,
+                content: section['content'],
+                isPlaceholder: section['placeholder'] == true,
+                showArrow: section['label'] != 'PAYMENT',
+              ),
+            );
+          }).toList(),
     );
   }
 
@@ -374,7 +438,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               image: item.imageURL,
               brand: item.brandName,
               name: item.productName,
-              description: 'Size: ${item.size}\nColors: ${item.colors.join(", ")}',
+              description:
+                  'Size: ${item.size}\nColors: ${item.colors.join(", ")}',
               quantity: item.quantity.toString(),
               price: 'EGP ${(item.price * item.quantity).toStringAsFixed(2)}',
             );

@@ -164,6 +164,73 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  Future<void> proceedToCheckout() async {
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+    if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    }
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User not logged in.')),
+      );
+      return;
+    }
+
+    // Prepare products for API
+    final products = cartItems.map((item) => {
+      "variantId": item.variantId,
+      "productId": item.productId,
+      "quantity": item.quantity,
+    }).toList();
+
+    final url = "$apiBaseURL/v1/customers/me/orders?userId=$userId";
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          testAuthHeader: testAuthValue,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({"products": products}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        final orderId = data['id'] ?? data['data']?['id'];
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+              CheckoutScreen(
+                cartItems: cartItems,
+                subtotal: subtotal,
+                orderId: orderId,
+              ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.easeInOut;
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to reserve items for checkout.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -236,26 +303,7 @@ class _CartPageState extends State<CartPage> {
                                     padding: EdgeInsets.symmetric(vertical: 14),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),),
                                   ),
-                                  onPressed: cartItems.isEmpty ? null : () {
-                                    Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, animation, secondaryAnimation) => 
-                                          CheckoutScreen(
-                                            cartItems: cartItems,
-                                            subtotal: subtotal,
-                                          ),
-                                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                          const begin = Offset(1.0, 0.0);
-                                          const end = Offset.zero;
-                                          const curve = Curves.easeInOut;
-                                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                                          var offsetAnimation = animation.drive(tween);
-                                          return SlideTransition(position: offsetAnimation, child: child);
-                                        },
-                                      ),
-                                    );
-                                  },
+                                  onPressed: cartItems.isEmpty ? null : proceedToCheckout,
                                   child: Text(
                                     "Proceed to Checkout",
                                     style: TextStyle(color: Colors.white, fontSize: 16),
