@@ -1,4 +1,3 @@
-import 'package:elevate/screens/user_profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.light(
         primary: Color(0xFFA51930), secondary: Colors.black, tertiary: Color(0xFFE8BBC2),// your exact color
         ),),
-        home:  ProfilePage(),
+        home:  SplashScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
