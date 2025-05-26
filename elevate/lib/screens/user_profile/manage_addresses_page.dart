@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/address.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../constants/app_constants.dart';
+import '../../cubits/customer_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ManageAddressesPage extends StatefulWidget {
   const ManageAddressesPage({super.key});
@@ -9,28 +14,8 @@ class ManageAddressesPage extends StatefulWidget {
 }
 
 class _ManageAddressesPageState extends State<ManageAddressesPage> {
-  // Sample list of addresses - replace with actual data source
-  final List<UserAddress> _addresses = [
-    UserAddress(
-      id: '1',
-      city: 'California',
-      street: 'St. Louis',
-      building: '11',
-      isDefault: true,
-    ),
-    UserAddress(
-      id: '2',
-      city: 'New York',
-      street: '5th Avenue',
-      building: '101',
-    ),
-    UserAddress(
-      id: '3',
-      city: 'Cairo',
-      street: 'Tahrir Square',
-      building: '22b',
-    ),
-  ];
+  final List<UserAddress> _addresses = [];
+  bool _isLoading = true; // Add loading state
 
   // To keep track of which card is expanded
   String? _expandedAddressId;
@@ -39,8 +24,15 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
   final _cityController = TextEditingController();
   final _streetController = TextEditingController();
   final _buildingController = TextEditingController();
+  final _postalCodeController = TextEditingController();
 
   final _addressFormKey = GlobalKey<FormState>(); // Added FormKey
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAddresses();
+  }
 
   @override
   void dispose() {
@@ -48,6 +40,70 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
     _streetController.dispose();
     _buildingController.dispose();
     super.dispose();
+  }
+
+  Future<void> fetchAddresses() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final customerState = context.read<CustomerCubit>().state;
+    String? userId;
+    if (customerState is CustomerLoggedIn) {
+      userId = customerState.customer.id;
+    } else if (customerState is CustomerLoaded) {
+      userId = customerState.customer.id;
+    }
+    if (userId == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final url = "$apiBaseURL/v1/customers/me?userId=$userId";
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {testAuthHeader: testAuthValue},
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final addresses = data['data']['addresses'] as List<dynamic>? ?? [];
+        setState(() {
+          _addresses.clear();
+          for (int i = 0; i < addresses.length; i++) {
+            final addr = addresses[i];
+            _addresses.add(
+              UserAddress(
+                id: i.toString(),
+                displayedAddress:
+                    '${addr['building']} ${addr['street']}, ${addr['city']}',
+                city: addr['city'] ?? '',
+                street: addr['street'] ?? '',
+                building: addr['building'].toString(),
+                postalCode: addr['postalCode'].toString(),
+                latitude: addr['latitude'].toString(),
+                longitude: addr['longitude'].toString(),
+                isDefault: i == 0, // Mark first as default
+              ),
+            );
+          }
+          _isLoading = false; // Done loading
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error fetching addresses: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load addresses.')));
+    }
   }
 
   void _toggleExpand(String addressId) {
@@ -58,6 +114,7 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
         _cityController.clear();
         _streetController.clear();
         _buildingController.clear();
+        _postalCodeController.clear();
       } else {
         _expandedAddressId = addressId;
         // Populate controllers when expanding
@@ -65,6 +122,7 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
         _cityController.text = address.city;
         _streetController.text = address.street;
         _buildingController.text = address.building;
+        _postalCodeController.text = address.postalCode;
       }
     });
   }
@@ -109,13 +167,16 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
 
   void _addNewAddress() {
     // TODO: Implement logic to add a new address, possibly navigate to a new form page or show a dialog
-    // For now, let's add a dummy address and expand it
     final newId = (_addresses.length + 1).toString();
     final newAddress = UserAddress(
       id: newId,
+      displayedAddress: '',
       city: '',
       street: '',
       building: '',
+      postalCode: '',
+      latitude: '',
+      longitude: '',
     );
     setState(() {
       _addresses.add(newAddress);
@@ -123,6 +184,7 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
       _cityController.clear();
       _streetController.clear();
       _buildingController.clear();
+      _postalCodeController.clear();
     });
   }
 
@@ -160,7 +222,9 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
                 child: const Icon(Icons.add),
               ),
       body:
-          _addresses.isEmpty
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : _addresses.isEmpty
               ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -191,26 +255,24 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
                       icon: Icon(
                         Icons.add_location_alt_outlined,
                         size: screenWidth * 0.07,
-                      ), // Increased icon size
+                      ),
                       label: Text(
                         'Add New Address',
                         style: TextStyle(fontSize: screenWidth * 0.045),
-                      ), // Increased text size
+                      ),
                       onPressed: _addNewAddress,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
-                          // Increased padding
                           horizontal: screenWidth * 0.08,
                           vertical: screenHeight * 0.016,
                         ),
                         textStyle: TextStyle(
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
-                        ), // Ensured text style consistency
+                        ),
                         shape: RoundedRectangleBorder(
-                          // Optional: make it more rounded
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
@@ -255,7 +317,7 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
                                                       a.building.isNotEmpty),
                                             ))
                                         ? 'New Address'
-                                        : '${address.street}, ${address.building}, ${address.city}',
+                                        : address.displayedAddress,
                                     style: TextStyle(
                                       fontSize: screenWidth * 0.04,
                                       fontWeight: FontWeight.bold,
@@ -286,10 +348,24 @@ class _ManageAddressesPageState extends State<ManageAddressesPage> {
                                   ),
                                   child: Column(
                                     children: [
-                                      _buildEditableAddressField(
-                                        label: 'City',
-                                        controller: _cityController,
-                                        screenWidth: screenWidth,
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _buildEditableAddressField(
+                                              label: 'City',
+                                              controller: _cityController,
+                                              screenWidth: screenWidth,
+                                            ),
+                                          ),
+                                          SizedBox(width: screenWidth * 0.03),
+                                          Expanded(
+                                            child: _buildEditableAddressField(
+                                              label: 'Postal Code',
+                                              controller: _postalCodeController,
+                                              screenWidth: screenWidth,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       SizedBox(height: screenHeight * 0.015),
                                       Row(
