@@ -1,6 +1,6 @@
-import 'package:elevate/constants/app_constants.dart';
+import 'package:elevate/core/constants/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:elevate/models/customer.dart';
+import 'package:elevate/features/auth/data/models/customer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

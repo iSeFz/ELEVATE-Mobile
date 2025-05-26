@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'utils/size_config.dart';
+import 'features/common/splash_screen.dart';
+import 'core/utils/size_config.dart';
 
 // Main function to start the run
 void main() async {
