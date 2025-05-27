@@ -52,7 +52,7 @@ class LoginPage extends StatelessWidget {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        MainPage(),
+                                        MainPage(customer: loginCubit.customer!),
                                 transitionsBuilder: (
                                   context,
                                   animation,
@@ -65,9 +65,6 @@ class LoginPage extends StatelessWidget {
                                   );
                                 },
                                 transitionDuration: const Duration(seconds: 1),
-                                settings: RouteSettings(
-                                  arguments: loginCubit.customer,
-                                ),
                               ),
                             );
                           },
@@ -126,6 +123,7 @@ class LoginPage extends StatelessWidget {
                                 keyboardType: TextInputType.text,
                                 label: 'Password',
                                 hint: 'Enter your password',
+                                validationFunc: validatePassword,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     state.isPasswordVisible

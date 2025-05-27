@@ -55,7 +55,7 @@ class SignUpPage extends StatelessWidget {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        MainPage(),
+                                        MainPage(customer: signUpCubit.customer!),
                                 transitionsBuilder: (
                                   context,
                                   animation,
@@ -68,9 +68,6 @@ class SignUpPage extends StatelessWidget {
                                   );
                                 },
                                 transitionDuration: const Duration(seconds: 1),
-                                settings: RouteSettings(
-                                  arguments: signUpCubit.customer,
-                                ),
                               ),
                             );
                           },

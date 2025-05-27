@@ -1,13 +1,15 @@
-import 'package:elevate/features/home/presentation/screens/home_page.dart';
-import 'package:elevate/core/utils/size_config.dart';
 import 'package:flutter/material.dart';
+import '/../core/utils/size_config.dart';
+import '../auth/data/models/customer.dart';
+import '../home/presentation/screens/home_page.dart';
+import '../wishlist/presentation/screens/wishlist_page.dart';
+import '../cart/presentation/screens/cart_page.dart';
 import '../notification/presentation/screens/notifications_page.dart';
 import '../profile/presentation/screens/profile_page.dart';
-import '../favorites/presentation/screens/favorites_page.dart';
-import '../cart/presentation/screens/cart_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final Customer customer;
+  const MainPage({super.key, required this.customer});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -15,15 +17,21 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 4;
-  final PageController _pageController = PageController(initialPage: 4);
+  late final PageController _pageController;
+  late final List<Widget> _pages;
 
-  final List<Widget> _pages = [
-    HomePage(),
-    FavoritesPage(),
-    CartPage(),
-    NotificationsPage(),
-    ProfilePage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+    _pages = [
+      HomePage(),
+      WishlistPage(userID: widget.customer.id!),
+      CartPage(),
+      NotificationsPage(),
+      ProfilePage(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,13 +57,13 @@ class _MainPageState extends State<MainPage> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.08),
                 blurRadius: 8,
-                offset: Offset(0, -4), // 👈 ABOVE shadow
+                offset: Offset(0, -4),
               ),
             ],
           ),
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-            elevation: 0, // ✅ Remove default shadow
+            elevation: 0,
             iconSize: 30 * SizeConfig.verticalBlock,
             currentIndex: _selectedIndex,
             unselectedItemColor: Colors.black,
@@ -105,9 +113,7 @@ class _MainPageState extends State<MainPage> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Center(
-                  child: Icon(Icons.person_outline_rounded),
-                ),
+                icon: Center(child: Icon(Icons.person_outline_rounded)),
                 label: '',
               ),
             ],
