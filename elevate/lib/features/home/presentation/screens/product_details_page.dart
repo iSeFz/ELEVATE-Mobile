@@ -385,6 +385,19 @@ class ProductDetails extends StatelessWidget {
                     SizedBox(height: 20 * SizeConfig.verticalBlock),
                     Row(
                       children: [
+                        // return SingleChildScrollView(
+                        //                   scrollDirection: Axis.horizontal,
+                        //                   child: Row(
+                        //                     mainAxisAlignment: MainAxisAlignment.center,
+                        //                     children: products
+                        //                         .map((product) => Padding(
+                        //                       padding: const EdgeInsets.all(8.0),
+                        //                       child: ProductCard(product: product),
+                        //                     ))
+                        //                         .toList(),
+                        //                   ),
+                        //
+                        //               );
                         // ProductCard(
                         //   product: WishlistProduct(
                         //     productId: '1',

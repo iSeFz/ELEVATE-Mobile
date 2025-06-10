@@ -1,3 +1,4 @@
+import 'package:elevate/features/search/presentation/screens/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
@@ -13,7 +14,47 @@ class HomePage extends StatelessWidget {
       create: (_) => ProductCubit()..fetchProducts(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(title: Text('Home'), backgroundColor: Colors.white,),
+        appBar: AppBar(
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: Padding(
+            padding: EdgeInsets.only(top: 20*SizeConfig.verticalBlock,
+                bottom: 20*SizeConfig.verticalBlock, left: 15*SizeConfig.verticalBlock, right: 15*SizeConfig.verticalBlock),
+            child: Text(
+              'ELEVATE',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 18*SizeConfig.textRatio,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search_rounded),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Search()),
+                );
+              },
+
+            ),
+          ],
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {},
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: Container(
+              color: Colors.grey[300],
+              height: 1,
+            ),
+          ),
+        ),
+
         body: BlocBuilder<ProductCubit, ProductState>(
           builder: (context, state) {
             if (state is ProductLoading) {
