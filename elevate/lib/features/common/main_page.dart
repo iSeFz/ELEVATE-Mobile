@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> {
       WishlistPage(userID: widget.customer.id!),
       CartPage(),
       NotificationsPage(),
-      ProfilePage(),
+      ProfilePage(customer: widget.customer),
     ];
   }
 
@@ -113,7 +113,13 @@ class _MainPageState extends State<MainPage> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Center(child: Icon(Icons.person_outline_rounded)),
+                icon: Center(
+                  child: Icon(
+                    _selectedIndex == 4
+                        ? Icons.person_rounded
+                        : Icons.person_outline_rounded,
+                  ),
+                ),
                 label: '',
               ),
             ],

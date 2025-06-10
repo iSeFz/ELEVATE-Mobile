@@ -7,6 +7,8 @@ class Customer {
   String? username;
   String? password;
   String? phoneNumber;
+  String? imageURL;
+  int? loyaltyPoints;
 
   // Default constructor
   Customer({
@@ -17,6 +19,8 @@ class Customer {
     this.username,
     this.password,
     this.phoneNumber,
+    this.imageURL,
+    this.loyaltyPoints,
   });
 
   // Parameterized constructor with null safety
@@ -28,6 +32,8 @@ class Customer {
     username = map['username']?.toString();
     password = map['password']?.toString();
     phoneNumber = map['phoneNumber']?.toString();
+    imageURL = map['imageURL']?.toString();
+    loyaltyPoints = map['loyaltyPoints'] as int?;
   }
 
   // Getter to return a map of the converted customer object
@@ -40,6 +46,8 @@ class Customer {
       'username': username,
       'password': password,
       'phoneNumber': phoneNumber,
+      'imageURL': imageURL,
+      'loyaltyPoints': loyaltyPoints,
     };
   }
 }

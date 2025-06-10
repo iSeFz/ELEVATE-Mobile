@@ -1,146 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../cubits/customer_cubit.dart';
-import '../../../auth/data/models/customer.dart';
-import 'profile_page.dart';
+import 'package:elevate/features/profile/presentation/cubits/profile_cubit.dart';
+import 'package:elevate/features/profile/presentation/cubits/profile_state.dart';
+import 'package:elevate/core/widgets/custom_text_form_field.dart';
+import 'package:elevate/core/utils/validations.dart';
 import 'manage_addresses_page.dart';
 
-
-class EditProfilePage extends StatefulWidget {
+class EditProfilePage extends StatelessWidget {
   const EditProfilePage({super.key});
 
   @override
-  State<EditProfilePage> createState() => _EditProfilePageState();
-}
-
-class _EditProfilePageState extends State<EditProfilePage> {
-  final _formKey = GlobalKey<FormState>();
-
-  // Initialize with empty strings, will be populated from Cubit
-  String _username = '';
-  String _firstName = '';
-  String _lastName = '';
-  String _email = '';
-  String _phone = '';
-
-  bool _dataInitialized = false; // Flag to initialize data only once
-
-  // TODO: Add a variable to store the profile image, e.g., File? _profileImage;
-
-  @override
-  void initState() {
-    super.initState();
-    // Attempt to initialize from current cubit state
-    final customerState = context.read<CustomerCubit>().state;
-    if (customerState is CustomerLoaded) {
-      _initializeData(customerState.customer);
-    } else if (customerState is CustomerLoggedIn) {
-      _initializeData(customerState.customer);
-    }
-    // If not loaded yet, BlocListener will handle it
-  }
-
-  void _initializeData(Customer customer) {
-    // Check _dataInitialized within setState to ensure it's set after first successful data load
-    if (mounted) {
-      // Ensure widget is mounted before calling setState
-      setState(() {
-        if (!_dataInitialized) {
-          // Initialize only once
-          final emailString = customer.email ?? '';
-          if (emailString.isNotEmpty) {
-            final atIndex = emailString.indexOf('@');
-            if (atIndex != -1) {
-              _username = emailString.substring(0, atIndex);
-            } else {
-              _username =
-                  emailString; // Or handle as an invalid email case if preferred
-            }
-          } else {
-            _username = ''; // Default if email is empty
-          }
-          _firstName = customer.firstName ?? '';
-          _lastName = customer.lastName ?? '';
-          _email = customer.email ?? '';
-          _phone = customer.phoneNumber ?? '';
-          _dataInitialized = true;
-        }
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final profileCubit = context.read<ProfileCubit>();
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context);
 
-    return BlocListener<CustomerCubit, CustomerState>(
-      listener: (context, state) {
-        // Listen for state changes to initialize data if not already done
-        if (!_dataInitialized) {
-          if (state is CustomerLoaded) {
-            _initializeData(state.customer);
-          } else if (state is CustomerLoggedIn) {
-            _initializeData(state.customer);
-          }
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 70,
-          centerTitle: true,
-          title: const Text(
-            'Account',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            onPressed: () {
-              Navigator.of(context).pop(
-                PageRouteBuilder(
-                  pageBuilder:
-                      (context, animation, secondaryAnimation) =>
-                          const ProfilePage(),
-                  transitionsBuilder: (
-                    context,
-                    animation,
-                    secondaryAnimation,
-                    child,
-                  ) {
-                    const begin = Offset(-1.0, 0.0);
-                    const end = Offset.zero;
-                    const curve = Curves.easeInOut;
-
-                    var tween = Tween(
-                      begin: begin,
-                      end: end,
-                    ).chain(CurveTween(curve: curve));
-                    var offsetAnimation = animation.drive(tween);
-
-                    return SlideTransition(
-                      position: offsetAnimation,
-                      child: child,
-                    );
-                  },
-                ),
-              );
-            },
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: theme.colorScheme.secondary,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: Padding(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: theme.colorScheme.secondary),
+      ),
+      body: BlocListener<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state is ProfileError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error: ${state.message}')));
+          } else if (state is ProfileUpdated) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Profile updated successfully!')),
+            );
+          }
+        },
+        child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: screenWidth * 0.07,
-            vertical: screenHeight * 0.01,
+            vertical: screenHeight * 0.02,
           ),
           child: SingleChildScrollView(
-            // Consider showing a loading indicator if !_dataInitialized and cubit state is loading
             child: Form(
-              key: _formKey,
+              key: profileCubit.formKey,
               child: Column(
                 children: [
                   Stack(
@@ -179,89 +90,81 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ],
                   ),
                   SizedBox(height: screenHeight * 0.03),
-                  _buildEditableTextField(
-                    context,
-                    label: 'Username',
-                    initialValue: _username, // Uses state variable
-                    editable: false, // Username is typically not editable here
-                    screenWidth: screenWidth,
-                    onSaved: (value) {
-                      // Username not saved from this form typically
-                    },
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.01,
+                    ),
+                    child: CustomTextFormField(
+                      label: 'Username',
+                      initialValue: profileCubit.customer?.username ?? "",
+                      enabled: false,
+                    ),
                   ),
                   Row(
                     children: [
                       Expanded(
-                        child: _buildEditableTextField(
-                          context,
-                          label: 'First Name',
-                          initialValue: _firstName, // Uses state variable
-                          screenWidth: screenWidth,
-                          onSaved:
-                              (value) => setState(
-                                () => _firstName = value ?? _firstName,
-                              ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your first name';
-                            }
-                            return null;
-                          },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: screenHeight * 0.01,
+                          ),
+                          child: CustomTextFormField(
+                            label: 'First Name',
+                            controller: profileCubit.firstNameController,
+                            validationFunc: validateName,
+                            onChanged:
+                                (value) => profileCubit.fieldChanged(
+                                  'firstName',
+                                  value,
+                                ),
+                          ),
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.03),
                       Expanded(
-                        child: _buildEditableTextField(
-                          context,
-                          label: 'Last Name',
-                          initialValue: _lastName, // Uses state variable
-                          screenWidth: screenWidth,
-                          onSaved:
-                              (value) => setState(
-                                () => _lastName = value ?? _lastName,
-                              ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your last name';
-                            }
-                            return null;
-                          },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: screenHeight * 0.01,
+                          ),
+                          child: CustomTextFormField(
+                            label: 'Last Name',
+                            controller: profileCubit.lastNameController,
+                            validationFunc: validateName,
+                            onChanged:
+                                (value) => profileCubit.fieldChanged(
+                                  'lastName',
+                                  value,
+                                ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  _buildEditableTextField(
-                    context,
-                    label: 'Email',
-                    initialValue: _email, // Uses state variable
-                    screenWidth: screenWidth,
-                    onSaved:
-                        (value) => setState(() => _email = value ?? _email),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-                      ).hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.01,
+                    ),
+                    child: CustomTextFormField(
+                      label: 'Email',
+                      controller: profileCubit.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validationFunc: validateEmail,
+                      onChanged:
+                          (value) => profileCubit.fieldChanged('email', value),
+                    ),
                   ),
-                  _buildEditableTextField(
-                    context,
-                    label: 'Phone',
-                    initialValue: _phone, // Uses state variable
-                    screenWidth: screenWidth,
-                    onSaved:
-                        (value) => setState(() => _phone = value ?? _phone),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.01,
+                    ),
+                    child: CustomTextFormField(
+                      label: 'Phone',
+                      controller: profileCubit.phoneController,
+                      keyboardType: TextInputType.phone,
+                      validationFunc: validatePhoneNumber,
+                      onChanged:
+                          (value) =>
+                              profileCubit.fieldChanged('phoneNumber', value),
+                    ),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.symmetric(
@@ -295,44 +198,52 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     },
                   ),
                   SizedBox(height: screenHeight * 0.02),
+                  // Save Changes Button
                   SizedBox(
                     width: screenWidth * 0.8,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.02,
-                        ),
-                        textStyle: TextStyle(
-                          fontSize: screenWidth * 0.045,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          // TODO: Implement save changes logic (e.g., call cubit to update user)
-                          // For now, just print the values
-                          print('Saving changes:');
-                          print('Username: $_username');
-                          print('First Name: $_firstName');
-                          print('Last Name: $_lastName');
-                          print('Email: $_email');
-                          print('Phone: $_phone');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Changes saved (locally for now)'),
+                    height: screenHeight * 0.06,
+                    child: BlocBuilder<ProfileCubit, ProfileState>(
+                      builder: (context, state) {
+                        bool isLoading = state is ProfileLoading;
+                        return ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                isLoading
+                                    ? Colors.grey
+                                    : Theme.of(context).colorScheme.primary,
+                            padding: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.01,
                             ),
-                          );
-                        }
+                            textStyle: TextStyle(
+                              fontSize: screenWidth * 0.045,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          onPressed:
+                              isLoading
+                                  ? null
+                                  : () {
+                                    profileCubit.submitProfileUpdate();
+                                  },
+                          child:
+                              isLoading
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Text(
+                                    'Save Changes',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                        );
                       },
-                      child: Text(
-                        'Save Changes',
-                        style: TextStyle(color: Colors.white),
-                      ),
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.02),
@@ -341,44 +252,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEditableTextField(
-    BuildContext context, {
-    required String label,
-    required String initialValue,
-    bool editable = true,
-    required double screenWidth,
-    required FormFieldSetter<String> onSaved,
-    FormFieldValidator<String>? validator,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: MediaQuery.of(context).size.height * 0.01,
-      ),
-      child: TextFormField(
-        initialValue: initialValue,
-        enabled: editable,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          filled: true,
-          fillColor: Colors.grey[200],
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.04,
-            vertical: MediaQuery.of(context).size.height * 0.02,
-          ),
-        ),
-        style: TextStyle(
-          color: editable ? Colors.black : Colors.grey.shade600,
-          fontSize: 16,
-        ),
-        onSaved: onSaved,
-        validator: validator,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
     );
   }
