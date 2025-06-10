@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/size_config.dart';
+import '../../../camera/presentation/screens/camera.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -74,7 +75,16 @@ class _SearchState extends State<Search> {
                           SizedBox(width: 8 * SizeConfig.horizontalBlock),
                           _buildFilterButton('Price'),
                           Spacer(),
-                          Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
+                          //visual search ?
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => Camera()),
+                              );
+                            },
+                            child: Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
+                          ),
                           SizedBox(width: 10 * SizeConfig.horizontalBlock),
                           Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
                           SizedBox(width: 10 * SizeConfig.horizontalBlock),
