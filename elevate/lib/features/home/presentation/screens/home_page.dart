@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/size_config.dart';
 import '../cubits/product_cubit.dart';
 import '/../core/widgets/product_card.dart';
 
@@ -19,19 +20,20 @@ class HomePage extends StatelessWidget {
               return Center(child: CircularProgressIndicator());
             } else if (state is ProductLoaded) {
               final products = state.products;
-              return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: products
-                        .map((product) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ProductCard(product: product),
-                    ))
-                        .toList(),
-                  ),
-
+              return GridView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: products.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // 2 per row
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 350 * SizeConfig.verticalBlock,
+                ),
+                itemBuilder: (context, index) {
+                  return ProductCard(product: products[index]);
+                },
               );
+
             } else if (state is ProductError) {
               return Center(child: Text(state.message));
             }

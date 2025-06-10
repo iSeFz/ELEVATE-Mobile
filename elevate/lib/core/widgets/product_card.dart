@@ -19,7 +19,7 @@ class ProductCard extends StatelessWidget {
       );
     },
     child: Container(
-      width: SizeConfig.screenWidth * 0.5 - 20,
+      width: SizeConfig.horizontalBlock * 200,
       height: 350*SizeConfig.verticalBlock,
       child: Card(
         color: Colors.white,
@@ -27,18 +27,18 @@ class ProductCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+            Container(
+              // borderRadius: BorderRadius.circular(10),
+              width: double.infinity,
+              height: 225*SizeConfig.verticalBlock,
               child: Image.network(
-                "product.imageURL",
+                product.image,
                 fit: BoxFit.cover,
-                width: double.infinity,
-                height: 220*SizeConfig.verticalBlock,
                 errorBuilder:
                     (context, error, stackTrace) => Container(
                       color: Colors.grey[100],
-                      width: double.infinity,
-                      height: 220*SizeConfig.verticalBlock,
+                      // width: double.infinity,
+                      // height: 220*SizeConfig.verticalBlock,
                       child: Icon(Icons.broken_image_rounded, size: 100*SizeConfig.verticalBlock,color: Color(
                           0xFFE8BBC2),),
                     ),
@@ -48,7 +48,7 @@ class ProductCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(18*SizeConfig.verticalBlock),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -60,7 +60,7 @@ class ProductCard extends StatelessWidget {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 2),
+                        SizedBox(height: 2*SizeConfig.verticalBlock),
                         Text(
                           product.brandName,
                           style: TextStyle(
@@ -69,7 +69,7 @@ class ProductCard extends StatelessWidget {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 4*SizeConfig.verticalBlock),
                         Text(
                           'EGP ${product.price}',
                           style: TextStyle(
@@ -83,11 +83,14 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                       icon: Icon(Icons.favorite_outline_rounded),
+
+                      padding: EdgeInsets.zero,
                       onPressed: () {
+
                         // setState(() {
                         //   // favoriteProducts.remove(product);
                         // });
@@ -95,6 +98,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.shopping_bag_outlined),
+                      padding: EdgeInsets.zero,
                       onPressed: () {},
                     ),
                   ],
