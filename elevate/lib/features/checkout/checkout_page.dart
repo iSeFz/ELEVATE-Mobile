@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../data/models/cart_item.dart';
+import '../cart/data/models/cart_item.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../cubits/customer_cubit.dart';
-import '../../../../core/constants/constants.dart';
+import '../../cubits/customer_cubit.dart';
+import '../../core/constants/constants.dart';
 import 'dart:async';
 
 enum DeliveryType { standard, express, pickup }

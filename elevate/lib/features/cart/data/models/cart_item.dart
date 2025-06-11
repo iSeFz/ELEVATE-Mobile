@@ -5,6 +5,7 @@ class CartItem {
   int quantity;
   String brandName;
   String productName;
+  int? productStock;
   String size;
   List<String> colors;
   double price;
@@ -22,4 +23,23 @@ class CartItem {
     required this.price,
     required this.imageURL,
   });
+
+  factory CartItem.fromJson(Map<String, dynamic> json) {
+    return CartItem(
+      id: json['id'],
+      productId: json['productId'],
+      variantId: json['variantId'],
+      quantity: json['quantity'],
+      brandName: json['brandName'],
+      productName: json['productName'],
+      size: json['size'],
+      colors:
+          (json['colors'] as List<dynamic>?)
+              ?.map((c) => c.toString())
+              .toList() ??
+          [],
+      price: (json['price'] as num).toDouble(),
+      imageURL: json['imageURL'],
+    );
+  }
 }

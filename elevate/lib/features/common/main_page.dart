@@ -27,7 +27,7 @@ class _MainPageState extends State<MainPage> {
     _pages = [
       HomePage(),
       WishlistPage(userID: widget.customer.id!),
-      CartPage(),
+      CartPage(userId: widget.customer.id!),
       NotificationsPage(),
       ProfilePage(customer: widget.customer),
     ];
