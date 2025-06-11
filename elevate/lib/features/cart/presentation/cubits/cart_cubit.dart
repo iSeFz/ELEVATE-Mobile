@@ -40,44 +40,65 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> updateQuantity(String userId, int index, int change) async {
+  Future<void> updateQuantity(String userId, int index, int newQuantity) async {
     final cartItem = _cartItems[index];
-    final newQuantity = cartItem.quantity + change;
 
     try {
-      if (newQuantity > 0) {
-        _cartItems[index].quantity = newQuantity;
-      } else {
-        await _cartService.removeItem(userId, cartItem.id!);
-        _cartItems.removeAt(index);
-        emit(CartItemRemoved());
-      }
+      // Try to update the quantity in the backend
+      await _cartService.updateQuantity(userId, cartItem.id!, newQuantity);
+      _cartItems[index].quantity = newQuantity;
 
       subtotal = _cartItems.fold(
         0.0,
         (sum, item) => sum + item.price * item.quantity,
       );
-      if (_cartItems.isNotEmpty) {
+      emit(CartLoaded());
+    } catch (e) {
+      try {
+        final latestStock = await _cartService.fetchProductStock(
+          cartItem.productId,
+          cartItem.variantId,
+        );
+        _cartItems[index].productStock = latestStock;
+
+        // Set the quantity to the max available stock
+        if (latestStock != null && latestStock > 0) {
+          _cartItems[index].quantity = latestStock;
+          // Update the backend with the new max stock value
+          await _cartService.updateQuantity(userId, cartItem.id!, latestStock);
+        }
+
+        subtotal = _cartItems.fold(
+          0.0,
+          (sum, item) => sum + item.price * item.quantity,
+        );
+
+        emit(
+          CartError(
+            message: "Quantity exceeds available stock. Updated to max available.",
+          ),
+        );
         emit(CartLoaded());
-      } else {
+      } catch (stockError) {
+        emit(CartError(message: "Failed to update quantity: $e"));
+        emit(CartLoaded());
+      }
+    }
+  }
+
+  Future<void> removeFromCart(String userId, int index) async {
+    try {
+      final cartItem = _cartItems[index];
+      await _cartService.removeItem(userId, cartItem.id!);
+      _cartItems.removeAt(index);
+      emit(CartItemRemoved());
+      if (_cartItems.isEmpty) {
         emit(CartEmpty());
+      } else {
+        emit(CartLoaded());
       }
     } catch (e) {
-      String backendMsg = "";
-      if (e is Exception && e.toString().contains('Exception:')) {
-        backendMsg = e.toString().replaceFirst('Exception:', '').trim();
-      }
-      emit(
-        CartError(
-          message:
-              backendMsg.isNotEmpty ? backendMsg : "Failed to remove item.",
-        ),
-      );
-      if (_cartItems.isNotEmpty) {
-        emit(CartLoaded());
-      } else {
-        emit(CartEmpty());
-      }
+      emit(CartError(message: 'Failed to remove item: $e'));
     }
   }
 

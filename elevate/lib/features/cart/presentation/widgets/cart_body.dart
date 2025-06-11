@@ -21,8 +21,11 @@ class CartBody extends StatelessWidget {
               return CartItemCard(
                 item: cartCubit.cartItems[index],
                 index: index,
-                onQuantityChanged: (idx, quantityChange) {
-                  cartCubit.updateQuantity(userId, idx, quantityChange);
+                onQuantityChanged: (idx, newQuantity) {
+                  cartCubit.updateQuantity(userId, idx, newQuantity);
+                },
+                onRemoveItem: (idx) {
+                  cartCubit.removeFromCart(userId, idx);
                 },
               );
             },

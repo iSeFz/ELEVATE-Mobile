@@ -5,13 +5,15 @@ import '../../data/models/cart_item.dart';
 class CartItemCard extends StatelessWidget {
   final CartItem item;
   final int index;
-  final void Function(int index, int quantityChange) onQuantityChanged;
+  final void Function(int index, int newQuantity) onQuantityChanged;
+  final void Function(int index) onRemoveItem;
 
   const CartItemCard({
     super.key,
     required this.item,
     required this.index,
     required this.onQuantityChanged,
+    required this.onRemoveItem,
   });
 
   @override
@@ -22,6 +24,7 @@ class CartItemCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               width: 100,
@@ -79,8 +82,11 @@ class CartItemCard extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(width: 12),
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // crossAxisAlignment: CrossAxisAlignment.end, // optional: aligns text/buttons right
+              // mainAxisSize: MainAxisSize.min, // ensures the column takes only needed height
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   "EGP ${item.price.toStringAsFixed(2)}",
@@ -89,7 +95,6 @@ class CartItemCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
                 DropdownButton<int>(
                   value: item.quantity,
                   items: List.generate(
@@ -99,15 +104,55 @@ class CartItemCard extends StatelessWidget {
                   ),
                   onChanged: (value) {
                     if (value != null) {
-                      onQuantityChanged(index, value - item.quantity);
+                      onQuantityChanged(index, value);
                     }
                   },
+                ),
+                TextButton.icon(
+                  onPressed: () => _confirmRemove(context),
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  label: const Text(
+                    'Remove',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    minimumSize: const Size(80, 30),
+                  ),
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _confirmRemove(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Remove Item'),
+            content: Text('Remove ${item.productName} from your cart?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onRemoveItem(index);
+                },
+                child: const Text('Remove'),
+              ),
+            ],
+          ),
     );
   }
 }
