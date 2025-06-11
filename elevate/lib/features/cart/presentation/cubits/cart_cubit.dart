@@ -75,7 +75,8 @@ class CartCubit extends Cubit<CartState> {
 
         emit(
           CartError(
-            message: "Quantity exceeds available stock. Updated to max available.",
+            message:
+                "Quantity exceeds available stock. Updated to max available.",
           ),
         );
         emit(CartLoaded());
@@ -102,12 +103,11 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<String?> proceedToCheckout(String userId) async {
-    emit(CartLoading());
+  Future<void> proceedToCheckout(String userId) async {
+    // emit(CartLoading());
     try {
       final orderId = await _cartService.proceedToCheckout(userId, _cartItems);
-      emit(CartLoaded());
-      return orderId;
+      emit(CartCheckoutSuccess(orderId));
     } catch (e) {
       // 1. Update product stock for all cart items
       await Future.wait(
@@ -135,7 +135,6 @@ class CartCubit extends Cubit<CartState> {
       } else {
         emit(CartEmpty());
       }
-      return null;
     }
   }
 }

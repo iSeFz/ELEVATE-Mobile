@@ -46,46 +46,7 @@ class CartSection extends StatelessWidget {
                 ),
               ),
               onPressed:
-                  cartCubit.cartItems.isEmpty
-                      ? null
-                      : () async {
-                        final orderId = await cartCubit.proceedToCheckout(
-                          userId,
-                        );
-                        if (orderId != null) {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      CheckoutScreen(
-                                        cartItems: cartCubit.cartItems,
-                                        subtotal: cartCubit.subtotal,
-                                        orderId: orderId,
-                                      ),
-                              transitionsBuilder: (
-                                context,
-                                animation,
-                                secondaryAnimation,
-                                child,
-                              ) {
-                                const begin = Offset(1.0, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.easeInOut;
-                                var tween = Tween(
-                                  begin: begin,
-                                  end: end,
-                                ).chain(CurveTween(curve: curve));
-                                var offsetAnimation = animation.drive(tween);
-                                return SlideTransition(
-                                  position: offsetAnimation,
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      },
+                  cartCubit.cartItems.isEmpty? null: () {cartCubit.proceedToCheckout(userId);},
               child: const Text(
                 "Proceed to Checkout",
                 style: TextStyle(color: Colors.white, fontSize: 16),
