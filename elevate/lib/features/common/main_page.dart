@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../search/presentation/screens/search.dart';
 import '/../core/utils/size_config.dart';
 import '../auth/data/models/customer.dart';
 import '../home/presentation/screens/home_page.dart';
@@ -26,9 +27,9 @@ class _MainPageState extends State<MainPage> {
     _pageController = PageController(initialPage: _selectedIndex);
     _pages = [
       HomePage(),
-      WishlistPage(userID: widget.customer.id!),
+      Search(),
       CartPage(userId: widget.customer.id!),
-      NotificationsPage(),
+      WishlistPage(userID: widget.customer.id!),
       ProfilePage(customer: widget.customer),
     ];
   }
@@ -80,18 +81,19 @@ class _MainPageState extends State<MainPage> {
                         : Icons.home_outlined,
                   ),
                 ),
-                label: '',
+                label: 'Home',
               ),
               BottomNavigationBarItem(
                 icon: Center(
                   child: Icon(
                     _selectedIndex == 1
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_outline_rounded,
+                        ? Icons.search_rounded
+                        : Icons.search_outlined,
                   ),
                 ),
-                label: '',
+                label: 'Search',
               ),
+
               BottomNavigationBarItem(
                 icon: Center(
                   child: Icon(
@@ -100,17 +102,17 @@ class _MainPageState extends State<MainPage> {
                         : Icons.shopping_bag_outlined,
                   ),
                 ),
-                label: '',
+                label: 'Cart',
               ),
               BottomNavigationBarItem(
                 icon: Center(
                   child: Icon(
                     _selectedIndex == 3
-                        ? Icons.notifications_rounded
-                        : Icons.notifications_none_rounded,
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_outline_rounded,
                   ),
                 ),
-                label: '',
+                label: 'Wishlist',
               ),
               BottomNavigationBarItem(
                 icon: Center(
@@ -120,7 +122,7 @@ class _MainPageState extends State<MainPage> {
                         : Icons.person_outline_rounded,
                   ),
                 ),
-                label: '',
+                label: 'Profile',
               ),
             ],
           ),
