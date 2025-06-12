@@ -1,6 +1,7 @@
 import 'package:elevate/features/home/data/models/productVariant.dart';
 
 class Product {
+  final String id;
   final String brandId;
   final String brandName;
   final String brandOwnerId;
@@ -19,6 +20,7 @@ class Product {
   final String image;
 
   Product({
+    required this.id,
     required this.brandId,
     required this.brandName,
     required this.brandOwnerId,
@@ -44,6 +46,7 @@ class Product {
     final firstVariant = variantList.isNotEmpty ? variantList.first : null;
 
     return Product(
+      id: json['id'] as String,
       brandId: json['brandId'] as String,
       brandName: json['brandName'] as String,
       brandOwnerId: json['brandOwnerId'] as String,
