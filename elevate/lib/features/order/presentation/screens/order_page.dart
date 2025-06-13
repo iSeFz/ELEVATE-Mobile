@@ -33,9 +33,9 @@ class OrderScreen extends StatelessWidget {
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
           }
-          if (state is OrderReleased) {
-            Navigator.of(context).maybePop();
-          }
+          // if (state is OrderReleased) {
+          //   Navigator.of(context).maybePop();
+          // }
           if (state is OrderPlaced) {
             showDialog(
               context: context,
@@ -389,7 +389,8 @@ class _OrderScreenBody extends StatelessWidget {
               ),
         );
         if (shouldLeave == true) {
-          context.read<OrderCubit>().releaseOrder(orderId, userId);
+          // Wait for releaseOrder to complete before navigation happens
+          await context.read<OrderCubit>().releaseOrder(orderId, userId);
           return true;
         }
         return false;

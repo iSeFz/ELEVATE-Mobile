@@ -12,7 +12,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CartCubit>(
-      create: (context) => CartCubit()..fetchCartItems(userId),
+      create: (context) => CartCubit(userId: userId)..fetchCartItems(),
       child: BlocConsumer<CartCubit, CartState>(
         listener: (context, state) {
           if (state is CartError) {
@@ -31,13 +31,22 @@ class CartPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder:
-                    (_) => OrderScreen(
-                      orderId: cartCubit.orderId!,
-                      userId: userId,
-                      cartItems: cartCubit.cartItems,
+                    (_) => BlocProvider.value(
+                      value: context.read<CartCubit>(),
+                      child: OrderScreen(
+                        orderId: cartCubit.orderId!,
+                        userId: userId,
+                        cartItems: cartCubit.cartItems,
+                      ),
                     ),
               ),
-            );
+            ).then((_) {
+              // Refresh the cart data when returning from the OrderScreen
+              final cubit = context.read<CartCubit>();
+              if (!cubit.isClosed && context.mounted) {
+                cubit.fetchCartItems();
+              }
+            });
           }
         },
         builder: (context, state) {
@@ -53,7 +62,7 @@ class CartPage extends StatelessWidget {
               body:
                   cartCubit.cartItems.isEmpty
                       ? const Center(child: Text('Your cart is empty.'))
-                      : CartBody(cartCubit: cartCubit, userId: userId),
+                      : const CartBody(),
             );
           } else if (state is CartEmpty) {
             return _cartScaffold(
@@ -77,14 +86,20 @@ class CartPage extends StatelessWidget {
 
   Widget _cartScaffold(BuildContext context, {required Widget body}) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
+        toolbarHeight: 70,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black26,
+        title: Text(
           'Cart',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.secondary,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
         ),
       ),
       body: body,

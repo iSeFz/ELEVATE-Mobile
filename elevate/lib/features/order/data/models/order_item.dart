@@ -38,8 +38,8 @@ class Address {
       building: json['building'] as int? ?? 0,
       city: json['city'] as String? ?? '',
       street: json['street'] as String? ?? '',
-      latitude: json['lat'] as double? ?? 0.0,
-      longitude: json['long'] as double? ?? 0.0,
+      latitude: json['latitude'] as double? ?? 0.0,
+      longitude: json['longitude'] as double? ?? 0.0,
     );
   }
 

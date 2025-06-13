@@ -5,15 +5,17 @@ import 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
   final CartService _cartService = CartService();
+  final String userId;
+
   List<CartItem> _cartItems = [];
   double subtotal = 0.0;
   String? orderId;
 
   List<CartItem> get cartItems => _cartItems;
 
-  CartCubit() : super(CartInitial());
+  CartCubit({required this.userId}) : super(CartInitial());
 
-  Future<void> fetchCartItems(String userId) async {
+  Future<void> fetchCartItems() async {
     emit(CartLoading());
     try {
       _cartItems = await _cartService.fetchCartItems(userId);
@@ -45,14 +47,15 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> updateQuantity(String userId, int index, int newQuantity) async {
+  Future<void> updateQuantity(int index, int newQuantity) async {
     final cartItem = _cartItems[index];
 
     try {
       // Try to update the quantity in the backend
       await _cartService.updateQuantity(userId, cartItem.id!, newQuantity);
       _cartItems[index].quantity = newQuantity;
-
+      // Reference changed, so the UI can detects the change and update quantity 
+      // _cartItems = List<CartItem>.from(_cartItems);
       subtotal = _cartItems.fold(
         0.0,
         (sum, item) => sum + item.price * item.quantity,
@@ -92,7 +95,7 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> removeFromCart(String userId, int index) async {
+  Future<void> removeFromCart(int index) async {
     try {
       final cartItem = _cartItems[index];
       await _cartService.removeItem(userId, cartItem.id!);
@@ -108,9 +111,9 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> proceedToCheckout(String userId) async {
+  Future<void> proceedToCheckout() async {
     try {
-      orderId = await _cartService.proceedToCheckout(userId, _cartItems); // <-- Save orderId
+      orderId = await _cartService.proceedToCheckout(userId, _cartItems);
       emit(CartCheckoutSuccess());
     } catch (e) {
       // 1. Update product stock for all cart items
@@ -144,10 +147,10 @@ class CartCubit extends Cubit<CartState> {
 
   bool canProceedToCheckout() {
     // Check if any item in the cart has zero stock
-    final hasOutOfStockItems = _cartItems.any((item) => 
-      item.productStock == 0 || item.productStock == null
+    final hasOutOfStockItems = _cartItems.any(
+      (item) => item.productStock == 0 || item.productStock == null,
     );
-    
+
     return !hasOutOfStockItems && _cartItems.isNotEmpty;
   }
 }
