@@ -7,6 +7,7 @@ class CartCubit extends Cubit<CartState> {
   final CartService _cartService = CartService();
   List<CartItem> _cartItems = [];
   double subtotal = 0.0;
+  String? orderId;
 
   List<CartItem> get cartItems => _cartItems;
 
@@ -23,6 +24,10 @@ class CartCubit extends Cubit<CartState> {
             item.productId,
             item.variantId,
           );
+
+          if (item.productStock != null && item.quantity > item.productStock!) {
+            item.quantity = item.productStock!;
+          }
         }),
       );
 
@@ -62,7 +67,7 @@ class CartCubit extends Cubit<CartState> {
         _cartItems[index].productStock = latestStock;
 
         // Set the quantity to the max available stock
-        if (latestStock != null && latestStock > 0) {
+        if (latestStock > 0) {
           _cartItems[index].quantity = latestStock;
           // Update the backend with the new max stock value
           await _cartService.updateQuantity(userId, cartItem.id!, latestStock);
@@ -104,10 +109,9 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> proceedToCheckout(String userId) async {
-    // emit(CartLoading());
     try {
-      final orderId = await _cartService.proceedToCheckout(userId, _cartItems);
-      emit(CartCheckoutSuccess(orderId));
+      orderId = await _cartService.proceedToCheckout(userId, _cartItems); // <-- Save orderId
+      emit(CartCheckoutSuccess());
     } catch (e) {
       // 1. Update product stock for all cart items
       await Future.wait(
@@ -136,5 +140,14 @@ class CartCubit extends Cubit<CartState> {
         emit(CartEmpty());
       }
     }
+  }
+
+  bool canProceedToCheckout() {
+    // Check if any item in the cart has zero stock
+    final hasOutOfStockItems = _cartItems.any((item) => 
+      item.productStock == 0 || item.productStock == null
+    );
+    
+    return !hasOutOfStockItems && _cartItems.isNotEmpty;
   }
 }

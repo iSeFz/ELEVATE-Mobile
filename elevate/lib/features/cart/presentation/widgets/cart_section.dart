@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../cubits/cart_cubit.dart';
-import '../../../checkout/checkout_page.dart';
 
 class CartSection extends StatelessWidget {
   final CartCubit cartCubit;
@@ -12,7 +11,7 @@ class CartSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 4)],
       ),
@@ -22,15 +21,12 @@ class CartSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "SubTotal",
+                "Subtotal",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Text(
                 "EGP ${cartCubit.subtotal.toStringAsFixed(2)}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -45,8 +41,22 @@ class CartSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed:
-                  cartCubit.cartItems.isEmpty? null: () {cartCubit.proceedToCheckout(userId);},
+              onPressed: cartCubit.canProceedToCheckout() 
+                ? () {
+                    cartCubit.proceedToCheckout(userId);
+                  }
+                : () {
+                    // Show error message for out of stock items
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Cannot checkout. One or more items are out of stock.',
+                        ),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  },
               child: const Text(
                 "Proceed to Checkout",
                 style: TextStyle(color: Colors.white, fontSize: 16),

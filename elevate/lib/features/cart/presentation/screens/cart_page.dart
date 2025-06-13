@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/cart_body.dart';
 import '../cubits/cart_cubit.dart';
 import '../cubits/cart_state.dart';
-import '../../../checkout/checkout_page.dart';
+import '../../../order/presentation/screens/order_page.dart';
 
 class CartPage extends StatelessWidget {
   final String userId;
@@ -26,14 +26,15 @@ class CartPage extends StatelessWidget {
             ).showSnackBar(SnackBar(content: Text('Item removed from cart')));
           }
           if (state is CartCheckoutSuccess) {
+            final cartCubit = context.read<CartCubit>();
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (_) => CheckoutScreen(
-                      cartItems: context.read<CartCubit>().cartItems,
-                      subtotal: context.read<CartCubit>().subtotal,
-                      orderId: state.orderId,
+                    (_) => OrderScreen(
+                      orderId: cartCubit.orderId!,
+                      userId: userId,
+                      cartItems: cartCubit.cartItems,
                     ),
               ),
             );

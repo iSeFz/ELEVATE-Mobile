@@ -10,10 +10,7 @@ class CartItemRemoved extends CartState {}
 
 class CartEmpty extends CartState {}
 
-class CartCheckoutSuccess extends CartState {
-  final String orderId;
-  CartCheckoutSuccess(this.orderId);
-}
+class CartCheckoutSuccess extends CartState {}
 
 class CartError extends CartState {
   final String message;
