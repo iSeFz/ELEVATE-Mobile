@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'order_state.dart';
@@ -10,6 +11,8 @@ class OrderCubit extends Cubit<OrderState> {
   String? _orderId;
   OrderItem? _orderItem;
   List<CartItem> _cartItems = [];
+  Timer? _reservationTimer;
+  static const int reservationTimeInMinutes = 10;
 
   List<Address> _addresses = []; // Store parsed Address objects
   List<String> _formattedAddresses = [];
@@ -37,6 +40,35 @@ class OrderCubit extends Cubit<OrderState> {
     _cartItems = cartItems;
   }
 
+  @override
+  Future<void> close() {
+    _cancelReservationTimer();
+    return super.close();
+  }
+
+  void _startReservationTimer() {
+    _cancelReservationTimer(); // Cancel any existing timer first
+    _reservationTimer = Timer(Duration(minutes: reservationTimeInMinutes), () {
+      _handleTimerExpiration();
+    });
+  }
+
+  void _cancelReservationTimer() {
+    _reservationTimer?.cancel();
+    _reservationTimer = null;
+  }
+
+  Future<void> _handleTimerExpiration() async {
+    if (_orderId != null && _orderItem != null) {
+      try {
+        await OrderService.releaseItems(_orderId!, _orderItem!.customerId);
+        emit(OrderTimerExpired());
+      } catch (e) {
+        emit(OrderError('Failed to release reservation: ${e.toString()}'));
+      }
+    }
+  }
+
   Future<void> initializeOrder(String orderId, String userId) async {
     emit(OrderLoading());
     try {
@@ -47,7 +79,6 @@ class OrderCubit extends Cubit<OrderState> {
       }
 
       _orderId = orderId;
-      // Print raw address data from API
       final addressesData = customerData['addresses'] as List<dynamic>? ?? [];
       _addresses = addressesData.map((addr) => Address.fromJson(addr)).toList();
 
@@ -88,6 +119,9 @@ class OrderCubit extends Cubit<OrderState> {
         shipmentFees: _shipmentFee,
       );
 
+      // Start the reservation timer once the order is loaded
+      _startReservationTimer();
+
       emit(OrderLoaded());
     } catch (e) {
       emit(OrderError('Error loading order: ${e.toString()}'));
@@ -96,6 +130,7 @@ class OrderCubit extends Cubit<OrderState> {
 
   Future<void> releaseOrder(String orderId, String userId) async {
     try {
+      _cancelReservationTimer(); // Cancel timer when manually releasing
       await OrderService.releaseItems(orderId, userId);
       emit(OrderReleased());
     } catch (e) {
@@ -165,6 +200,7 @@ class OrderCubit extends Cubit<OrderState> {
       emit(OrderLoading());
 
       try {
+        _cancelReservationTimer(); // Cancel timer when placing the order
         final success = await OrderService.confirmOrder(
           _orderId!,
           _orderItem!.customerId,

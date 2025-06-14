@@ -37,6 +37,16 @@ class OrderScreen extends StatelessWidget {
           if (state is OrderReleased) {
             Navigator.of(context).pop();
           }
+          if (state is OrderTimerExpired) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Your reservation has expired. Items have been released.'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+            // Navigate to cart screen (pop all until first)
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
           if (state is OrderPlaced) {
             showDialog(
               context: context,
@@ -275,11 +285,11 @@ class _OrderScreenBody extends StatelessWidget {
               ),
               if (validationError != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 4.0), // Left padding to align with input field
+                  padding: const EdgeInsets.only(top: 8.0, left: 4.0),
                   child: Text(
                     validationError!,
                     style: const TextStyle(color: Colors.red, fontSize: 12),
-                    textAlign: TextAlign.left, // Ensure text is left aligned
+                    textAlign: TextAlign.left,
                   ),
                 ),
             ],
