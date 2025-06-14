@@ -28,6 +28,7 @@ class OrderCubit extends Cubit<OrderState> {
   double get shipmentFee => _shipmentFee;
   String? get orderId => _orderId;
   List<CartItem> get cartItems => _cartItems;
+  String get phoneNumber => _orderItem?.phoneNumber ?? '';
 
   double get subtotal =>
       _cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
@@ -142,6 +143,13 @@ class OrderCubit extends Cubit<OrderState> {
         // Recalculate shipping fee with new address
         updateShipmentType(_selectedShipmentType);
       }
+    }
+  }
+
+  void updatePhoneNumber(String newPhoneNumber) {
+    if (state is OrderLoaded && _orderItem != null) {
+      _orderItem!.phoneNumber = newPhoneNumber;
+      emit(OrderLoaded());
     }
   }
 

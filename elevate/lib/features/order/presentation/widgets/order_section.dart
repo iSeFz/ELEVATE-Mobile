@@ -6,6 +6,7 @@ class OrderSection extends StatelessWidget {
   final bool isPlaceholder;
   final bool showArrow;
   final bool disabled;
+  final bool showEditIcon;
 
   const OrderSection({
     super.key,
@@ -14,6 +15,7 @@ class OrderSection extends StatelessWidget {
     this.isPlaceholder = false,
     this.showArrow = true,
     this.disabled = false,
+    this.showEditIcon = false,
   });
 
   @override
@@ -75,7 +77,13 @@ class OrderSection extends StatelessWidget {
                       ),
                     ),
           ),
-          if (showArrow)
+          if (showEditIcon)
+            Icon(
+              Icons.edit,
+              size: 20,
+              color: disabled ? Colors.grey : Colors.black,
+            )
+          else if (showArrow)
             Icon(
               Icons.chevron_right,
               size: 20,

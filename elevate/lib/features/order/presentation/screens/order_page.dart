@@ -7,6 +7,7 @@ import '../widgets/order_item_card.dart';
 import '../widgets/order_section.dart';
 import '../../../cart/data/models/cart_item.dart';
 import '../../data/models/shipment_types.dart';
+import '../../../../core/utils/validations.dart';
 
 class OrderScreen extends StatelessWidget {
   final String orderId;
@@ -239,6 +240,76 @@ class _OrderScreenBody extends StatelessWidget {
     );
   }
 
+  void _showPhoneNumberEditDialog(BuildContext context) {
+    final cubit = context.read<OrderCubit>();
+    final phoneController = TextEditingController(text: cubit.phoneNumber);
+    final formKey = GlobalKey<FormState>();
+    String? validationError;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text(
+          'Edit Phone Number',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
+            children: [
+              TextFormField(
+                controller: phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number',
+                  // hintText: '010XXXXXXXX',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+                validator: validatePhoneNumber,
+                onChanged: (value) {
+                  validationError = validatePhoneNumber(value);
+                  (dialogContext as Element).markNeedsBuild();
+                },
+              ),
+              if (validationError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, left: 4.0), // Left padding to align with input field
+                  child: Text(
+                    validationError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                    textAlign: TextAlign.left, // Ensure text is left aligned
+                  ),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(context);
+                cubit.updatePhoneNumber(phoneController.text);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Phone number updated successfully"),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildOrderSections(BuildContext context) {
     final cubit = context.read<OrderCubit>();
     final hasAddress = cubit.selectedAddress != null;
@@ -249,6 +320,13 @@ class _OrderScreenBody extends StatelessWidget {
         'content': cubit.selectedAddress ?? 'Select delivery address',
         'placeholder': cubit.selectedAddress == null,
         'onTap': () => _showAddressOptions(context),
+      },
+      {
+        'label': 'PHONE',
+        'content': cubit.phoneNumber.isEmpty ? 'Add phone number' : cubit.phoneNumber,
+        'placeholder': cubit.phoneNumber.isEmpty,
+        'onTap': () => _showPhoneNumberEditDialog(context),
+        'showEditIcon': true,
       },
       {
         'label': 'DELIVERY',
@@ -280,6 +358,7 @@ class _OrderScreenBody extends StatelessWidget {
             isPlaceholder: section['placeholder'] == true,
             showArrow: section['label'] != 'PAYMENT' && section['disabled'] != true,
             disabled: section['disabled'] == true,
+            showEditIcon: section['showEditIcon'] == true,
           ),
         );
       }).toList(),
