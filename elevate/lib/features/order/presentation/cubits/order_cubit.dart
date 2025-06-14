@@ -46,7 +46,6 @@ class OrderCubit extends Cubit<OrderState> {
       }
 
       _orderId = orderId;
-
       // Print raw address data from API
       final addressesData = customerData['addresses'] as List<dynamic>? ?? [];
       _addresses = addressesData.map((addr) => Address.fromJson(addr)).toList();
@@ -108,11 +107,7 @@ class OrderCubit extends Cubit<OrderState> {
       _selectedShipmentType = type;
 
       try {
-        if (type == ShipmentTypes.pickup) {
-          _shipmentFee = 0.0;
-          _orderItem!.shipmentFees = 0.0;
-          _orderItem!.shipmentMethod = ShipmentTypes.pickup;
-        } else if (_selectedAddress != null) {
+        if (_selectedAddress != null) {
           final requestBody = jsonEncode({
             "address": _selectedAddress!.toJson(),
             "shipmentType": type,
@@ -152,6 +147,13 @@ class OrderCubit extends Cubit<OrderState> {
 
   Future<void> placeOrder() async {
     if (state is OrderLoaded && _orderId != null && _orderItem != null) {
+      // Check if address is required (when not using pickup)
+      if (_selectedShipmentType != ShipmentTypes.pickup &&
+          _selectedAddress == null) {
+        emit(OrderError('Please select an address before placing your order.'));
+        return;
+      }
+
       emit(OrderLoading());
 
       try {

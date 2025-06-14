@@ -5,6 +5,7 @@ class OrderSection extends StatelessWidget {
   final dynamic content;
   final bool isPlaceholder;
   final bool showArrow;
+  final bool disabled;
 
   const OrderSection({
     super.key,
@@ -12,16 +13,18 @@ class OrderSection extends StatelessWidget {
     required this.content,
     this.isPlaceholder = false,
     this.showArrow = true,
+    this.disabled = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        border: Border(
+      decoration: BoxDecoration(
+        border: const Border(
           bottom: BorderSide(color: Color(0xFFE6E6E6), width: 0.5),
         ),
+        color: disabled ? const Color(0xFFF5F5F5) : Colors.white,
       ),
       child: Row(
         children: [
@@ -29,10 +32,10 @@ class OrderSection extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: Colors.black,
+                color: disabled ? Colors.grey : Colors.black,
               ),
             ),
           ),
@@ -49,9 +52,11 @@ class OrderSection extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     color:
-                                        isPlaceholder
-                                            ? Colors.black38
-                                            : Colors.black,
+                                        disabled
+                                            ? Colors.grey
+                                            : (isPlaceholder
+                                                ? Colors.black38
+                                                : Colors.black),
                                   ),
                                 ),
                               )
@@ -61,11 +66,21 @@ class OrderSection extends StatelessWidget {
                       content.toString(),
                       style: TextStyle(
                         fontSize: 14,
-                        color: isPlaceholder ? Colors.black38 : Colors.black,
+                        color:
+                            disabled
+                                ? Colors.grey
+                                : (isPlaceholder
+                                    ? Colors.black38
+                                    : Colors.black),
                       ),
                     ),
           ),
-          if (showArrow) const Icon(Icons.chevron_right, size: 20),
+          if (showArrow)
+            Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: disabled ? Colors.grey : Colors.black,
+            ),
         ],
       ),
     );

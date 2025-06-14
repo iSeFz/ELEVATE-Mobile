@@ -33,9 +33,9 @@ class OrderScreen extends StatelessWidget {
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
           }
-          // if (state is OrderReleased) {
-          //   Navigator.of(context).maybePop();
-          // }
+          if (state is OrderReleased) {
+            Navigator.of(context).pop();
+          }
           if (state is OrderPlaced) {
             showDialog(
               context: context,
@@ -49,7 +49,10 @@ class OrderScreen extends StatelessWidget {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        // Go to home page / order history
+                        // Close all screens back to cart screen for now
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        // Alternatively, navigate to order history
+                        // Navigator.of(context).pushReplacementNamed('/orderHistory');
                       },
                       child: const Text('OK'),
                     ),
@@ -81,7 +84,7 @@ class OrderScreen extends StatelessWidget {
               ),
               body: const Center(child: CircularProgressIndicator()),
             );
-          } else if (state is OrderLoaded) {
+          } else if (state is OrderLoaded || state is OrderPlaced) {
             return _OrderScreenBody(
               orderId: orderId,
               userId: userId,
@@ -238,6 +241,8 @@ class _OrderScreenBody extends StatelessWidget {
 
   Widget _buildOrderSections(BuildContext context) {
     final cubit = context.read<OrderCubit>();
+    final hasAddress = cubit.selectedAddress != null;
+    
     final sections = [
       {
         'label': 'ADDRESS',
@@ -248,31 +253,36 @@ class _OrderScreenBody extends StatelessWidget {
       {
         'label': 'DELIVERY',
         'content': [
-          cubit.selectedShipmentType == ShipmentTypes.standard
-              ? 'Standard Delivery (3-4 days)'
-              : cubit.selectedShipmentType == ShipmentTypes.express
-              ? 'Express Delivery (1-2 day)'
-              : 'Pick up from store',
+          // Always show "Pick up from store" when no address is selected
+          !hasAddress
+              ? 'Pick up from store'
+              : cubit.selectedShipmentType == ShipmentTypes.standard
+                  ? 'Standard Delivery (3-4 days)'
+                  : cubit.selectedShipmentType == ShipmentTypes.express
+                      ? 'Express Delivery (1-2 day)'
+                      : 'Pick up from store',
           'EGP ${cubit.shipmentFee.toStringAsFixed(2)}',
         ],
-        'onTap': () => _showDeliveryOptions(context),
+        // Only allow shipment selection if an address is selected
+        'onTap': hasAddress ? () => _showDeliveryOptions(context) : null,
+        'disabled': !hasAddress,
       },
       {'label': 'PAYMENT', 'content': 'Cash on delivery'},
     ];
 
     return Column(
-      children:
-          sections.map((section) {
-            return GestureDetector(
-              onTap: section['onTap'] as void Function()?,
-              child: OrderSection(
-                label: section['label'] as String,
-                content: section['content'],
-                isPlaceholder: section['placeholder'] == true,
-                showArrow: section['label'] != 'PAYMENT',
-              ),
-            );
-          }).toList(),
+      children: sections.map((section) {
+        return GestureDetector(
+          onTap: section['onTap'] as void Function()?,
+          child: OrderSection(
+            label: section['label'] as String,
+            content: section['content'],
+            isPlaceholder: section['placeholder'] == true,
+            showArrow: section['label'] != 'PAYMENT' && section['disabled'] != true,
+            disabled: section['disabled'] == true,
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -401,13 +411,37 @@ class _OrderScreenBody extends StatelessWidget {
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
-          leading:
-              Navigator.canPop(context)
-                  ? IconButton(
-                    icon: const Icon(Icons.chevron_left, size: 24),
-                    onPressed: () => Navigator.maybePop(context),
-                  )
-                  : null,
+          leading: Navigator.canPop(context)
+              ? IconButton(
+                  icon: const Icon(Icons.chevron_left, size: 24),
+                  onPressed: () async {
+                    // Use the same confirmation logic as WillPopScope
+                    final shouldLeave = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Leave Checkout?'),
+                        content: const Text(
+                          'If you leave now, you will lose your reserved items. Do you want to continue?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (shouldLeave == true && context.mounted) {
+                      await context.read<OrderCubit>().releaseOrder(orderId, userId);
+                      if (context.mounted) Navigator.of(context).pop();
+                    }
+                  },
+                )
+              : null,
           title: const Text(
             'Checkout',
             style: TextStyle(

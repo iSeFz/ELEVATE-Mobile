@@ -72,9 +72,9 @@ class OrderService {
       "phoneNumber": phoneNumber,
       "pointsRedeemed": 0,
       "payment": {
-        "method": "cash on delivery",
-        "credentials": "string"
-      }
+        "method": "Cash on delivery",
+        "credentials": "1234567812345678",
+      },
     });
 
     try {
@@ -86,7 +86,6 @@ class OrderService {
         },
         body: requestBody,
       );
-
       return response.statusCode == 200;
     } catch (e) {
       throw Exception('Error placing order: $e');

@@ -61,13 +61,23 @@ class CartPage extends StatelessWidget {
               context,
               body:
                   cartCubit.cartItems.isEmpty
-                      ? const Center(child: Text('Your cart is empty.'))
+                      ? const Center(
+                        child: Text(
+                          'Your cart is empty.',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      )
                       : const CartBody(),
             );
           } else if (state is CartEmpty) {
             return _cartScaffold(
               context,
-              body: const Center(child: Text('Your cart is empty.')),
+              body: const Center(
+                child: Text(
+                  'Your cart is empty.',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
             );
           } else if (state is CartError) {
             return _cartScaffold(
