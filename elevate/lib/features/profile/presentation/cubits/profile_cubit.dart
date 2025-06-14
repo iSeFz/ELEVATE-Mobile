@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '/../features/auth/data/models/customer.dart';
 import 'profile_state.dart';
+import '../../data/models/address.dart';
 import '../../data/services/profile_service.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
@@ -10,6 +11,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   final ProfileService _profileService = ProfileService();
   Customer? _customer;
   Map<String, dynamic>? _customerJSON;
+  List<UserAddress> _addresses = [];
+  String? _expandedAddressId;
 
   // Map to track which fields have been changed
   final Map<String, dynamic> _changedFields = {};
@@ -21,15 +24,27 @@ class ProfileCubit extends Cubit<ProfileState> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
+  // Address form key and controllers
+  final GlobalKey<FormState> addressFormKey = GlobalKey<FormState>();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController streetController = TextEditingController();
+  final TextEditingController buildingController = TextEditingController();
+  final TextEditingController postalCodeController = TextEditingController();
+
   // Getters for easier access to customer data
   Customer? get customer => _customer;
+  List<UserAddress> get addresses => _addresses;
+  String? get expandedAddressId => _expandedAddressId;
 
   String get fullName => '${_customer!.firstName} ${_customer!.lastName}';
 
-  String get loyaltyPoints => '${_customer!.loyaltyPoints.toString()} Points';
+  String get loyaltyPoints =>
+      '${_customer?.loyaltyPoints == 0 ? "Loyalty" : _customer?.loyaltyPoints.toString()} Points';
+
+  // --- Profile Related Methods ---
 
   // Helper method to update text controllers with current customer data
-  void _updateControllers() {
+  void _updateProfileControllers() {
     firstNameController.text = _customer?.firstName ?? '';
     lastNameController.text = _customer?.lastName ?? '';
     emailController.text = _customer?.email ?? '';
@@ -49,8 +64,22 @@ class ProfileCubit extends Cubit<ProfileState> {
       // Create a map of the current customer data as a starting point
       _customerJSON = _customer!.toJson();
       // Initialize controllers with customer data
-      _updateControllers();
-      emit(ProfileLoaded()); // Emit loaded after data is ready
+      _updateProfileControllers();
+
+      // Fetch addresses for the customer
+      _addresses = _customer?.addresses ?? [];
+
+      for (var address in _addresses) {
+        // Set local variables for address display
+        address.id = _addresses.indexOf(address).toString();
+        address.isDefault = address.id == "0" ? true : false;
+        // Initialize address controllers
+        _updateAddressControllers(address.id ?? '');
+      }
+
+      _expandedAddressId = null; // Reset expanded address state
+
+      emit(ProfileLoaded()); // Emit loaded state after data is ready
     } catch (e) {
       emit(ProfileError(message: e.toString()));
     }
@@ -96,7 +125,7 @@ class ProfileCubit extends Cubit<ProfileState> {
           _customer = Customer.fromJson(_customerJSON!);
 
           // Re-initialize controllers to ensure they reflect the latest saved data
-          _updateControllers();
+          _updateProfileControllers();
           emit(ProfileUpdated());
         } else {
           emit(
@@ -111,12 +140,141 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+  // --- Address Related Methods ---
+
+  // Helper method to update text controllers with current address data
+  void _updateAddressControllers(String addressID) {
+    // Update address controllers with the selected address data
+    final address = _addresses.firstWhere((addr) => addr.id == addressID);
+    cityController.text = address.city ?? '';
+    streetController.text = address.street ?? '';
+    buildingController.text = address.building?.toString() ?? '';
+    postalCodeController.text = address.postalCode?.toString() ?? '';
+    address.displayedAddress =
+        "${address.building} ${address.street}, ${address.city}";
+  }
+
+  // Toggle the expansion of address cards
+  void toggleExpandAddress(String addressID) {
+    // If the address is already expanded, clear the controllers and collapse it
+    if (_expandedAddressId == addressID) {
+      _expandedAddressId = null;
+      clearAddressControllers();
+    }
+    // Otherwise expand the selected address
+    _expandedAddressId = addressID;
+    // Populate controllers when expanding
+    _updateAddressControllers(addressID);
+    emit(AddressExpanded());
+  }
+
+  Future<void> saveAddress(String addressID) async {
+    if (addressFormKey.currentState?.validate() ?? false) {
+      addressFormKey.currentState!.save();
+      // Implement address save logic
+      final index = _addresses.indexWhere((addr) => addr.id == addressID);
+      if (index != -1) {
+        _addresses[index] = UserAddress(
+          id: addressID,
+          displayedAddress:
+              "${buildingController.text} ${streetController.text}, ${cityController.text}",
+          city: cityController.text,
+          street: streetController.text,
+          building: int.tryParse(buildingController.text),
+          postalCode: int.tryParse(postalCodeController.text),
+          latitude: _addresses[index].latitude,
+          longitude: _addresses[index].longitude,
+          isDefault: _addresses[index].isDefault,
+        );
+      }
+      // Mark addresses as changed by providing the full current list
+      _changedFields['addresses'] =
+          _addresses
+              .map(
+                (addr) =>
+                    addr.toJson()..removeWhere(
+                      (key, _) =>
+                          key == 'id' ||
+                          key == 'displayedAddress' ||
+                          key == 'isDefault',
+                    ),
+              )
+              .toList();
+      emit(AddressSaved());
+    }
+  }
+
+  void deleteAddress(String addressID) {
+    emit(AddressLoading());
+    _addresses.removeWhere((addr) => addr.id == addressID);
+
+    // Mark addresses as changed by providing the full current list
+    _changedFields['addresses'] =
+        _addresses
+            .map(
+              (addr) =>
+                  addr.toJson()..removeWhere(
+                    (key, _) =>
+                        key == 'id' ||
+                        key == 'displayedAddress' ||
+                        key == 'isDefault',
+                  ),
+            )
+            .toList();
+
+    if (_expandedAddressId == addressID) {
+      clearAddressControllers();
+      _expandedAddressId = null;
+    }
+    emit(AddressDeleted());
+  }
+
+  void addNewAddress() {
+    clearAddressControllers();
+    emit(AddressLoading());
+    // Create a new address with a unique ID
+    final newId = (_addresses.length + 1).toString();
+    final newAddress = UserAddress(
+      id: newId,
+      displayedAddress: 'New Address',
+      city: '',
+      street: '',
+      building: 0,
+      postalCode: 0,
+      latitude: 0,
+      longitude: 0,
+    );
+
+    // Add the new address to the list
+    _addresses.add(newAddress);
+    _expandedAddressId = newId;
+    emit(AddressExpanded());
+  }
+
+  void setDefaultAddress(String addressID) {
+    for (var address in _addresses) {
+      address.isDefault = address.id == addressID;
+    }
+    emit(DefaultAddressUpdated());
+  }
+
+  void clearAddressControllers() {
+    cityController.clear();
+    streetController.clear();
+    buildingController.clear();
+    postalCodeController.clear();
+  }
+
   @override
   Future<void> close() {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+    cityController.dispose();
+    streetController.dispose();
+    buildingController.dispose();
+    postalCodeController.dispose();
     return super.close();
   }
 }

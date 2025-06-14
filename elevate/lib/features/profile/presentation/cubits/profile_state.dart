@@ -1,3 +1,4 @@
+// --- Profile Related States ---
 abstract class ProfileState {}
 
 class ProfileInitial extends ProfileState {}
@@ -13,3 +14,14 @@ class ProfileError extends ProfileState {
 
   ProfileError({required this.message});
 }
+
+// --- Address Related States ---
+class AddressLoading extends ProfileState {}
+
+class AddressSaved extends ProfileState {}
+
+class AddressExpanded extends ProfileState {}
+
+class DefaultAddressUpdated extends ProfileState {}
+
+class AddressDeleted extends ProfileState {}
