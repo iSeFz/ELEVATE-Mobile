@@ -38,8 +38,9 @@ class Address {
       building: json['building'] as int? ?? 0,
       city: json['city'] as String? ?? '',
       street: json['street'] as String? ?? '',
-      latitude: json['latitude'] as double? ?? 0.0,
-      longitude: json['longitude'] as double? ?? 0.0,
+      // Handle numeric values safely
+      latitude: json['latitude'] is num ? (json['latitude'] as num).toDouble() : 0.0,
+      longitude: json['longitude'] is num ? (json['longitude'] as num).toDouble() : 0.0,
     );
   }
 

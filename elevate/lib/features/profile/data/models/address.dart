@@ -29,8 +29,8 @@ class UserAddress {
     street = json['street'] ?? '';
     building = json['building'] ?? 0;
     postalCode = json['postalCode'] ?? 0;
-    latitude = json['latitude'] ?? 0.0;
-    longitude = json['longitude'] ?? 0.0;
+    latitude = json['latitude'] is num ? (json['latitude'] as num).toDouble() : 0.0;
+    longitude = json['longitude'] is num ? (json['longitude'] as num).toDouble() : 0.0;
     isDefault = json['isDefault'] ?? false;
   }
 
