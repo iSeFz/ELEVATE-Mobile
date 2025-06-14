@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'edit_profile_page.dart';
-import '../../../../core/utils/google_utils.dart';
 import 'change_password_page.dart';
+import 'settings_page.dart';
+import '../../../../core/utils/google_utils.dart';
 import '../../../auth/presentation/screens/login_page.dart';
 import '../../../auth/data/models/customer.dart';
 import '../../../profile/presentation/cubits/profile_cubit.dart';
@@ -168,7 +169,12 @@ class ProfilePage extends StatelessWidget {
                             icon: Icons.settings_outlined,
                             text: 'Settings',
                             onTap: () {
-                              // TODO: Implement Settings navigation/action
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SettingsPage(),
+                                ),
+                              );
                             },
                           ),
                         ],
