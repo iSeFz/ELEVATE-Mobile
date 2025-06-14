@@ -12,7 +12,10 @@ class AuthService {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(customerData.toJson()),
+      body: jsonEncode(
+        customerData.toJson()
+          ..removeWhere((key, _) => key == 'id' || key == 'loyaltyPoints'),
+      ),
     );
 
     final responseData = jsonDecode(response.body);
