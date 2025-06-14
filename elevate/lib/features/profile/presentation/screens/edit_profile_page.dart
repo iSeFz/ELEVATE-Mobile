@@ -192,7 +192,11 @@ class EditProfilePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ManageAddressesPage(),
+                          builder:
+                              (context) => BlocProvider.value(
+                                value: profileCubit,
+                                child: const ManageAddressesPage(),
+                              ),
                         ),
                       );
                     },
