@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '/../features/auth/data/models/customer.dart';
 import 'profile_state.dart';
 import '../../data/models/address.dart';
@@ -36,7 +38,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   List<UserAddress> get addresses => _addresses;
   String? get expandedAddressId => _expandedAddressId;
 
-  String get fullName => '${_customer!.firstName} ${_customer!.lastName}';
+  String get fullName => '${_customer?.firstName} ${_customer?.lastName}';
+
+  String get imageURL => '${_customer?.imageURL}';
 
   String get loyaltyPoints =>
       '${_customer?.loyaltyPoints == 0 ? "Loyalty" : _customer?.loyaltyPoints.toString()} Points';
@@ -52,6 +56,33 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     // Reset changed fields tracking
     _changedFields.clear();
+  }
+
+  // Method to refresh customer data from the database
+  Future<void> refreshCustomerData() async {
+    try {
+      if (_customer?.id == null) {
+        throw Exception("Customer ID is not available");
+      }
+
+      emit(ProfileLoading());
+
+      // Fetch the latest customer data from the server
+      final refreshedCustomer = await _profileService.refreshCustomer(
+        _customer!.id!,
+      );
+
+      // Update the customer instance with the refreshed data
+      initializeCustomer(refreshedCustomer);
+
+      emit(ProfileLoaded());
+    } catch (e) {
+      emit(
+        ProfileError(
+          message: "Failed to refresh customer data: ${e.toString()}",
+        ),
+      );
+    }
   }
 
   // Initialize customer data and controllers at the start
@@ -137,6 +168,52 @@ class ProfileCubit extends Cubit<ProfileState> {
       } catch (e) {
         emit(ProfileError(message: e.toString()));
       }
+    }
+  }
+
+  // --- Profile Photo Related Methods ---
+
+  // Pick an image from the photo library or camera
+  Future<void> pickImage(String sourceOption) async {
+    try {
+      final returnedImage = await ImagePicker().pickImage(
+        source:
+            sourceOption == "camera" ? ImageSource.camera : ImageSource.gallery,
+      );
+      if (returnedImage != null) {
+        // Save the selected image to the profile
+        // Convert the XFile to File by using its path
+        saveProfilePhoto(File(returnedImage.path));
+      } else {
+        emit(ProfileError(message: "No image selected."));
+      }
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Upload the profile photo to the firebase storage
+  void saveProfilePhoto(File selectedImage) async {
+    emit(ProfileLoading());
+    try {
+      // Upload the image to Firebase Storage
+      String imageURL = await _profileService.uploadProfileImage(
+        _customerJSON?['id'],
+        selectedImage,
+      );
+
+      if (imageURL.isEmpty) {
+        emit(ProfileError(message: "Image upload failed."));
+        return;
+      }
+
+      // Update the changed fields map to trigger the customer update upon save
+      fieldChanged("imageURL", imageURL);
+
+      // Emit success state
+      emit(ProfilePictureUpdated());
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
     }
   }
 
