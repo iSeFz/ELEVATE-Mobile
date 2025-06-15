@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/cart_body.dart';
 import '../cubits/cart_cubit.dart';
 import '../cubits/cart_state.dart';
-import '../../../checkout/checkout_page.dart';
+import '../../../order/presentation/screens/order_page.dart';
 
 class CartPage extends StatelessWidget {
   final String userId;
@@ -12,7 +12,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CartCubit>(
-      create: (context) => CartCubit()..fetchCartItems(userId),
+      create: (context) => CartCubit(userId: userId)..fetchCartItems(),
       child: BlocConsumer<CartCubit, CartState>(
         listener: (context, state) {
           if (state is CartError) {
@@ -26,17 +26,27 @@ class CartPage extends StatelessWidget {
             ).showSnackBar(SnackBar(content: Text('Item removed from cart')));
           }
           if (state is CartCheckoutSuccess) {
+            final cartCubit = context.read<CartCubit>();
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (_) => CheckoutScreen(
-                      cartItems: context.read<CartCubit>().cartItems,
-                      subtotal: context.read<CartCubit>().subtotal,
-                      orderId: state.orderId,
+                    (_) => BlocProvider.value(
+                      value: context.read<CartCubit>(),
+                      child: OrderScreen(
+                        orderId: cartCubit.orderId!,
+                        userId: userId,
+                        cartItems: cartCubit.cartItems,
+                      ),
                     ),
               ),
-            );
+            ).then((_) {
+              // Refresh the cart data when returning from the OrderScreen
+              final cubit = context.read<CartCubit>();
+              if (!cubit.isClosed && context.mounted) {
+                cubit.fetchCartItems();
+              }
+            });
           }
         },
         builder: (context, state) {
@@ -51,13 +61,23 @@ class CartPage extends StatelessWidget {
               context,
               body:
                   cartCubit.cartItems.isEmpty
-                      ? const Center(child: Text('Your cart is empty.'))
-                      : CartBody(cartCubit: cartCubit, userId: userId),
+                      ? const Center(
+                        child: Text(
+                          'Your cart is empty.',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      )
+                      : const CartBody(),
             );
           } else if (state is CartEmpty) {
             return _cartScaffold(
               context,
-              body: const Center(child: Text('Your cart is empty.')),
+              body: const Center(
+                child: Text(
+                  'Your cart is empty.',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
             );
           } else if (state is CartError) {
             return _cartScaffold(
@@ -76,14 +96,20 @@ class CartPage extends StatelessWidget {
 
   Widget _cartScaffold(BuildContext context, {required Widget body}) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
+        toolbarHeight: 70,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black26,
+        title: Text(
           'Cart',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.secondary,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
         ),
       ),
       body: body,

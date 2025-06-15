@@ -1,3 +1,5 @@
+import '../../../profile/data/models/address.dart';
+
 // Model class for the customer object
 class Customer {
   String? id;
@@ -9,6 +11,7 @@ class Customer {
   String? phoneNumber;
   String? imageURL;
   int? loyaltyPoints;
+  List<UserAddress>? addresses;
 
   // Default constructor
   Customer({
@@ -21,6 +24,7 @@ class Customer {
     this.phoneNumber,
     this.imageURL,
     this.loyaltyPoints,
+    this.addresses,
   });
 
   // Parameterized constructor with null safety
@@ -34,6 +38,12 @@ class Customer {
     phoneNumber = map['phoneNumber']?.toString();
     imageURL = map['imageURL']?.toString();
     loyaltyPoints = map['loyaltyPoints'] as int?;
+    addresses =
+        addresses == null
+            ? (map['addresses'] as List)
+                .map((address) => UserAddress.fromJson(address))
+                .toList()
+            : [];
   }
 
   // Getter to return a map of the converted customer object
@@ -48,6 +58,7 @@ class Customer {
       'phoneNumber': phoneNumber,
       'imageURL': imageURL,
       'loyaltyPoints': loyaltyPoints,
+      'addresses': addresses?.map((address) => address.toJson()).toList(),
     };
   }
 }
