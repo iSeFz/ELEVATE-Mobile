@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:elevate/features/home/data/models/product.dart';
+import 'package:elevate/features/home/data/models/product_card_model.dart';
 import '../../data/services/product_service.dart';
 
 // States
@@ -10,7 +10,7 @@ class ProductInitial extends ProductState {}
 class ProductLoading extends ProductState {}
 
 class ProductLoaded extends ProductState {
-  final List<Product> products;
+  final List<ProductCardModel> products;
   ProductLoaded(this.products);
 }
 
@@ -28,7 +28,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductLoading());
 
       // Call static method directly
-      List<Product> products = await ProductService.getAllProducts();
+      List<ProductCardModel> products = await ProductService.getAllProductsCards();
 
       emit(ProductLoaded(products));
     } catch (e) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../search/presentation/screens/search.dart';
+import '../search/presentation/screens/search_page.dart';
 import '/../core/utils/size_config.dart';
 import '../auth/data/models/customer.dart';
 import '../home/presentation/screens/home_page.dart';
@@ -27,7 +27,7 @@ class _MainPageState extends State<MainPage> {
     _pageController = PageController(initialPage: _selectedIndex);
     _pages = [
       HomePage(),
-      Search(),
+      SearchPage(),
       CartPage(userId: widget.customer.id!),
       WishlistPage(userID: widget.customer.id!),
       ProfilePage(customer: widget.customer),

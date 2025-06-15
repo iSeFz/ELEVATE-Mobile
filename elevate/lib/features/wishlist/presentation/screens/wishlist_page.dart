@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/widgets/product_card.dart';
 import '../cubits/wishlist_cubit.dart';
 import '../cubits/wishlist_state.dart';
-import '../widgets/wishlist_product_card.dart';
 
 // Wishlist Page
 class WishlistPage extends StatelessWidget {
@@ -59,13 +59,13 @@ class WishlistPage extends StatelessWidget {
 
                     return Row(
                       children: [
-                        WishlistProductCard(
-                          userID: userID,
+                        ProductCard(
+                          userId: userID,
                           product: wishlistProducts[firstIndex],
                         ),
                         if (secondIndex < wishlistProducts.length)
-                          WishlistProductCard(
-                            userID: userID,
+                          ProductCard(
+                            userId: userID,
                             product: wishlistProducts[secondIndex],
                           )
                         else

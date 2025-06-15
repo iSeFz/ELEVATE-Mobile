@@ -1,14 +1,14 @@
 import 'dart:async';
+import 'package:elevate/features/home/data/models/product_card_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/services/wishlist_service.dart';
-import '../../data/models/wishlist_product.dart';
 import 'wishlist_state.dart';
 
 // Wishlist Cubit
 class WishlistCubit extends Cubit<WishlistState> {
   final WishlistService _wishlistService = WishlistService();
-  List<WishlistProduct> _wishlistProducts = [];
-  List<WishlistProduct> get wishlistProducts => _wishlistProducts;
+  List<ProductCardModel> _wishlistProducts = [];
+  List<ProductCardModel> get wishlistProducts => _wishlistProducts;
 
   WishlistCubit() : super(WishlistInitial());
 
@@ -36,7 +36,7 @@ class WishlistCubit extends Cubit<WishlistState> {
       if (isRemoved) {
         // If the product was removed successfully from the backend, remove locally
         _wishlistProducts.removeWhere(
-          (product) => product.productId == productID,
+          (product) => product.id == productID,
         );
         emit(WishlistItemRemoved());
         // Emit WishlistLoaded or WishlistEmpty to refresh the UI
