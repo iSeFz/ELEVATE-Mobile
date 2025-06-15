@@ -6,8 +6,9 @@ import 'settings_page.dart';
 import '../../../../core/utils/google_utils.dart';
 import '../../../auth/presentation/screens/login_page.dart';
 import '../../../auth/data/models/customer.dart';
-import '../../../profile/presentation/cubits/profile_cubit.dart';
-import '../../../profile/presentation/widgets/profile_page_option.dart';
+import '../cubits/profile_cubit.dart';
+import '../cubits/profile_state.dart';
+import '../widgets/profile_page_option.dart';
 
 // Profile Page
 class ProfilePage extends StatelessWidget {
@@ -22,8 +23,8 @@ class ProfilePage extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => ProfileCubit()..initializeCustomer(customer),
-      child: Builder(
-        builder: (context) {
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
           final profileCubit = context.read<ProfileCubit>();
 
           return Scaffold(
@@ -54,12 +55,19 @@ class ProfilePage extends StatelessWidget {
                     // Customer profile photo
                     CircleAvatar(
                       radius: screenWidth * 0.2,
-                      backgroundColor: theme.colorScheme.tertiary,
-                      child: Icon(
-                        Icons.person,
-                        size: screenWidth * 0.2,
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundImage:
+                          profileCubit.imageURL.isNotEmpty
+                              ? NetworkImage(profileCubit.imageURL)
+                              : null,
+                      child:
+                          profileCubit.imageURL.isEmpty
+                              ? Icon(
+                                Icons.person,
+                                size: screenWidth * 0.2,
+                                color: theme.colorScheme.onPrimaryContainer,
+                              )
+                              : null,
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     // Customer name field
