@@ -1,9 +1,11 @@
+import 'package:elevate/features/home/presentation/widgets/about_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state_cubit.dart';
+import '../widgets/reviews_section.dart';
 import 'reviews.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/rate_card.dart';
@@ -19,14 +21,13 @@ class ProductDetails extends StatefulWidget {
 
   final String productId;
   final ProductCardModel productView;
-  final dynamic userId;
+  final String userId;
 
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-  int selectedColorIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
-              title: Text('Men', style: TextStyle(color: Colors.black)),
+              title: Text('', style: TextStyle(color: Colors.black)),
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.of(context).pop(),
@@ -76,23 +77,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                 } else if (state is ProductDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ProductDetailsLoaded) {
-                  // Extract color-image pairs from product variants
-                  final variants = state.product.variants;
-                  final colorImagePairs = variants
-                      .expand((variant) => variant.colors.asMap().entries.map((entry) {
-                    final colorName = entry.value;
-                    final color = _parseColor(colorName);
-                    final image = (variant.images.isNotEmpty)
-                        ? variant.images[entry.key % variant.images.length]
-                        : state.product.image;
-                    return {'color': color, 'image': image};
-                  }))
-                      .toList();
-
-                  final selectedImage = colorImagePairs.isNotEmpty
-                      ? colorImagePairs[selectedColorIndex]['image']
-                      : state.product.image;
-
+                  // Extract color-image pairs from product variantsf
                   return Stack(
                     children: [
                       GestureDetector(
@@ -100,12 +85,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => FullScreenImage(imageUrl: selectedImage.toString()),
+                              builder: (_) => FullScreenImage(imageUrl: state.product.image),
                             ),
                           );
                         },
                         child: Image.network(
-                          selectedImage.toString(),
+                          state.product.image,
                           width: double.infinity,
                           height: MediaQuery.of(context).size.height,
                           fit: BoxFit.fitWidth,
@@ -157,7 +142,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 12 * SizeConfig.verticalBlock),
                                 Text(
-                                  state.product.price.toString(),
+                                  'EGP '+state.product.price.toString(),
                                   style: TextStyle(
                                     fontSize: 20 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -165,38 +150,20 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 13 * SizeConfig.verticalBlock),
                                 Text(
-                                  'Colors :',
+                                  'Sizes :',
                                   style: TextStyle(fontSize: 13 * SizeConfig.textRatio),
                                 ),
-                                SizedBox(height: 8),
+                                SizedBox(height: 5 * SizeConfig.verticalBlock),
                                 Row(
-                                  children: colorImagePairs.asMap().entries.map((entry) {
-                                    int idx = entry.key;
-                                    Color variantColor = entry.value['color'] as Color;
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedColorIndex = idx;
-                                        });
-                                      },
-                                      child: Container(
-                                        margin: EdgeInsets.only(right: 10),
-                                        width: 30 * SizeConfig.horizontalBlock,
-                                        height: 30 * SizeConfig.verticalBlock,
-                                        decoration: BoxDecoration(
-                                          color: variantColor,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: selectedColorIndex == idx
-                                                ? Colors.red
-                                                : Colors.grey.shade300,
-                                            width: 2,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizeWidget('S'),
+                                    SizeWidget('M'),
+                                    SizeWidget('L'),
+                                    SizeWidget('XL'),
+                                  ],
                                 ),
+
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 ElevatedButton(
                                   onPressed: () {},
@@ -219,216 +186,25 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ),
                                 ),
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0 * SizeConfig.horizontalBlock,
-                                      ),
-                                      child: Text(
-                                        "About product",
-                                        style: TextStyle(
-                                          fontSize: 18 * SizeConfig.textRatio,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        borderRadius: BorderRadius.circular(
-                                          8 * SizeConfig.verticalBlock,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          ExpansionTile(
-                                            title: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.checkroom,
-                                                  color: Colors.black,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  "Description",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 18 * SizeConfig.textRatio
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            trailing: Icon(Icons.expand_more),
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(
-                                                  16 * SizeConfig.verticalBlock,),
-                                                child: Text(
-                                                state.product.description,
-                                                style: TextStyle(
-                                                  fontSize: 14 * SizeConfig.textRatio,
-                                                  color: Colors.grey[700],
-                                                ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Divider(
-                                            color: Colors.grey.shade300,
-                                            height: 1 * SizeConfig.verticalBlock,
-                                          ),
-                                          ExpansionTile(
-                                            title: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.straighten,
-                                                  color: Colors.black,
-                                                ),
-                                                SizedBox(
-                                                  width: 8 * SizeConfig.horizontalBlock,
-                                                ),
-                                                Text(
-                                                  "Size Chart",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 18 * SizeConfig.textRatio
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            trailing: Icon(Icons.expand_more),
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(
-                                                  8.0 * SizeConfig.verticalBlock,
-                                                ),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text("S: Chest 36-38 in"),
-                                                    Text("M: Chest 39-41 in"),
-                                                    Text("L: Chest 42-44 in"),
-                                                    Text("XL: Chest 45-47 in"),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Divider(
-                                            color: Colors.grey.shade300,
-                                            height: 1 * SizeConfig.verticalBlock,
-                                          ),
-                                          ExpansionTile(
-                                            title: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.reviews_outlined,
-                                                  color: Colors.black,
-                                                ),
-                                                SizedBox(
-                                                  width: 8 * SizeConfig.horizontalBlock,
-                                                ),
-                                                Text(
-                                                  "Reviews",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 18 * SizeConfig.textRatio
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            trailing: Icon(Icons.expand_more),
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal:
-                                                  24 * SizeConfig.horizontalBlock,
-                                                  vertical: 10 * SizeConfig.verticalBlock,
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    RateCard(
-                                                      username: 'Adham_Immortal',
-                                                      avatarUrl:
-                                                      'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-                                                      comment: 'Loved the material!',
-                                                      stars: 5,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 30 * SizeConfig.verticalBlock,
-                                                    ),
-                                                    RateCard(
-                                                      username: 'Belal_Ahmedd',
-                                                      avatarUrl:
-                                                      'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-                                                      comment: 'Had fun AR',
-                                                      stars: 3,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 20 * SizeConfig.verticalBlock,
-                                                    ),
-                                                    Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        vertical:
-                                                        10 * SizeConfig.verticalBlock,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        border: Border(
-                                                          top: BorderSide(
-                                                            color: Colors.grey[300]!,
-                                                            width: 1,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (_) => ReviewsBar(),
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                          children: [
-                                                            Text(
-                                                              "See more >>",
-                                                              style: TextStyle(
-                                                                color: Color(0xFFA51930),
-                                                                fontSize:
-                                                                10 *
-                                                                    SizeConfig.textRatio,
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Divider(
-                                            color: Colors.grey.shade300,
-                                            height: 1 * SizeConfig.verticalBlock,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                //about prod
+                                AboutSection(
+                                  product: state.product,
                                 ),
+
+                                SizedBox(height: 30 * SizeConfig.verticalBlock),
+
+                                //reviews section
+                                // ReviewsSection(
+                                //   // productId: widget.productId,
+                                //   // userId: widget.userId,
+                                // ),
+
+
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 8.0 * SizeConfig.horizontalBlock,
+
                                   ),
                                   child: Text(
                                     "You might like",
@@ -477,4 +253,37 @@ Color _parseColor(String colorName) {
     default:
       return Colors.grey;
   }
+}
+
+Widget SizeWidget(String text) {
+  bool selected=false;
+  var onTap;
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: 40 * SizeConfig.horizontalBlock,
+      height: 40 * SizeConfig.horizontalBlock,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        border: Border.all(
+          color: selected
+              ? Colors.black
+              : Colors.grey[400]!,
+          width: 2,
+        ),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 16 * SizeConfig.textRatio,
+          fontWeight: FontWeight.w500,
+          color: selected
+              ?Colors.black
+              : Colors.black,
+        ),
+      ),
+    ),
+  );
 }

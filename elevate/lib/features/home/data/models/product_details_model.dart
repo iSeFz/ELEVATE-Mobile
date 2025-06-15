@@ -9,13 +9,12 @@ class ProductDetailsModel {
   final String category;
   final String description;
   final String material;
-  // final DateTime createdAt;
   // final DateTime updatedAt;
   final List<ProductVariant> variants;
 
   // Derived attributes
   final String color;
-  final double price;
+  final int price;
   final String image;
 
   ProductDetailsModel({
@@ -26,7 +25,6 @@ class ProductDetailsModel {
     required this.category,
     required this.description,
     required this.material,
-    // required this.createdAt,
     // required this.updatedAt,
     required this.variants,
     required this.color,
@@ -58,7 +56,7 @@ class ProductDetailsModel {
       // ),
       variants: variantList,
       color: firstVariant?.colors.first ?? '',
-      price: firstVariant?.price ?? 0.0,
+      price: firstVariant?.price ?? 0,
       image: firstVariant?.images.first ??
           'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
     );

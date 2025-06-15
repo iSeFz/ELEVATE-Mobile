@@ -2,7 +2,7 @@ class ProductVariant {
   final String id;
   final String size;
   final int stock;
-  final double price;
+  final int price;
   final int discount;
   final List<String> colors;
   final List<String> images;
@@ -21,7 +21,7 @@ class ProductVariant {
     id: json['id'] as String,
     size: json['size'] as String,
     stock: json['stock'] as int,
-    price: (json['price'] as num).toDouble(),
+    price: json['price'] as int,
     discount: json['discount'] as int,
     colors: List<String>.from(json['colors']),
     images: List<String>.from(json['images']),

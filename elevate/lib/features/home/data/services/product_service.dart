@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:elevate/features/home/data/models/review_model.dart';
 import 'package:elevate/features/home/presentation/screens/product_details_page.dart';
 import 'package:http/http.dart' as http;
 import '../models/product_card_model.dart';
@@ -32,7 +33,16 @@ class ProductService {
       throw Exception('Failed to load product details');
     }
   }
+  static Future<ReviewModel> getProductReviews (String productId) async {
+    final response = await http.get(Uri.parse('$baseUrl/products/$productId/reviews'));
 
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      return ReviewModel.fromJson(jsonResponse['data']);
+    } else {
+      throw Exception('Failed to load product details');
+    }
+  }
 // You can add more product-related methods here, e.g.
 // Future<Product> getProductById(int id) { ... }
 // Future<void> createProduct(Product product) { ... }

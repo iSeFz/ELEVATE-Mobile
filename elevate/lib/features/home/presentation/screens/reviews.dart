@@ -38,21 +38,21 @@ class _ReviewsBarState extends State<ReviewsBar> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
         child: Column(
           children: [
-            RateCard(
-              username: 'Adham_Immortal',
-              avatarUrl:
-                  'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-              comment: 'Loved the material!',
-              stars: 5,
-            ),
+            // RateCard(
+            //   username: 'Adham_Immortal',
+            //   avatarUrl:
+            //       'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+            //   comment: 'Loved the material!',
+            //   stars: 5,
+            // ),
             const SizedBox(height: 40),
-            RateCard(
-              username: 'Belal_Ahmedd',
-              avatarUrl:
-                  'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
-              comment: 'Had fun AR',
-              stars: 3,
-            ),
+            // RateCard(
+            //   username: 'Belal_Ahmedd',
+            //   avatarUrl:
+            //       'https://domanza.co/cdn/shop/files/CCxNavy-45Large_27baa9f2-e314-4ffb-a8a9-65d1ad738bc8_jpg.jpg?v=1739309915&width=5760',
+            //   comment: 'Had fun AR',
+            //   stars: 3,
+            // ),
           ],
         ),
       ),

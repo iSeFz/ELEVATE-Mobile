@@ -1,21 +1,23 @@
-class Review {
+class ReviewModel {
   final String productID;
   final String customerID;
+  // final String avatarUrl;
   final String title;
   final String content;
   final int rating;
   final String updatedAt;
 
-  Review({
+  ReviewModel({
     required this.productID,
     required this.customerID,
     required this.title,
     required this.content,
     required this.rating,
     required this.updatedAt,
+    // required this.avatarUrl,
   });
 
-  factory Review.fromJson(Map<String, dynamic> json) => Review(
+  factory ReviewModel.fromJson(Map<String, dynamic> json) => ReviewModel(
     productID: json['productID'] as String,
     customerID: json['customerID'] as String,
     title: json['title'] as String,
