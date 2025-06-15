@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/constants.dart';
-import '../models/wishlist_product.dart';
+import '../../../home/data/models/product_card_model.dart';
 
 class WishlistService {
-  Future<List<WishlistProduct>> fetchWishlist(String userID) async {
+  Future<List<ProductCardModel>> fetchWishlist(String userID) async {
     try {
       final response = await http.get(
         Uri.parse("$apiBaseURL/v1/customers/me/wishlist?userId=$userID"),
@@ -16,7 +16,7 @@ class WishlistService {
       if (response.statusCode == 200 && responseData['status'] == 'success') {
         final List<dynamic> productsJson = responseData['data'];
         return productsJson
-            .map((json) => WishlistProduct.fromJson(json))
+            .map((json) => ProductCardModel.fromJson(json))
             .toList();
       } else {
         throw Exception(responseData['message'] ?? 'Failed to load wishlist');

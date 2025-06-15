@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../features/wishlist/presentation/cubits/wishlist_cubit.dart';
 import '/../core/utils/size_config.dart';
 import '/../features/home/presentation/screens/product_details_page.dart';
-import '/../features/home/data/models/product.dart';
+import '/../features/home/data/models/product_card_model.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product});
-  final Product product;
+  const ProductCard({super.key, required this.product,required this.userId});
+  final ProductCardModel product;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +17,8 @@ class ProductCard extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ProductDetails(product: product),
+          //user id waiting for local authentication database
+          builder: (_) => ProductDetails(productId: product.id, userId: '', productView: product),
         ),
       );
     },
@@ -83,22 +87,20 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.favorite_outline_rounded),
-
-                      padding: EdgeInsets.zero,
+                      icon: Icon(Icons.favorite, color: Colors.red),
+                      tooltip: 'Remove from Wishlist',
                       onPressed: () {
-
-                        // setState(() {
-                        //   // favoriteProducts.remove(product);
-                        // });
+                        context.read<WishlistCubit>().removeFromWishlist(
+                          userId,
+                          product.id,
+                        );
                       },
                     ),
                     IconButton(
                       icon: Icon(Icons.shopping_bag_outlined),
-                      padding: EdgeInsets.zero,
                       onPressed: () {},
                     ),
                   ],

@@ -1,4 +1,4 @@
-import 'package:elevate/features/search/presentation/screens/search.dart';
+import 'package:elevate/features/search/presentation/screens/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Search()),
+                  MaterialPageRoute(builder: (context) => SearchPage()),
                 );
               },
 
@@ -71,7 +71,7 @@ class HomePage extends StatelessWidget {
                   mainAxisExtent: 350 * SizeConfig.verticalBlock,
                 ),
                 itemBuilder: (context, index) {
-                  return ProductCard(product: products[index]);
+                  return ProductCard(product: products[index], userId: '',);
                 },
               );
 
