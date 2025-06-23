@@ -43,7 +43,51 @@ class ProductService {
       throw Exception('Failed to load product details');
     }
   }
-// You can add more product-related methods here, e.g.
-// Future<Product> getProductById(int id) { ... }
-// Future<void> createProduct(Product product) { ... }
-}
+
+  // XXSmall
+  // XSmall
+  // Small
+  // Medium
+  // Large
+  // XLarge
+  // XXLarge
+  static Future<List<String>?> getAllSizes () async {
+    final response = await http.get(Uri.parse('$baseUrl/products/sizes'));
+
+    if (response.statusCode == 200) {
+      // final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      // final List<String> fullSizes = List<String>.from(
+      //     jsonResponse['data']['sizes'] ?? []);
+      // List<String> shortSizes = [];
+      //   for (var size in fullSizes) {
+      //     final regex = RegExp(r'^(X+)?(.*)$', caseSensitive: false);
+      //     final match = regex.firstMatch(size);
+      //     if (match != null) {
+      //       final xPart = match.group(1) ?? '';
+      //       final afterX = match.group(2)?.trim() ?? '';
+      //       final firstLetter = afterX.isNotEmpty
+      //           ? afterX[0].toUpperCase()
+      //           : '';
+      //       shortSizes.add('$xPart$firstLetter');
+      //     } else {
+      //       shortSizes.add(size); // fallback
+      //     }
+      //   }
+      //   return shortSizes;
+      }
+      else {
+        throw Exception('Failed to load product details');
+      }
+  }
+
+    // String? getVariantIdBySize(String shortLabel, ) {
+    //   final match = sizeMap.entries.firstWhere(
+    //         (entry) => entry.value == shortLabel,
+    //     orElse: () => const MapEntry('', ''),
+    //   );
+    //   return match.key.isEmpty ? null : match.key;
+    // }
+
+
+
+  }

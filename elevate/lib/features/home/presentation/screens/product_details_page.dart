@@ -1,10 +1,11 @@
 import 'package:elevate/features/home/presentation/widgets/about_section.dart';
+import 'package:elevate/features/home/presentation/widgets/size_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
-import '../cubits/product_details_state_cubit.dart';
+import '../cubits/product_details_state.dart';
 import '../widgets/reviews_section.dart';
 import 'reviews.dart';
 import '../../../../core/utils/size_config.dart';
@@ -28,7 +29,9 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-
+  String selectedSize = "S";
+  String size = "M";
+  List<String> sizes = ['S', 'M', 'L', 'XL'];
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -80,23 +83,32 @@ class _ProductDetailsState extends State<ProductDetails> {
                   // Extract color-image pairs from product variantsf
                   return Stack(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => FullScreenImage(imageUrl: state.product.image),
-                            ),
-                          );
-                        },
-                        child: Image.network(
-                          state.product.image,
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height,
-                          fit: BoxFit.fitWidth,
-                          alignment: Alignment.topCenter,
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: PageView.builder(
+                          itemCount: state.product.images.length,
+                          itemBuilder: (context, index) {
+                            final imageUrl = state.product.images[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => FullScreenImage(imageUrl: imageUrl),
+                                  ),
+                                );
+                              },
+                              child: Image.network(
+                                imageUrl,
+                                width: double.infinity,
+                                fit: BoxFit.fitWidth,
+                                alignment: Alignment.topCenter,
+                              ),
+                            );
+                          },
                         ),
                       ),
+
                       DraggableScrollableSheet(
                         initialChildSize: 0.4,
                         minChildSize: 0.3,
@@ -123,7 +135,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 16),
+
+                                //product card info
+                                SizedBox(height: 16*SizeConfig.verticalBlock),
                                 Text(
                                   widget.productView.name,
                                   style: TextStyle(
@@ -148,21 +162,47 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+
+
+
+                                //color info
                                 SizedBox(height: 13 * SizeConfig.verticalBlock),
                                 Text(
-                                  'Sizes :',
+                                  'Color: '+ state.product.color,
+                                  style: TextStyle(fontSize: 13 * SizeConfig.textRatio),
+                                ),
+
+
+                                //size (variants) row
+                                SizedBox(height: 10 * SizeConfig.verticalBlock),
+                                Text(
+                                  'Sizes:',
                                   style: TextStyle(fontSize: 13 * SizeConfig.textRatio),
                                 ),
                                 SizedBox(height: 5 * SizeConfig.verticalBlock),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizeWidget('S'),
-                                    SizeWidget('M'),
-                                    SizeWidget('L'),
-                                    SizeWidget('XL'),
-                                  ],
+                                  children: state.product.variants.map((variant) {
+                                    final shortLabel = context.read<ProductDetailsCubit>().getShortSize(variant.size);
+                                    final selectedSizeId = context.watch<ProductDetailsCubit>().state.selectedSizeId;
+
+                                    return Padding(
+                                      padding: EdgeInsets.only(right: 7 * SizeConfig.horizontalBlock),
+                                      child: SizeContainer(
+                                        text: shortLabel,
+                                        selected: selectedSizeId == variant.id,
+                                        onTap: () {
+                                          context.read<ProductDetailsCubit>().selectSize(variant.id);
+                                        },
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
+
+
+
+
+
 
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 ElevatedButton(
@@ -241,49 +281,17 @@ class _ProductDetailsState extends State<ProductDetails> {
 }
 
 // Helper to parse color names to Color objects
-Color _parseColor(String colorName) {
-  switch (colorName.toLowerCase()) {
-    case 'black':
-      return Colors.black;
-    case 'blue':
-      return Colors.blue[900]!;
-    case 'red':
-      return Color(0xFFA51930);
-  // Add more color mappings as needed
-    default:
-      return Colors.grey;
-  }
-}
+// Color _parseColor(String colorName) {
+//   switch (colorName.toLowerCase()) {
+//     case 'black':
+//       return Colors.black;
+//     case 'blue':
+//       return Colors.blue[900]!;
+//     case 'red':
+//       return Color(0xFFA51930);
+//   // Add more color mappings as needed
+//     default:
+//       return Colors.grey;
+//   }
+// }
 
-Widget SizeWidget(String text) {
-  bool selected=false;
-  var onTap;
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 40 * SizeConfig.horizontalBlock,
-      height: 40 * SizeConfig.horizontalBlock,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-        border: Border.all(
-          color: selected
-              ? Colors.black
-              : Colors.grey[400]!,
-          width: 2,
-        ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 16 * SizeConfig.textRatio,
-          fontWeight: FontWeight.w500,
-          color: selected
-              ?Colors.black
-              : Colors.black,
-        ),
-      ),
-    ),
-  );
-}
