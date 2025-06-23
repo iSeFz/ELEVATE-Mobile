@@ -161,7 +161,10 @@ class ProfilePage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (context) => const ChangePasswordPage(),
+                                      (context) => BlocProvider.value(
+                                        value: profileCubit,
+                                        child: const ChangePasswordPage(),
+                                      ),
                                 ),
                               );
                             },

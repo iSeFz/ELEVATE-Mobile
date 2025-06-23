@@ -1,216 +1,211 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/profile_cubit.dart';
+import '../cubits/profile_state.dart';
+import '../../../auth/presentation/screens/login_page.dart';
+import '../../../../core/utils/validations.dart';
+import '../../../../core/widgets/custom_text_form_field.dart';
 
-class ChangePasswordPage extends StatefulWidget {
+class ChangePasswordPage extends StatelessWidget {
   const ChangePasswordPage({super.key});
 
   @override
-  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
-}
-
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _currentPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  bool _obscureCurrentPassword = true;
-  bool _obscureNewPassword = true;
-  bool _obscureConfirmPassword = true;
-
-  @override
-  void dispose() {
-    _currentPasswordController.dispose();
-    _newPasswordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _toggleCurrentPasswordVisibility() {
-    setState(() {
-      _obscureCurrentPassword = !_obscureCurrentPassword;
-    });
-  }
-
-  void _toggleNewPasswordVisibility() {
-    setState(() {
-      _obscureNewPassword = !_obscureNewPassword;
-    });
-  }
-
-  void _toggleConfirmPasswordVisibility() {
-    setState(() {
-      _obscureConfirmPassword = !_obscureConfirmPassword;
-    });
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your password';
-    }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters';
-    }
-    // Add more complex validation if needed (e.g., regex for uppercase, lowercase, number, special char)
-    return null;
-  }
-
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please confirm your new password';
-    }
-    if (value != _newPasswordController.text) {
-      return 'Passwords do not match';
-    }
-    return null;
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // Process password change
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password changed successfully!'),
-        ), // Placeholder
-      );
-      // TODO: Implement actual password change logic (e.g., API call)
-      Navigator.pop(context);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final profileCubit = context.read<ProfileCubit>();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-        centerTitle: true,
-        backgroundColor: theme.scaffoldBackgroundColor,
-        elevation: 0,
-        iconTheme: IconThemeData(color: theme.textTheme.titleLarge?.color),
-        titleTextStyle: TextStyle(
-          color: theme.textTheme.titleLarge?.color,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+    return BlocListener<ProfileCubit, ProfileState>(
+      listener: (context, state) {
+        if (state is PasswordChanged) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(height: screenHeight * 0.02),
+                    CircleAvatar(
+                      backgroundColor: theme.colorScheme.primary,
+                      radius: screenWidth * 0.1,
+                      child: Icon(
+                        Icons.check_circle_outlined,
+                        color: Colors.white,
+                        size: screenWidth * 0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Success!',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: theme.textTheme.bodyMedium,
+                        children: [
+                          const TextSpan(
+                            text: 'A verification link is sent to\n',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                profileCubit.changePasswordEmailController.text,
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const TextSpan(
+                            text:
+                                '\n\nPlease follow the instructions in the email to change your password.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                actionsAlignment: MainAxisAlignment.center,
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.01,
+                        horizontal: screenWidth * 0.1,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      // Log out the user after password change
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginPage(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'OK',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        } else if (state is ProfileError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Change Password',
+            style: TextStyle(
+              color: theme.colorScheme.secondary,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          centerTitle: true,
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.07,
-          vertical: screenHeight * 0.03,
-        ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Text(
-                'Enter your current password and set a new one.',
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: screenHeight * 0.04),
-              TextFormField(
-                controller: _currentPasswordController,
-                obscureText: _obscureCurrentPassword,
-                decoration: InputDecoration(
-                  labelText: 'Current Password',
-                  hintText: 'Enter your current password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureCurrentPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: _toggleCurrentPasswordVisibility,
-                  ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.07,
+            vertical: screenHeight * 0.03,
+          ),
+          child: Form(
+            key: profileCubit.changePasswordFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                // Lock Icon
+                Icon(
+                  Icons.lock_open_rounded,
+                  size: screenWidth * 0.2,
+                  color: theme.colorScheme.primary,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your current password';
-                  }
-                  // TODO: Add validation against actual current password
-                  return null;
-                },
-              ),
-              SizedBox(height: screenHeight * 0.025),
-              TextFormField(
-                controller: _newPasswordController,
-                obscureText: _obscureNewPassword,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  hintText: 'Enter your new password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureNewPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: _toggleNewPasswordVisibility,
-                  ),
+                SizedBox(height: screenHeight * 0.035),
+                // Change Password Instructions
+                Text(
+                  'Enter email to receive a verification link',
+                  style: theme.textTheme.titleMedium,
+                  textAlign: TextAlign.center,
                 ),
-                validator: _validatePassword,
-              ),
-              SizedBox(height: screenHeight * 0.01),
-              Text(
-                'Password must be at least 8 characters long.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.hintColor,
+                SizedBox(height: screenHeight * 0.035),
+                // Email Field
+                CustomTextFormField(
+                  keyboardType: TextInputType.text,
+                  label: 'Email',
+                  hint: 'Enter your email',
+                  validationFunc: validateEmail,
+                  controller: profileCubit.changePasswordEmailController,
                 ),
-              ),
-              SizedBox(height: screenHeight * 0.025),
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: _obscureConfirmPassword,
-                decoration: InputDecoration(
-                  labelText: 'Confirm New Password',
-                  hintText: 'Re-enter your new password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: _toggleConfirmPasswordVisibility,
-                  ),
+                SizedBox(height: screenHeight * 0.035),
+                // Change Password Button
+                BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        padding: EdgeInsets.symmetric(
+                          vertical: screenHeight * 0.018,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        textStyle: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                      ),
+                      onPressed: profileCubit.submitChangePassword,
+                      child:
+                          state is ProfileLoading
+                              ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: theme.colorScheme.onPrimary,
+                                ),
+                              )
+                              : Text(
+                                'Change Password',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onPrimary,
+                                ),
+                              ),
+                    );
+                  },
                 ),
-                validator: _validateConfirmPassword,
-              ),
-              SizedBox(height: screenHeight * 0.05),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  textStyle: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                ),
-                onPressed: _submitForm,
-                child: Text(
-                  'Update Password',
-                  style: TextStyle(color: theme.colorScheme.onPrimary),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
