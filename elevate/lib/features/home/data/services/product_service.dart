@@ -2,27 +2,35 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product_card_model.dart';
 import '../models/product_details_model.dart';
+import '../../../../core/constants/constants.dart';
 
 class ProductService {
-  static String baseUrl = "https://elevate-gp.vercel.app/api/v1/";
+  // Retrieve a single page of products
+  Future<List<ProductCardModel>> getProductPage(int pageNumber) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products?page=$pageNumber'),
+      );
 
-  static Future<List<ProductCardModel>> getAllProductsCards() async {
-    final response = await http.get(Uri.parse('$baseUrl/products'));
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = json.decode(response.body);
-
-      final List<dynamic> productsJson = jsonResponse['data'];
-      return productsJson
-          .map((json) => ProductCardModel.fromJson(json))
-          .toList();
-    } else {
-      throw Exception('Failed to load products');
+      if (response.statusCode == 200) {
+        final List<dynamic> productsJson = jsonResponse['data'];
+        return productsJson
+            .map((json) => ProductCardModel.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      throw Exception('Error fetching products: $e');
     }
   }
 
   static Future<ProductDetailsModel> getProductDetails(String productId) async {
-    final response = await http.get(Uri.parse('$baseUrl/products/$productId'));
+    final response = await http.get(
+      Uri.parse('$apiBaseURL/v1/products/$productId'),
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
@@ -35,14 +43,6 @@ class ProductService {
   static Future<List<ProductCardModel>> getRelatedProducts(
     String productId,
   ) async {
-    final url = 'https://AEZ0KDU74P.algolia.net/1/indexes/*/recommendations';
-
-    final headers = {
-      'X-Algolia-Application-Id': 'AEZ0KDU74P',
-      'X-Algolia-API-Key': 'ad4de708ee025e45a75f2019d8a44280',
-      'Content-Type': 'application/json',
-    };
-
     final body = {
       "requests": [
         {
@@ -52,21 +52,30 @@ class ProductService {
           "threshold": 0,
           "maxRecommendations": 5,
           "queryParameters": {
-            "attributesToRetrieve": ["objectID", "brandName", "name", "variants"]
-          }
+            "attributesToRetrieve": [
+              "objectID",
+              "brandName",
+              "name",
+              "variants",
+            ],
+          },
         },
       ],
     };
 
     try {
       final response = await http.post(
-        Uri.parse(url),
-        headers: headers,
+        Uri.parse(algoliaBaseURL),
+        headers: {
+          algoliaAppIDHeader: algoliaAppIDValue,
+          algoliaAPIKeyHeader: algoliaAPIKeyValue,
+          'Content-Type': 'application/json',
+        },
         body: json.encode(body),
       );
       print(response.body);
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse.containsKey('results') &&
             jsonResponse['results'].isNotEmpty &&
