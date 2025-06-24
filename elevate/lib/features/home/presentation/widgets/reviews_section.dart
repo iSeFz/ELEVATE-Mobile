@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/rate_card.dart';
-import '../../data/models/review_model.dart';
 import '../cubits/review_cubit.dart';
 import '../cubits/review_state.dart';
 import '../screens/reviews_page.dart';

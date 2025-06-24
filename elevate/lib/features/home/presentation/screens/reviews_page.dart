@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/widgets/rate_card.dart';
 
 class ReviewsBar extends StatefulWidget {
   const ReviewsBar({super.key});

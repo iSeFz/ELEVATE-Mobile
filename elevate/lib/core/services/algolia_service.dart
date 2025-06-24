@@ -12,5 +12,4 @@ class AlgoliaService {
     print('Algolia search results: ${results.hits.length} hits for query "$query"');
     return results.hits.map((hit) => hit.data).toList();
   }
-
 }
