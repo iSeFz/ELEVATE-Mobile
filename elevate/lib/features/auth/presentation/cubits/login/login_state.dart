@@ -37,3 +37,13 @@ class LoginPasswordVisibilityChanged extends LoginState {
   final bool isPasswordVisible;
   LoginPasswordVisibilityChanged({required this.isPasswordVisible});
 }
+
+// --- Forgot Password Related States ---
+class ForgotPasswordLoading extends LoginState{}
+
+class PasswordResetSuccess extends LoginState{}
+
+class ForgotPasswordError extends LoginState {
+  final String message;
+  ForgotPasswordError({required this.message});
+}

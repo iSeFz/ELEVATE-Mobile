@@ -156,4 +156,23 @@ class AuthService {
       );
     }
   }
+
+  // Reset the password for the user with the provided email
+  Future<bool> forgotPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$apiBaseURL/v1/utilities/send-password-reset"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          testAuthHeader: testAuthValue,
+        },
+        body: json.encode({'email': email}),
+      );
+
+      // Return true if the password reset request was successful
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Error changing password: $e');
+    }
+  }
 }
