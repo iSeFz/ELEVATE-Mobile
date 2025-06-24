@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../features/home/data/models/review_model.dart';
+import '../utils/size_config.dart';
+
 class RateCard extends StatelessWidget {
-  final String username;
-  final String avatarUrl;
-  final String comment;
-  final int stars;
+  final ReviewModel review;
+
 
   const RateCard({
     super.key,
-    required this.username,
-    required this.avatarUrl,
-    required this.comment,
-    required this.stars,
+    required this.review
   });
 
   @override
@@ -22,29 +20,52 @@ class RateCard extends StatelessWidget {
         // Comment box
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(
-            top: 24,
-            left: 12,
-            right: 12,
-            bottom: 16,
+          padding:  EdgeInsets.only(
+            top: 24*SizeConfig.verticalBlock,
+            left: 12*SizeConfig.horizontalBlock,
+            right: 12*SizeConfig.horizontalBlock,
+            bottom: 16*SizeConfig.verticalBlock,
           ),
-          margin: const EdgeInsets.only(top: 16),
+          margin:  EdgeInsets.only(top: 16*SizeConfig.verticalBlock),
           decoration: BoxDecoration(
             color: const Color(0xFFF2F2F2),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey[300]!, width: 0.5),
           ),
-          child: Text(
-            comment,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 12 * SizeConfig.horizontalBlock, // Padding from left and right
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(bottom: 8 * SizeConfig.verticalBlock),
+                  child: Text(
+                    review.title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14 * SizeConfig.textRatio,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  review.content,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12 * SizeConfig.textRatio,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
+
         ),
 
-        // Avatar + Username box
+
+      // Avatar + Username box
         Positioned(
           top: -5,
           left: 0,
@@ -55,12 +76,12 @@ class RateCard extends StatelessWidget {
               // alignment: Alignment.centerLeft,
               children: [
                 CircleAvatar(
-                  radius: 18,
-                  backgroundImage: NetworkImage(avatarUrl),
+                  radius: 18*SizeConfig.verticalBlock,
+                  backgroundImage: NetworkImage(review.customerImageURL),
                 ),
                 // SizedBox(width: 46),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: EdgeInsets.symmetric(horizontal: 6*SizeConfig.horizontalBlock, vertical: 2*SizeConfig.verticalBlock),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: const BorderRadius.only(
@@ -77,8 +98,8 @@ class RateCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    username,
-                    style: TextStyle(fontSize: 10, color: Color(0xFF160202)),
+                    review.customerFirstName + ' ' + review.customerLastName[0] + '.',
+                    style: TextStyle(fontSize: 10*SizeConfig.textRatio, color: Color(0xFF160202)),
                   ),
                 ),
               ],
@@ -91,7 +112,7 @@ class RateCard extends StatelessWidget {
           top: 5,
           right: 3,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            padding:  EdgeInsets.symmetric(horizontal: 6*SizeConfig.horizontalBlock, vertical: 4*SizeConfig.verticalBlock),
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(12),
@@ -101,13 +122,13 @@ class RateCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ...List.generate(
-                  stars,
-                  (index) => Icon(Icons.star, size: 12, color: Colors.amber),
+                  review.rating,
+                  (index) => Icon(Icons.star, size: 12*SizeConfig.verticalBlock, color: Colors.amber),
                 ),
                 ...List.generate(
-                  5 - stars,
+                  5 - review.rating,
                   (index) =>
-                      Icon(Icons.star, size: 12, color: Colors.grey[300]!),
+                      Icon(Icons.star, size: 12*SizeConfig.verticalBlock, color: Colors.grey[300]!),
                 ),
               ],
             ),
