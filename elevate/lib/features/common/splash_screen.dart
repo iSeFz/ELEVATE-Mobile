@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/services/local_database_service.dart';
 import '../auth/presentation/screens/login_page.dart';
+import 'main_page.dart';
 
 // Splash screen at the start of the app.
 class SplashScreen extends StatefulWidget {
@@ -26,23 +28,38 @@ class _SplashScreenState extends State<SplashScreen> {
         _showLogo = true;
       });
     }
+
     // Wait for logo to appear then navigate
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder:
-              (context, animation, secondaryAnimation) => const LoginPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(seconds: 2),
-        ),
-      );
+      final customer = LocalDatabaseService.getCustomer();
+      if (customer != null) {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => MainPage(customer: customer),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

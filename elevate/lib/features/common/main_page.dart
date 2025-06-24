@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/services/local_database_service.dart';
 import '../search/presentation/screens/search_page.dart';
 import '/../core/utils/size_config.dart';
 import '../auth/data/models/customer.dart';
@@ -11,7 +12,6 @@ import '../profile/presentation/screens/profile_page.dart';
 class MainPage extends StatefulWidget {
   final Customer customer;
   const MainPage({super.key, required this.customer});
-
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -24,10 +24,12 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    LocalDatabaseService.saveCustomer(widget.customer);
+
     _pageController = PageController(initialPage: _selectedIndex);
     _pages = [
       HomePage(),
-      SearchPage(),
+      // SearchPage(),
       CartPage(userId: widget.customer.id!),
       WishlistPage(userID: widget.customer.id!),
       ProfilePage(customer: widget.customer),
