@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubits/profile_cubit.dart';
-import '../cubits/profile_state.dart';
+import '../cubits/login/login_cubit.dart';
+import '../cubits/login/login_state.dart';
 import '../../../auth/presentation/screens/login_page.dart';
 import '../../../../core/utils/validations.dart';
 import '../../../../core/widgets/custom_text_form_field.dart';
 
-class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
+class ForgotPasswordPage extends StatelessWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final profileCubit = context.read<ProfileCubit>();
+    final loginCubit = context.read<LoginCubit>();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final theme = Theme.of(context);
 
-    return BlocListener<ProfileCubit, ProfileState>(
+    return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
-        if (state is PasswordChanged) {
+        if (state is PasswordResetSuccess) {
           showDialog(
             context: context,
             builder: (context) {
@@ -58,8 +58,7 @@ class ChangePasswordPage extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text:
-                                profileCubit.changePasswordEmailController.text,
+                            text: loginCubit.forgotPasswordEmailController.text,
                             style: TextStyle(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.bold,
@@ -68,7 +67,7 @@ class ChangePasswordPage extends StatelessWidget {
                           ),
                           const TextSpan(
                             text:
-                                '\n\nPlease follow the instructions in the email to change your password.',
+                                '\n\nPlease follow the instructions in the email to reset your password.',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
@@ -93,7 +92,6 @@ class ChangePasswordPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      // Log out the user after password change and clear navigation stack
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
@@ -115,7 +113,7 @@ class ChangePasswordPage extends StatelessWidget {
               );
             },
           );
-        } else if (state is ProfileError) {
+        } else if (state is ForgotPasswordError) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -124,7 +122,7 @@ class ChangePasswordPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Change Password',
+            'Forgot Password',
             style: TextStyle(
               color: theme.colorScheme.secondary,
               fontSize: 24,
@@ -140,20 +138,20 @@ class ChangePasswordPage extends StatelessWidget {
             vertical: screenHeight * 0.03,
           ),
           child: Form(
-            key: profileCubit.changePasswordFormKey,
+            key: loginCubit.forgotPasswordFormKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 // Lock Icon
                 Icon(
-                  Icons.lock_open_rounded,
+                  Icons.lock_reset_rounded,
                   size: screenWidth * 0.2,
                   color: theme.colorScheme.primary,
                 ),
                 SizedBox(height: screenHeight * 0.035),
-                // Change Password Instructions
+                // Forgot Password Instructions
                 Text(
-                  'Enter email to receive a verification link',
+                  'Enter email to recover your account',
                   style: theme.textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -164,11 +162,11 @@ class ChangePasswordPage extends StatelessWidget {
                   label: 'Email',
                   hint: 'Enter your email',
                   validationFunc: validateEmail,
-                  controller: profileCubit.changePasswordEmailController,
+                  controller: loginCubit.forgotPasswordEmailController,
                 ),
                 SizedBox(height: screenHeight * 0.035),
-                // Change Password Button
-                BlocBuilder<ProfileCubit, ProfileState>(
+                // Forgot Password Button
+                BlocBuilder<LoginCubit, LoginState>(
                   builder: (context, state) {
                     return ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -185,9 +183,9 @@ class ChangePasswordPage extends StatelessWidget {
                           color: theme.colorScheme.onPrimary,
                         ),
                       ),
-                      onPressed: profileCubit.submitChangePassword,
+                      onPressed: loginCubit.submitForgotPassword,
                       child:
-                          state is ProfileLoading
+                          state is ForgotPasswordLoading
                               ? SizedBox(
                                 height: 20,
                                 width: 20,
@@ -197,7 +195,7 @@ class ChangePasswordPage extends StatelessWidget {
                                 ),
                               )
                               : Text(
-                                'Change Password',
+                                'Send recovery link',
                                 style: TextStyle(
                                   color: theme.colorScheme.onPrimary,
                                 ),

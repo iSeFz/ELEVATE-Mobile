@@ -7,6 +7,7 @@ import '../../../../core/widgets/custom_text_form_field.dart';
 import '../../../common/main_page.dart';
 import '../../../../core/utils/validations.dart';
 import 'sign_up_page.dart';
+import 'forgot_password_page.dart';
 
 // Login Page
 class LoginPage extends StatelessWidget {
@@ -110,8 +111,8 @@ class LoginPage extends StatelessWidget {
                           CustomTextFormField(
                             controller: loginCubit.emailController,
                             keyboardType: TextInputType.text,
-                            label: 'Email or Phone Number',
-                            hint: 'Enter your email or phone number',
+                            label: 'Email',
+                            hint: 'Enter your email',
                             validationFunc: validateEmailNPhoneNumber,
                           ),
                           const SizedBox(height: 20),
@@ -136,6 +137,33 @@ class LoginPage extends StatelessWidget {
                                 ),
                               );
                             },
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.all(0),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => BlocProvider.value(
+                                          value: loginCubit,
+                                          child: const ForgotPasswordPage(),
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Forgot your password?',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 15),
                           BlocBuilder<LoginCubit, LoginState>(
@@ -272,7 +300,7 @@ class LoginPage extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: 'Sign Up',
+                                  text: 'Register Now',
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.primary,
