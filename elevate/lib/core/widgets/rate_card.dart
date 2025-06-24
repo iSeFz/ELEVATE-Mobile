@@ -4,15 +4,12 @@ import '../../features/home/data/models/review_model.dart';
 import '../utils/size_config.dart';
 
 class RateCard extends StatelessWidget {
-  final String username;
-  final String avatarUrl;
   final ReviewModel review;
+
 
   const RateCard({
     super.key,
-    required this.review,
-    required this.username,
-    required this.avatarUrl,
+    required this.review
   });
 
   @override
@@ -35,17 +32,40 @@ class RateCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey[300]!, width: 0.5),
           ),
-          child: Text(
-            review.content,
-            style:  TextStyle(
-              color: Colors.black,
-              fontSize: 12*SizeConfig.textRatio,
-              fontWeight: FontWeight.w500,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 12 * SizeConfig.horizontalBlock, // Padding from left and right
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(bottom: 8 * SizeConfig.verticalBlock),
+                  child: Text(
+                    review.title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14 * SizeConfig.textRatio,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  review.content,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12 * SizeConfig.textRatio,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
+
         ),
 
-        // Avatar + Username box
+
+      // Avatar + Username box
         Positioned(
           top: -5,
           left: 0,
@@ -57,7 +77,7 @@ class RateCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18*SizeConfig.verticalBlock,
-                  backgroundImage: NetworkImage(avatarUrl),
+                  backgroundImage: NetworkImage(review.customerImageURL),
                 ),
                 // SizedBox(width: 46),
                 Container(
@@ -78,7 +98,7 @@ class RateCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    username,
+                    review.customerFirstName + ' ' + review.customerLastName[0] + '.',
                     style: TextStyle(fontSize: 10*SizeConfig.textRatio, color: Color(0xFF160202)),
                   ),
                 ),

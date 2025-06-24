@@ -7,7 +7,7 @@ import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
 import '../widgets/reviews_section.dart';
-import 'reviews.dart';
+import 'reviews_page.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/rate_card.dart';
 import '../../../../core/widgets/full_screen_image.dart';
@@ -139,7 +139,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //product card info
                                 SizedBox(height: 16*SizeConfig.verticalBlock),
                                 Text(
-                                  widget.productView.name,
+                                  widget.productView.name + ' - ' + widget.productView.id,
                                   style: TextStyle(
                                     fontSize: 18 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -173,7 +173,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
 
 
-                                //size (variants) row
+                                //sizes (variants) row
                                 SizedBox(height: 10 * SizeConfig.verticalBlock),
                                 Text(
                                   'Sizes:',
@@ -234,10 +234,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),
 
                                 //reviews section
-                                // ReviewsSection(
-                                //   // productId: widget.productId,
-                                //   // userId: widget.userId,
-                                // ),
+                                ReviewsSection(
+                                  productId: state.product.id,
+                                  userId: widget.userId,
+                                ),
 
 
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),

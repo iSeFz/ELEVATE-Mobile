@@ -33,16 +33,6 @@ class ProductService {
       throw Exception('Failed to load product details');
     }
   }
-  static Future<ReviewModel> getProductReviews (String productId) async {
-    final response = await http.get(Uri.parse('$baseUrl/products/$productId/reviews'));
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      return ReviewModel.fromJson(jsonResponse['data']);
-    } else {
-      throw Exception('Failed to load product details');
-    }
-  }
 
   // XXSmall
   // XSmall
