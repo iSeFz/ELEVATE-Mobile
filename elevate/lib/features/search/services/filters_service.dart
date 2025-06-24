@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:elevate/features/home/data/models/review_model.dart';
-import 'package:elevate/features/home/presentation/screens/product_details_page.dart';
 import 'package:http/http.dart' as http;
 
 class filterService {
