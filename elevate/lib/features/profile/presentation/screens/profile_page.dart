@@ -217,6 +217,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                         onPressed: () {
                           signOutGoogle();
+                          profileCubit.logout();
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
