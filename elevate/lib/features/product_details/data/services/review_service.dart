@@ -53,7 +53,7 @@ class ReviewService {
   static Future<void> updateProductReview(ReviewModel review) async {
     try {
       final response = await http.put(
-        Uri.parse('$apiBaseURL/v1/reviews/{id}${review.id}?userId=${review.customerId}'),
+        Uri.parse('$apiBaseURL/v1/reviews/${review.id}?userId=${review.customerId}'),
         headers: {
           'Content-Type': 'application/json',
           testAuthHeader: testAuthValue,

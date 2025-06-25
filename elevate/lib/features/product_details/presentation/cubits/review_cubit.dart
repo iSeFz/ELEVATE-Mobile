@@ -64,7 +64,7 @@ Future<void> createReview(ReviewModel review ) async {
 
       emit(ReviewSuccess());
     } catch (e) {
-      emit(ReviewError(e.toString()));
+      emit(ReviewError(e.toString()+'uuu'));
     }
   }
 
