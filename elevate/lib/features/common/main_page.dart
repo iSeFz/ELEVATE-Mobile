@@ -6,7 +6,6 @@ import '../auth/data/models/customer.dart';
 import '../product_details/presentation/screens/home_page.dart';
 import '../wishlist/presentation/screens/wishlist_page.dart';
 import '../cart/presentation/screens/cart_page.dart';
-import '../notification/presentation/screens/notifications_page.dart';
 import '../profile/presentation/screens/profile_page.dart';
 
 class MainPage extends StatefulWidget {

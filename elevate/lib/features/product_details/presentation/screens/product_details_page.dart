@@ -1,5 +1,3 @@
-import 'package:elevate/features/product_details/presentation/widgets/about_section.dart';
-import 'package:elevate/features/product_details/presentation/widgets/size_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
@@ -7,9 +5,7 @@ import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
 import '../widgets/reviews_section.dart';
-import 'reviews_page.dart';
 import '../../../../core/utils/size_config.dart';
-import '../../../../core/widgets/rate_card.dart';
 import '../../../../core/widgets/full_screen_image.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -36,12 +32,8 @@ class _ProductDetailsState extends State<ProductDetails> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<WishlistCubit>(
-          create: (context) => WishlistCubit(),
-        ),
-        BlocProvider<ProductDetailsCubit>(
-          create: (_) => ProductDetailsCubit(),
-        ),
+        BlocProvider<WishlistCubit>(create: (context) => WishlistCubit()),
+        BlocProvider<ProductDetailsCubit>(create: (_) => ProductDetailsCubit()),
       ],
       child: Builder(
         builder: (context) {
@@ -75,7 +67,9 @@ class _ProductDetailsState extends State<ProductDetails> {
             body: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
               builder: (context, state) {
                 if (state is ProductDetailsInitial) {
-                  context.read<ProductDetailsCubit>().fetchProductDetials(widget.productId);
+                  context.read<ProductDetailsCubit>().fetchProductDetials(
+                    widget.productId,
+                  );
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ProductDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
@@ -94,7 +88,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => FullScreenImage(imageUrl: imageUrl),
+                                    builder:
+                                        (_) =>
+                                            FullScreenImage(imageUrl: imageUrl),
                                   ),
                                 );
                               },
@@ -115,11 +111,20 @@ class _ProductDetailsState extends State<ProductDetails> {
                         maxChildSize: 0.9,
                         builder: (context, scrollController) {
                           return Container(
-                            padding: EdgeInsets.all(16 * SizeConfig.verticalBlock),
+                            padding: EdgeInsets.all(
+                              16 * SizeConfig.verticalBlock,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-                              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
+                                ),
+                              ],
                             ),
                             child: ListView(
                               controller: scrollController,
@@ -137,9 +142,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
 
                                 //product card info
-                                SizedBox(height: 16*SizeConfig.verticalBlock),
+                                SizedBox(height: 16 * SizeConfig.verticalBlock),
                                 Text(
-                                  widget.productView.name + ' - ' + widget.productView.id,
+                                  widget.productView.name +
+                                      ' - ' +
+                                      widget.productView.id,
                                   style: TextStyle(
                                     fontSize: 18 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -156,53 +163,62 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 12 * SizeConfig.verticalBlock),
                                 Text(
-                                  'EGP '+state.product.price.toString(),
+                                  'EGP ' + state.product.price.toString(),
                                   style: TextStyle(
                                     fontSize: 20 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
 
-
-
                                 //color info
                                 SizedBox(height: 13 * SizeConfig.verticalBlock),
                                 Text(
-                                  'Color: '+ state.product.color,
-                                  style: TextStyle(fontSize: 13 * SizeConfig.textRatio),
+                                  'Color: ' + state.product.color,
+                                  style: TextStyle(
+                                    fontSize: 13 * SizeConfig.textRatio,
+                                  ),
                                 ),
-
 
                                 //sizes (variants) row
                                 SizedBox(height: 10 * SizeConfig.verticalBlock),
                                 Text(
                                   'Sizes:',
-                                  style: TextStyle(fontSize: 13 * SizeConfig.textRatio),
+                                  style: TextStyle(
+                                    fontSize: 13 * SizeConfig.textRatio,
+                                  ),
                                 ),
                                 SizedBox(height: 5 * SizeConfig.verticalBlock),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  children: state.product.variants.map((variant) {
-                                    final shortLabel = context.read<ProductDetailsCubit>().getShortSize(variant.size);
-                                    final selectedSizeId = context.watch<ProductDetailsCubit>().state.selectedSizeId;
+                                  children:
+                                      state.product.variants.map((variant) {
+                                        final shortLabel = context
+                                            .read<ProductDetailsCubit>()
+                                            .getShortSize(variant.size);
+                                        final selectedSizeId =
+                                            context
+                                                .watch<ProductDetailsCubit>()
+                                                .state
+                                                .selectedSizeId;
 
-                                    return Padding(
-                                      padding: EdgeInsets.only(right: 7 * SizeConfig.horizontalBlock),
-                                      child: SizeContainer(
-                                        text: shortLabel,
-                                        selected: selectedSizeId == variant.id,
-                                        onTap: () {
-                                          context.read<ProductDetailsCubit>().selectSize(variant.id);
-                                        },
-                                      ),
-                                    );
-                                  }).toList(),
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                            right:
+                                                7 * SizeConfig.horizontalBlock,
+                                          ),
+                                          child: SizeContainer(
+                                            text: shortLabel,
+                                            selected:
+                                                selectedSizeId == variant.id,
+                                            onTap: () {
+                                              context
+                                                  .read<ProductDetailsCubit>()
+                                                  .selectSize(variant.id);
+                                            },
+                                          ),
+                                        );
+                                      }).toList(),
                                 ),
-
-
-
-
-
 
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 ElevatedButton(
@@ -227,9 +243,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),
                                 //about prod
-                                AboutSection(
-                                  product: state.product,
-                                ),
+                                AboutSection(product: state.product),
 
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),
 
@@ -239,26 +253,74 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   userId: widget.userId,
                                 ),
 
-
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 Padding(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 8.0 * SizeConfig.horizontalBlock,
-
+                                    horizontal:
+                                        8.0 * SizeConfig.horizontalBlock,
                                   ),
                                   child: Text(
-                                    "You might like",
+                                    "Related Products",
                                     style: TextStyle(
                                       fontSize: 18 * SizeConfig.textRatio,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                Row(
-                                  children: [
-                                    // Add recommended ProductCards here
-                                  ],
+                                SizedBox(height: 10 * SizeConfig.verticalBlock),
+                                SizedBox(
+                                  height:
+                                      350 *
+                                      SizeConfig
+                                          .verticalBlock, // Increased height to prevent overflow
+                                  child:
+                                      state.relatedProducts != null &&
+                                              state.relatedProducts!.isNotEmpty
+                                          ? ListView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  8.0 *
+                                                  SizeConfig.horizontalBlock,
+                                            ),
+                                            itemCount:
+                                                state.relatedProducts!.length,
+                                            itemBuilder: (context, index) {
+                                              return Padding(
+                                                padding: EdgeInsets.only(
+                                                  right:
+                                                      12 *
+                                                      SizeConfig
+                                                          .horizontalBlock,
+                                                ),
+                                                child: SizedBox(
+                                                  width:
+                                                      180 *
+                                                      SizeConfig
+                                                          .horizontalBlock,
+                                                  height:
+                                                      320 *
+                                                      SizeConfig.verticalBlock,
+                                                  child: ProductCard(
+                                                    product:
+                                                        state
+                                                            .relatedProducts![index],
+                                                    userId: widget.userId,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          )
+                                          : Center(
+                                            child: Text(
+                                              "Loading related products...",
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize:
+                                                    14 * SizeConfig.textRatio,
+                                              ),
+                                            ),
+                                          ),
                                 ),
                               ],
                             ),
@@ -294,4 +356,3 @@ class _ProductDetailsState extends State<ProductDetails> {
 //       return Colors.grey;
 //   }
 // }
-

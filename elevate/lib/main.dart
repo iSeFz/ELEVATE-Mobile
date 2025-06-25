@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
     return MaterialApp(
       title: 'ELEVATE',
       theme: ThemeData(
@@ -28,7 +27,12 @@ class MyApp extends StatelessWidget {
           tertiary: Color(0xFFE8BBC2),
         ),
       ),
-      home: SplashScreen(),
+      home: Builder(
+        builder: (context) {
+          SizeConfig().init(context);
+          return SplashScreen();
+        },
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

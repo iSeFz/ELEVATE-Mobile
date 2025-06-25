@@ -18,6 +18,11 @@ class LoginCubit extends Cubit<LoginState> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  // Fields for forgot password
+  final GlobalKey<FormState> forgotPasswordFormKey = GlobalKey<FormState>();
+  final TextEditingController forgotPasswordEmailController =
+      TextEditingController();
+
   LoginCubit() : super(LoginInitial(isPasswordVisible: false));
 
   // Dispose controllers
@@ -94,6 +99,31 @@ class LoginCubit extends Cubit<LoginState> {
           isPasswordVisible: _isPasswordVisible,
         ),
       );
+    }
+  }
+
+  // --- Forgot Password Related Methods ---
+
+  // Forgot password and send a reset email
+  Future<void> forgotPassword(String validEmail) async {
+    emit(ForgotPasswordLoading());
+    try {
+      // Call the service to reset the password
+      if (await _authService.forgotPassword(validEmail)) {
+        emit(PasswordResetSuccess());
+      } else {
+        emit(ForgotPasswordError(message: "Failed to reset password."));
+      }
+    } catch (e) {
+      emit(ForgotPasswordError(message: e.toString()));
+    }
+  }
+
+  // Submit the forgot password form
+  void submitForgotPassword() {
+    if (forgotPasswordFormKey.currentState!.validate()) {
+      forgotPasswordFormKey.currentState!.save();
+      forgotPassword(forgotPasswordEmailController.text);
     }
   }
 }

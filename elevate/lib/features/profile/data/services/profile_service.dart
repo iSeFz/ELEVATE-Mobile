@@ -77,4 +77,23 @@ class ProfileService {
       throw Exception('Error updating profile image: $e');
     }
   }
+
+  // Change the password through redirecting the user to email for password update
+  Future<bool> changePassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$apiBaseURL/v1/utilities/send-password-reset"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          testAuthHeader: testAuthValue,
+        },
+        body: json.encode({'email': email}),
+      );
+
+      // Return true if the password change request was successful
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Error changing password: $e');
+    }
+  }
 }

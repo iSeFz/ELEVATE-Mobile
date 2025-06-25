@@ -17,6 +17,16 @@ class ProfileError extends ProfileState {
   ProfileError({required this.message});
 }
 
+class PasswordChanged extends ProfileState {}
+
+class ChangePasswordVisibilityChanged extends ProfileState {
+  final bool isCurrentPasswordVisible;
+
+  ChangePasswordVisibilityChanged({
+    required this.isCurrentPasswordVisible,
+  });
+}
+
 // --- Address Related States ---
 class AddressLoading extends ProfileState {}
 

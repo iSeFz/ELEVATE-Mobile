@@ -34,6 +34,11 @@ class ProfileCubit extends Cubit<ProfileState> {
   final TextEditingController buildingController = TextEditingController();
   final TextEditingController postalCodeController = TextEditingController();
 
+  // Change password form key and controllers
+  final GlobalKey<FormState> changePasswordFormKey = GlobalKey<FormState>();
+  final TextEditingController changePasswordEmailController =
+      TextEditingController();
+
   // Getters for easier access to customer data
   Customer? get customer => _customer;
   List<UserAddress> get addresses => _addresses;
@@ -169,6 +174,41 @@ class ProfileCubit extends Cubit<ProfileState> {
       } catch (e) {
         emit(ProfileError(message: e.toString()));
       }
+    }
+  }
+
+  // --- Change Password Related Methods ---
+
+  // Change password method
+  Future<void> changePassword(String validEmail) async {
+    emit(ProfileLoading());
+    if (_customer?.email != validEmail) {
+      emit(
+        ProfileError(message: "Email is not available for password change."),
+      );
+      return;
+    }
+    try {
+      // Call the service to change the password
+      bool isChanged = await _profileService.changePassword(validEmail);
+
+      if (isChanged) {
+        emit(PasswordChanged());
+      } else {
+        emit(ProfileError(message: "Failed to change password."));
+      }
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Submit the change password form
+  void submitChangePassword() {
+    if (changePasswordFormKey.currentState!.validate()) {
+      changePasswordFormKey.currentState!.save();
+      changePassword(
+        changePasswordEmailController.text,
+      );
     }
   }
 
