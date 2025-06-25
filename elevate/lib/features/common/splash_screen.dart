@@ -33,24 +33,30 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
-      final customer = LocalDatabaseService.getCustomer();
-      if (customer != null) {
+      try {
+        final customer = LocalDatabaseService.getCustomer();
+        if (customer != null) {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  MainPage(customer: customer),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => MainPage(customer: customer),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(seconds: 2),
-          ),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            pageBuilder: (context, animation, secondaryAnimation) =>
+            const LoginPage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
             transitionDuration: const Duration(seconds: 2),
@@ -59,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     }
   }
+
 
 
   @override
