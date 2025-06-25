@@ -24,13 +24,13 @@ class CustomerAdapter extends TypeAdapter<Customer> {
       username: fields[4] as String?,
       imageURL: fields[5] as String?,
       loyaltyPoints: fields[6] as int?,
-    );
+    )..token = fields[7] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Customer obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +44,9 @@ class CustomerAdapter extends TypeAdapter<Customer> {
       ..writeByte(5)
       ..write(obj.imageURL)
       ..writeByte(6)
-      ..write(obj.loyaltyPoints);
+      ..write(obj.loyaltyPoints)
+      ..writeByte(7)
+      ..write(obj.token);
   }
 
   @override
