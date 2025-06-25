@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../cubits/review_cubit.dart';
+import '../cubits/review_state.dart';
 import '../widgets/rate_card.dart';
 import 'create_review_page.dart';
 
@@ -37,18 +38,25 @@ class ReviewsPage extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24* SizeConfig.horizontalBlock, vertical: 26* SizeConfig.verticalBlock),
-        child: Column(
-          children: reviews.map((review) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: RateCard(review: review),
-            );
-          }).toList(),
-        ),
+      body:  BlocBuilder<ReviewCubit, ReviewState>(
+      builder: (context, state) {
+        List<ReviewModel> reviews = context.read<ReviewCubit>().reviews;
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24 * SizeConfig.horizontalBlock, vertical: 26 * SizeConfig.verticalBlock),
+          child: Column(
+            children: reviews.map((review) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: RateCard(review: review),
+              );
+            }).toList(),
+          ),
+        );
+      },
       ),
-      bottomNavigationBar: ClipRRect(
+
+    bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),

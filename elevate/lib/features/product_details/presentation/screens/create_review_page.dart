@@ -8,7 +8,9 @@ import '../cubits/review_state.dart';
 class CreateReviewPage extends StatefulWidget {
   final String productId;
 
-  const CreateReviewPage({super.key, required this.productId});
+  final dynamic review;
+
+  const CreateReviewPage({super.key, required this.productId, this.review});
 
   @override
   State<CreateReviewPage> createState() => _CreateReviewPageState();
@@ -30,6 +32,7 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
 
   Future<void> _submitForm(BuildContext context) async {
     final cubit = context.read<ReviewCubit>();
+
     final review = ReviewModel(
       productId: widget.productId,
       title: _titleController.text,
@@ -37,8 +40,22 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
       rating: _rating.value,
     );
 
-    cubit.createReview(review);
+    if (widget.review != null && widget.review.id != null) {
+      review.id = widget.review.id;
+      cubit.editReview(review);
+    } else {
+      cubit.createReview(review);
+    }
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.review != null) {
+      _titleController.text = widget.review.title ?? '';
+      _contentController.text = widget.review.content ?? '';
+      _rating.value = widget.review.rating ?? 0;
+    }
   }
 
   @override
@@ -129,21 +146,53 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
                       );
                     }),
                   ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: state is ReviewLoading ? null : () => _submitForm(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.secondary,
-                      padding: EdgeInsets.symmetric(vertical: 10* SizeConfig.verticalBlock, horizontal: 20 * SizeConfig.horizontalBlock),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  SizedBox(height: 15*SizeConfig.verticalBlock),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: state is ReviewLoading ? null : () => _submitForm(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.secondary,
+                        padding: EdgeInsets.symmetric(vertical: 10 * SizeConfig.verticalBlock),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: state is ReviewLoading
+                          ? CircularProgressIndicator(color: Colors.grey[200])
+                          : Text(
+                        'Submit Review',
+                        style: TextStyle(color: theme.colorScheme.onPrimary),
                       ),
                     ),
-                    child: state is ReviewLoading
-                        ? CircularProgressIndicator(color: Colors.grey[200])
-                        : Text(
-                      'Submit Review',
-                      style: TextStyle(color: theme.colorScheme.onPrimary),
+                  ),
+                  SizedBox(height: 20 * SizeConfig.verticalBlock),
+
+                  // Delete Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (widget.review != null) {
+                          context.read<ReviewCubit>().deleteReview(widget.review);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No review to delete')),
+                          );
+                        }
+                      },
+
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[600],
+                        padding: EdgeInsets.symmetric(vertical: 10 * SizeConfig.verticalBlock),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: Text(
+                        'Delete Review',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
 

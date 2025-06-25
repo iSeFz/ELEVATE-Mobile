@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/constants.dart';
-import '../../../home/data/models/product_card_model.dart';
+import '../../../product_details/data/models/product_card_model.dart';
 
 class WishlistService {
   Future<List<ProductCardModel>> fetchWishlist(String userID) async {

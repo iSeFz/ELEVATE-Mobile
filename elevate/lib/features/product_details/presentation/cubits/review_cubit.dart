@@ -61,10 +61,13 @@ Future<void> createReview(ReviewModel review ) async {
       String userId = LocalDatabaseService.getCustomerId();
       review.customerId = userId;
       await ReviewService.updateProductReview(review);
+      _reviews.removeWhere((r) => r.customerId == review.customerId); // Remove old review
+      
+      _reviews.add(review); // Add the updated review to the internal list
 
       emit(ReviewSuccess());
     } catch (e) {
-      emit(ReviewError(e.toString()+'uuu'));
+      emit(ReviewError(e.toString()));
     }
   }
 
@@ -79,7 +82,7 @@ Future<void> createReview(ReviewModel review ) async {
     final customerId = LocalDatabaseService.getCustomerId();
 
     // If reviews list is empty, treat it as "already reviewed" (or no permission to review)
-    if (_reviews.isEmpty || _reviews == null) {
+    if (_reviews == null || _reviews.isEmpty  ) {
       print('Reviews list is empty — blocking review');
       return 1;
     }
@@ -100,7 +103,7 @@ Future<void> createReview(ReviewModel review ) async {
       String userId = LocalDatabaseService.getCustomerId();
       review.customerId = userId;
       await ReviewService.deleteProductReview(review);
-
+      _reviews.removeWhere((r) => r.id == review.id); // Remove old review
       emit(ReviewSuccess());
     } catch (e) {
       emit(ReviewError(e.toString()));
