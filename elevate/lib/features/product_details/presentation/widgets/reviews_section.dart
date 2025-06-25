@@ -1,9 +1,10 @@
+import 'package:elevate/features/product_details/presentation/widgets/rate_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/size_config.dart';
-import '../../../../core/widgets/rate_card.dart';
+import '../../data/models/review_model.dart';
 import '../cubits/review_cubit.dart';
 import '../cubits/review_state.dart';
 import '../screens/reviews_page.dart';
@@ -22,7 +23,7 @@ class ReviewsSection extends StatelessWidget {
         ..fetchProductReviews(productId),
       child: BlocBuilder<ReviewCubit, ReviewState>(
         builder: (context, state) {
-          if (state is ReviewInitial) {
+          if (state is ReviewInitial || state is ReviewLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -30,7 +31,7 @@ class ReviewsSection extends StatelessWidget {
             return Center(child: Text(
                 'Error: ${state.message}')); // Fix: display the error message
           }
-
+          List<ReviewModel> reviews = context.read<ReviewCubit>().reviews;
           return Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: 8.0 * SizeConfig.horizontalBlock),
@@ -46,7 +47,14 @@ class ReviewsSection extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => ReviewsBar()));
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<ReviewCubit>(),  // use the existing cubit
+                        child: ReviewsPage(productId: productId,),
+                      ),
+                    ),
+                  );
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,20 +81,19 @@ class ReviewsSection extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 20 * SizeConfig.verticalBlock),
-                    if (state is ReviewLoaded && state.reviews.isNotEmpty)
+                    if (state is ReviewSuccess && reviews.isNotEmpty)
                       Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 15 * SizeConfig.horizontalBlock),
-                          child:
-                              Column(
-                                children: [
-
-                                  RateCard(review: state.reviews[0]),
-                                  SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                  RateCard(review: state.reviews[1])]
-                              )
-                          )
-
+                        padding: EdgeInsets.symmetric(horizontal: 15 * SizeConfig.horizontalBlock),
+                        child: Column(
+                          children: List.generate(
+                            reviews.length >= 2 ? 2 : reviews.length,
+                                (index) => Padding(
+                              padding: EdgeInsets.only(bottom: 20 * SizeConfig.verticalBlock),
+                              child: RateCard(review: reviews[index]),
+                            ),
+                          ),
+                        ),
+                      )
                     else
                       Text('No reviews yet.'),
                     SizedBox(height: 10 * SizeConfig.verticalBlock),

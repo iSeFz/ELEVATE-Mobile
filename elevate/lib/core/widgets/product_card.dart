@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/wishlist/presentation/cubits/wishlist_cubit.dart';
 import '/../core/utils/size_config.dart';
-import '/../features/home/presentation/screens/product_details_page.dart';
-import '/../features/home/data/models/product_card_model.dart';
+import '/../features/product_details/presentation/screens/product_details_page.dart';
+import '/../features/product_details/data/models/product_card_model.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product,required this.userId});

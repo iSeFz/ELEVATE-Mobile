@@ -1,6 +1,6 @@
-import 'package:elevate/features/home/data/models/product_card_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../data/services/product_service.dart';
+import '../../../../product_details/data/models/product_card_model.dart';
+import '../../../../product_details/data/services/product_service.dart';
 import 'home_state.dart';
 
 // Home Cubit

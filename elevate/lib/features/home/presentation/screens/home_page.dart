@@ -1,3 +1,5 @@
+import 'package:elevate/features/product_details/presentation/screens/reviews_page.dart';
+import 'package:elevate/features/search/presentation/screens/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
@@ -34,6 +36,22 @@ class HomePage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
+          ),
+          actions: [
+            // IconButton(
+            //   icon: Icon(Icons.search_rounded),
+            //   // onPressed: () {
+            //   //   Navigator.push(
+            //   //     context,
+            //   //     MaterialPageRoute(builder: (_) => ReviewsBar()),
+            //   //   );
+            //   // },
+            //
+            // ),
+          ],
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {},
           ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(1),

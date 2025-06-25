@@ -1,4 +1,4 @@
-import 'package:elevate/features/home/data/models/product_variant_model.dart';
+import 'package:elevate/features/product_details/data/models/product_variant_model.dart';
 
 class ProductCardModel {
   final String id;

@@ -1,3 +1,4 @@
+import 'package:elevate/core/services/local_database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'features/common/splash_screen.dart';
@@ -7,6 +8,7 @@ import 'core/utils/size_config.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await LocalDatabaseService.initDatabase(); // Initialize the local database service
   runApp(const MyApp());
 }
 

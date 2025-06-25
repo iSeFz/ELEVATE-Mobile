@@ -108,7 +108,9 @@ class AuthService {
       final customerJsonFromServer = responseData['data']['user'];
 
       if (customerJsonFromServer != null) {
-        return Customer.fromJson(customerJsonFromServer);
+        Customer customer = Customer.fromJson(customerJsonFromServer);
+        customer.token = responseData['data']['accessToken'];
+        return customer;
       } else {
         throw Exception(
           responseData['message'] ?? 'User data not found in response',

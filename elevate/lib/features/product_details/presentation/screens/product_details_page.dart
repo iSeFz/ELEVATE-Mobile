@@ -1,15 +1,15 @@
-import 'package:elevate/core/widgets/product_card.dart';
-import 'package:elevate/features/home/presentation/widgets/about_section.dart';
-import 'package:elevate/features/home/presentation/widgets/size_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/widgets/product_card.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
+import '../widgets/about_section.dart';
 import '../widgets/reviews_section.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/full_screen_image.dart';
+import '../widgets/size_container.dart';
 
 class ProductDetails extends StatefulWidget {
   ProductDetails({
@@ -147,9 +147,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //product card info
                                 SizedBox(height: 16 * SizeConfig.verticalBlock),
                                 Text(
-                                  widget.productView.name +
-                                      ' - ' +
-                                      widget.productView.id,
+                                  widget.productView.name,
                                   style: TextStyle(
                                     fontSize: 18 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,

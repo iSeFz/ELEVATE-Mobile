@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:elevate/features/home/data/models/product_card_model.dart';
-import 'package:elevate/features/home/presentation/cubits/product_details_state.dart';
+import 'package:elevate/features/product_details/data/models/product_card_model.dart';
+import 'package:elevate/features/product_details/presentation/cubits/product_details_state.dart';
 import '../../data/models/product_details_model.dart';
 import '../../data/services/product_service.dart';
 

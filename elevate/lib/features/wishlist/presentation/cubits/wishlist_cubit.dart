@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:elevate/features/home/data/models/product_card_model.dart';
+import 'package:elevate/features/product_details/data/models/product_card_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/services/wishlist_service.dart';
 import 'wishlist_state.dart';

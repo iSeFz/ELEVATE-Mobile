@@ -1,16 +1,29 @@
-import '../../../profile/data/models/address.dart';
+import 'package:hive/hive.dart';
 
+import '../../../profile/data/models/address.dart';
+part 'customer.g.dart'; // required for code generation
+
+@HiveType(typeId: 0)
 // Model class for the customer object
 class Customer {
+  @HiveField(0)
   String? id;
+  @HiveField(1)
   String? email;
+  @HiveField(2)
   String? firstName;
+  @HiveField(3)
   String? lastName;
+  @HiveField(4)
   String? username;
   String? password;
   String? phoneNumber;
+  @HiveField(5)
   String? imageURL;
+  @HiveField(6)
   int? loyaltyPoints;
+  @HiveField(7)
+  String ? token;
   List<UserAddress>? addresses;
 
   // Default constructor

@@ -85,11 +85,11 @@ class SearchPage extends StatelessWidget {
                                 ),
                                 child: Row(
                                   children: [
-                                    _buildFilterButton('Category'),
-                                    SizedBox(width: 8 * SizeConfig.horizontalBlock),
-                                    _buildFilterButton('Brand', isHighlighted: true),
-                                    SizedBox(width: 8 * SizeConfig.horizontalBlock),
-                                    _buildFilterButton('Price'),
+                                    // _buildFilterButton('Category', context.read<SearchCubit>().categories),
+                                    // SizedBox(width: 8 * SizeConfig.horizontalBlock),
+                                    // _buildFilterButton('Brand', isHighlighted: true),
+                                    // SizedBox(width: 8 * SizeConfig.horizontalBlock),
+                                    // _buildFilterButton('Price'),
                                     const Spacer(),
                                     InkWell(
                                       onTap: () {
@@ -155,7 +155,9 @@ class SearchPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterButton(String label, {bool isHighlighted = false}) {
+  Widget _buildFilterButton(String label,
+      Map<String, dynamic> filterOptions,
+      {bool isHighlighted = false}) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 12 * SizeConfig.horizontalBlock,
