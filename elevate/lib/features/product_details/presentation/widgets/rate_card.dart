@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../features/product_details/data/models/review_model.dart';
-import '../utils/size_config.dart';
+import '../../../../core/utils/size_config.dart';
+import '../../data/models/review_model.dart';
 
 class RateCard extends StatelessWidget {
   final ReviewModel review;
@@ -77,7 +77,7 @@ class RateCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18*SizeConfig.verticalBlock,
-                  backgroundImage: NetworkImage(review.customerImageURL!),
+                  backgroundImage: NetworkImage("review.customerImageURL!"),
                 ),
                 // SizedBox(width: 46),
                 Container(
@@ -98,7 +98,8 @@ class RateCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    review.customerFirstName! + ' ' + review.customerLastName![0] + '.',
+                    // review.customerFirstName! + ' ' + review.customerLastName![0] + '.',
+                    "name",
                     style: TextStyle(fontSize: 10*SizeConfig.textRatio, color: Color(0xFF160202)),
                   ),
                 ),

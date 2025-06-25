@@ -1,5 +1,5 @@
-import 'package:elevate/features/home/presentation/widgets/about_section.dart';
-import 'package:elevate/features/home/presentation/widgets/size_container.dart';
+import 'package:elevate/features/product_details/presentation/widgets/about_section.dart';
+import 'package:elevate/features/product_details/presentation/widgets/size_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';

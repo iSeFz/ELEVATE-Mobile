@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:elevate/features/home/data/models/product_card_model.dart';
+import 'package:elevate/features/product_details/data/models/product_card_model.dart';
 import '../../data/services/product_service.dart';
 
 // States

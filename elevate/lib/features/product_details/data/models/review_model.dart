@@ -1,9 +1,9 @@
 class ReviewModel {
-  final String productId;
-  final String customerId;
-  final String customerFirstName;
-  final String customerLastName;
-  final String customerImageURL;
+  final String ?productId;
+  final String ?customerId;
+  final String ?customerFirstName;
+  final String ?customerLastName;
+  final String ?customerImageURL;
 
   final String title;
   final String content;
@@ -11,11 +11,11 @@ class ReviewModel {
   // final String updatedAt;
 
   ReviewModel({
-    required this.productId,
-    required this.customerId,
-    required this.customerFirstName,
-    required this.customerLastName,
-    required this.customerImageURL,
+     this.productId,
+     this.customerId,
+    this.customerFirstName,
+    this.customerLastName,
+    this.customerImageURL,
     required this.title,
     required this.content,
     required this.rating,
@@ -36,8 +36,8 @@ class ReviewModel {
   );
 
   Map<String, dynamic> toJson() => {
-    'productId': productId,
-    'customerId': customerId,
+    // 'productId': productId,
+    // 'customerId': customerId,
     'title': title,
     'content': content,
     'rating': rating,

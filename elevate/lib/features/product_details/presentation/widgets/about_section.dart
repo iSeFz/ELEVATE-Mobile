@@ -1,4 +1,4 @@
-import 'package:elevate/features/home/data/models/product_details_model.dart';
+import 'package:elevate/features/product_details/data/models/product_details_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

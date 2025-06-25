@@ -23,7 +23,7 @@ class ReviewsSection extends StatelessWidget {
         ..fetchProductReviews(productId),
       child: BlocBuilder<ReviewCubit, ReviewState>(
         builder: (context, state) {
-          if (state is ReviewInitial) {
+          if (state is ReviewInitial || state is ReviewLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -47,7 +47,7 @@ class ReviewsSection extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => ReviewsBar()));
+                      context, MaterialPageRoute(builder: (_) => ReviewsBar(reviews: state.reviews)));
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
