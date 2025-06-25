@@ -14,12 +14,8 @@ class ReviewsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) =>
-        ReviewCubit()
-          ..fetchProductReviews(productId),
-        child: BlocBuilder<ReviewCubit, ReviewState>(
-        builder: (context, state) {
+    return BlocBuilder<ReviewCubit, ReviewState>(
+      builder: (context, state) {
         if (state is ReviewInitial || state is ReviewLoading) {
           return Scaffold(
             appBar: AppBar(
@@ -27,7 +23,8 @@ class ReviewsPage extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.pop(context),
               ),
-              title: const Text('Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
+              title: const Text(
+                  'Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
@@ -43,7 +40,8 @@ class ReviewsPage extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.pop(context),
               ),
-              title: const Text('Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
+              title: const Text(
+                  'Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
@@ -52,7 +50,9 @@ class ReviewsPage extends StatelessWidget {
           );
         }
 
-        List<ReviewModel> reviews = context.read<ReviewCubit>().reviews
+        List<ReviewModel> reviews = context
+            .read<ReviewCubit>()
+            .reviews
             .where((review) => review.productId == productId)
             .toList();
 
@@ -63,7 +63,8 @@ class ReviewsPage extends StatelessWidget {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
             ),
-            title: const Text('Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: const Text(
+                'Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
             centerTitle: true,
             elevation: 0,
             backgroundColor: Colors.white,
@@ -96,9 +97,14 @@ class ReviewsPage extends StatelessWidget {
               topRight: Radius.circular(16),
             ),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 13 * SizeConfig.horizontalBlock),
+              padding: EdgeInsets.symmetric(
+                  horizontal: 13 * SizeConfig.horizontalBlock),
               height: 60,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .primary
+                  .withOpacity(0.2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -109,31 +115,37 @@ class ReviewsPage extends StatelessWidget {
 
                       if (cubit.canCustomerReview(productId) == 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('You have already reviewed this product.')),
+                          const SnackBar(content: Text(
+                              'You have already reviewed this product.')),
                         );
                         return;
                       }
 
                       // Navigate and wait for result
-                      await Navigator.push(
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => BlocProvider.value(
-                            value: cubit, // Pass existing cubit
-                            child: CreateReviewPage(productId: productId),
-                          ),
+                          builder: (_) =>
+                              BlocProvider.value(
+                                value: cubit, // Pass existing cubit
+                                child: CreateReviewPage(productId: productId),
+                              ),
                         ),
 
                       );
-
+                      if (result == true) {
+                        context.read<ReviewCubit>().fetchProductReviews(
+                            productId);
+                      }
                     },
                   ),
                 ],
               ),
             ),
           ),
+
         );
       },
-    )
-  );  }
+    );
+  }
 }

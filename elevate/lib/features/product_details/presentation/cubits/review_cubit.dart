@@ -35,7 +35,14 @@ class ReviewCubit extends Cubit<ReviewState> {
       emit(ReviewError(e.toString()+'hh'));
     }
   }
+  void resetState() {
+    emit(ReviewInitial());
+  }
 
+  bool canEditReview(ReviewModel review) {
+  String customerId = LocalDatabaseService.getCustomerId();
+    return review.customerId == customerId;
+  }
 Future<void> createReview(ReviewModel review ) async {
   try {
     emit(ReviewLoading());

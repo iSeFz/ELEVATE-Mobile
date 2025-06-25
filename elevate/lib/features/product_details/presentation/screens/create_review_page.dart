@@ -43,6 +43,9 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
 
     if (widget.review != null && widget.review.id != null) {
       review.id = widget.review.id;
+      review.customerFirstName= widget.review.customerFirstName;
+      review.customerLastName= widget.review.customerLastName;
+      review.customerImageURL= widget.review.customerImageURL;
       cubit.editReview(review);
     } else {
       cubit.createReview(review);
@@ -72,17 +75,9 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
         listener: (context, state) {
           if (state is ReviewSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Review submitted successfully!')),
+              const SnackBar(content: Text('Task done successfully!')),
             );
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<ReviewCubit>(),  // use the existing cubit
-                  child: ReviewsPage(productId: widget.productId,),
-                ),
-              ),
-            );
+            Navigator.pop(context, true);
           }
           else if (state is ReviewError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -92,9 +87,9 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
 
         },
         builder: (context, state) {
-          if (state is ReviewLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          // if (state is ReviewLoading) {
+          //   return const Center(child: CircularProgressIndicator());
+          // }
           return Center (
               child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 30* SizeConfig.horizontalBlock, vertical: 16* SizeConfig.verticalBlock),
