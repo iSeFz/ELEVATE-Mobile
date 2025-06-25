@@ -1,4 +1,3 @@
-import 'package:elevate/core/widgets/product_card.dart';
 import 'package:elevate/features/home/presentation/widgets/about_section.dart';
 import 'package:elevate/features/home/presentation/widgets/size_container.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
 import '../widgets/reviews_section.dart';
+import '../widgets/recommendation_section.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/full_screen_image.dart';
 
@@ -255,75 +255,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   productId: state.product.id,
                                   userId: widget.userId,
                                 ),
-
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        8.0 * SizeConfig.horizontalBlock,
-                                  ),
-                                  child: Text(
-                                    "Related Products",
-                                    style: TextStyle(
-                                      fontSize: 18 * SizeConfig.textRatio,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 10 * SizeConfig.verticalBlock),
-                                SizedBox(
-                                  height:
-                                      350 *
-                                      SizeConfig
-                                          .verticalBlock, // Increased height to prevent overflow
-                                  child:
-                                      state.relatedProducts != null &&
-                                              state.relatedProducts!.isNotEmpty
-                                          ? ListView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  8.0 *
-                                                  SizeConfig.horizontalBlock,
-                                            ),
-                                            itemCount:
-                                                state.relatedProducts!.length,
-                                            itemBuilder: (context, index) {
-                                              return Padding(
-                                                padding: EdgeInsets.only(
-                                                  right:
-                                                      12 *
-                                                      SizeConfig
-                                                          .horizontalBlock,
-                                                ),
-                                                child: SizedBox(
-                                                  width:
-                                                      180 *
-                                                      SizeConfig
-                                                          .horizontalBlock,
-                                                  height:
-                                                      320 *
-                                                      SizeConfig.verticalBlock,
-                                                  child: ProductCard(
-                                                    product:
-                                                        state
-                                                            .relatedProducts![index],
-                                                    userId: widget.userId,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          )
-                                          : Center(
-                                            child: Text(
-                                              "Loading related products...",
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                                fontSize:
-                                                    14 * SizeConfig.textRatio,
-                                              ),
-                                            ),
-                                          ),
+                                
+                                // Recommendation Section
+                                RecommendationSection(
+                                  userId: widget.userId,
                                 ),
                               ],
                             ),
