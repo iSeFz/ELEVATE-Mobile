@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:elevate/core/constants/constants.dart';
 import 'package:http/http.dart' as http;
-import '../models/product_card_model.dart';
-import '../models/product_details_model.dart';
 import '../models/review_model.dart';
 
 class ReviewService {
@@ -70,6 +68,24 @@ class ReviewService {
     }
   }
 
+  static Future<void> deleteProductReview(ReviewModel review) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$apiBaseURL/v1/reviews/${review.id}?userId=${review.customerId}'),
+        headers: {
+          'Content-Type': 'application/json',
+          testAuthHeader: testAuthValue,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete review: ${response.body}');
+      }
+    } catch (e) {
+      print('Error in deleteProductReview: $e');
+      rethrow;
+    }
+  }
 
 
 }

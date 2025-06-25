@@ -93,19 +93,19 @@ Future<void> createReview(ReviewModel review ) async {
   }
 
 
-  // Future<void> deleteReview(ReviewModel review ) async {
-  //   try {
-  //     emit(ReviewLoading());
-  //
-  //     String userId = LocalDatabaseService.getCustomerId();
-  //     review.customerId = userId;
-  //     await ReviewService.createProductReview(review);
-  //
-  //     emit(ReviewSuccess());
-  //   } catch (e) {
-  //     emit(ReviewError(e.toString()));
-  //   }
-  // }
+  Future<void> deleteReview(ReviewModel review ) async {
+    try {
+      emit(ReviewLoading());
+
+      String userId = LocalDatabaseService.getCustomerId();
+      review.customerId = userId;
+      await ReviewService.deleteProductReview(review);
+
+      emit(ReviewSuccess());
+    } catch (e) {
+      emit(ReviewError(e.toString()));
+    }
+  }
 }
 
 
