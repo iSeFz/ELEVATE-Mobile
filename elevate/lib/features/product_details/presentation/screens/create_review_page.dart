@@ -1,3 +1,4 @@
+import 'package:elevate/features/product_details/presentation/screens/reviews_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
@@ -73,7 +74,15 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Review submitted successfully!')),
             );
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ReviewCubit>(),  // use the existing cubit
+                  child: ReviewsPage(productId: widget.productId,),
+                ),
+              ),
+            );
           }
           else if (state is ReviewError) {
             ScaffoldMessenger.of(context).showSnackBar(

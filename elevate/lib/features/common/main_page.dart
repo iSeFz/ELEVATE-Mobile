@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
     _pageController = PageController(initialPage: _selectedIndex);
     _pages = [
       HomePage(),
-      // SearchPage(),
+      SearchPage(),
       CartPage(userId: widget.customer.id!),
       WishlistPage(userID: widget.customer.id!),
       ProfilePage(customer: widget.customer),
