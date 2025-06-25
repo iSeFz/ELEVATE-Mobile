@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/widgets/product_card.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
+import '../widgets/about_section.dart';
 import '../widgets/reviews_section.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/full_screen_image.dart';
+import '../widgets/size_container.dart';
 
 class ProductDetails extends StatefulWidget {
   ProductDetails({

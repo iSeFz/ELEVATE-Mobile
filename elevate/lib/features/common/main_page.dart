@@ -3,7 +3,7 @@ import '../../core/services/local_database_service.dart';
 import '../search/presentation/screens/search_page.dart';
 import '/../core/utils/size_config.dart';
 import '../auth/data/models/customer.dart';
-import '../product_details/presentation/screens/home_page.dart';
+import '../home/presentation/screens/home_page.dart';
 import '../wishlist/presentation/screens/wishlist_page.dart';
 import '../cart/presentation/screens/cart_page.dart';
 import '../profile/presentation/screens/profile_page.dart';
