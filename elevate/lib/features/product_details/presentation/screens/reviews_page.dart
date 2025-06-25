@@ -2,18 +2,20 @@ import 'package:elevate/features/product_details/data/models/review_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
-import '../../../../core/widgets/rate_card.dart';
 import '../cubits/review_cubit.dart';
+import '../widgets/rate_card.dart';
 import 'create_review_page.dart';
 
-class ReviewsBar extends StatelessWidget {
-  final List<ReviewModel> reviews;
+class ReviewsPage extends StatelessWidget {
+  final String productId;
 
-  const ReviewsBar({super.key, required this.reviews});
+  const ReviewsPage({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final cubit = context.read<ReviewCubit>();
+    List<ReviewModel> reviews = cubit.reviews;
+  return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
@@ -36,7 +38,7 @@ class ReviewsBar extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
+        padding: EdgeInsets.symmetric(horizontal: 24* SizeConfig.horizontalBlock, vertical: 26* SizeConfig.verticalBlock),
         child: Column(
           children: reviews.map((review) {
             return Padding(
@@ -61,13 +63,21 @@ class ReviewsBar extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.add, size: 30),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (context) => ReviewCubit(),
-                      child: CreateReviewPage(productId: reviews.first.productId!),
+                  if (cubit.canCustomerReview(productId) == 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You have already reviewed this product.')),
+                    );
+                    return;
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: cubit,
+                        child: CreateReviewPage(productId: productId),
+                      ),
                     ),
-                  ));
-
+                  );
                 },
               ),
             ],

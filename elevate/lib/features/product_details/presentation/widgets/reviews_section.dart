@@ -1,9 +1,9 @@
+import 'package:elevate/features/product_details/presentation/widgets/rate_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/size_config.dart';
-import '../../../../core/widgets/rate_card.dart';
 import '../../data/models/review_model.dart';
 import '../cubits/review_cubit.dart';
 import '../cubits/review_state.dart';
@@ -47,7 +47,14 @@ class ReviewsSection extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => ReviewsBar(reviews: reviews)));
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<ReviewCubit>(),  // use the existing cubit
+                        child: ReviewsPage(productId: productId,),
+                      ),
+                    ),
+                  );
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,18 +83,17 @@ class ReviewsSection extends StatelessWidget {
                     SizedBox(height: 20 * SizeConfig.verticalBlock),
                     if (state is ReviewSuccess && reviews.isNotEmpty)
                       Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 15 * SizeConfig.horizontalBlock),
-                          child:
-                              Column(
-                                children: [
-
-                                  RateCard(review: reviews[0]),
-                                  SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                  RateCard(review: reviews[1])]
-                              )
-                          )
-
+                        padding: EdgeInsets.symmetric(horizontal: 15 * SizeConfig.horizontalBlock),
+                        child: Column(
+                          children: List.generate(
+                            reviews.length >= 2 ? 2 : reviews.length,
+                                (index) => Padding(
+                              padding: EdgeInsets.only(bottom: 20 * SizeConfig.verticalBlock),
+                              child: RateCard(review: reviews[index]),
+                            ),
+                          ),
+                        ),
+                      )
                     else
                       Text('No reviews yet.'),
                     SizedBox(height: 10 * SizeConfig.verticalBlock),

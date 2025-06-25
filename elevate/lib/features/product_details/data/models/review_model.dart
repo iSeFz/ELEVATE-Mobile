@@ -1,6 +1,6 @@
 class ReviewModel {
-  final String productId;
-
+  String productId;
+  String? id;
   String? customerId;
   String? customerFirstName;
   String? customerLastName;
@@ -11,6 +11,7 @@ class ReviewModel {
   final int rating;
 
   ReviewModel({
+    this.id,
     required this.productId,
     this.customerId,
     this.customerFirstName,
@@ -22,6 +23,7 @@ class ReviewModel {
   });
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) => ReviewModel(
+    id: json['id'] as String,
     productId: json['productId'] as String,
     customerId: json['customerId'] as String?,
     customerFirstName: json['customerFirstName'] as String?,

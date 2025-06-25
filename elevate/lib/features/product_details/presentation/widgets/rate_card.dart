@@ -77,7 +77,7 @@ class RateCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18*SizeConfig.verticalBlock,
-                  backgroundImage: NetworkImage("review.customerImageURL!"),
+                  backgroundImage: NetworkImage(review.customerImageURL!),
                 ),
                 // SizedBox(width: 46),
                 Container(
@@ -98,8 +98,7 @@ class RateCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    // review.customerFirstName! + ' ' + review.customerLastName![0] + '.',
-                    "name",
+                    review.customerFirstName! + ' ' + review.customerLastName![0] + '.',
                     style: TextStyle(fontSize: 10*SizeConfig.textRatio, color: Color(0xFF160202)),
                   ),
                 ),
@@ -112,29 +111,55 @@ class RateCard extends StatelessWidget {
         Positioned(
           top: 5,
           right: 3,
-          child: Container(
-            padding:  EdgeInsets.symmetric(horizontal: 6*SizeConfig.horizontalBlock, vertical: 4*SizeConfig.verticalBlock),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(12),
-              // border: Border.all(color: Color(0xFFA51930)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end, // Align to the right
               children: [
-                ...List.generate(
-                  review.rating,
-                  (index) => Icon(Icons.star, size: 12*SizeConfig.verticalBlock, color: Colors.amber),
+
+                Container(
+                padding: EdgeInsets.symmetric(
+                horizontal: 6 * SizeConfig.horizontalBlock,
+                vertical: 4 * SizeConfig.verticalBlock,
                 ),
-                ...List.generate(
-                  5 - review.rating,
-                  (index) =>
-                      Icon(Icons.star, size: 12*SizeConfig.verticalBlock, color: Colors.grey[300]!),
+                decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(12),
+                ),
+                child: // Stars Row
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...List.generate(
+                      review.rating,
+                          (index) => Icon(Icons.star, size: 12 * SizeConfig.verticalBlock, color: Colors.amber),
+                    ),
+                    ...List.generate(
+                      5 - review.rating,
+                          (index) => Icon(Icons.star, size: 12 * SizeConfig.verticalBlock, color: Colors.grey[300]!),
+                    ),
+                  ],
+                ),
+    ),
+                // Space between stars and buttons
+                // SizedBox(height: 8 * SizeConfig.verticalBlock),
+
+                // Action buttons vertically stacked
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.blue[500], size: 20 * SizeConfig.textRatio),
+                  onPressed: () {
+                    print('Edit Review: ${review.title}');
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red, size: 20 * SizeConfig.textRatio),
+                  onPressed: () {
+                    print('Delete Review: ${review.title}');
+                  },
                 ),
               ],
             ),
           ),
-        ),
+
+
       ],
     );
   }

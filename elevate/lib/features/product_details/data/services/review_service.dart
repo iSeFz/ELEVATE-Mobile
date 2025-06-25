@@ -6,13 +6,12 @@ import '../models/product_details_model.dart';
 import '../models/review_model.dart';
 
 class ReviewService {
-  static String baseUrl = "https://elevate-gp.vercel.app/api/v1/";
 
   // ProductService({required this.baseUrl});
 
   static Future<List<ReviewModel>> getProductReviews(String productId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/products/$productId/reviews'),
+      Uri.parse('$apiBaseURL/v1/products/$productId/reviews'),
     );
 
     if (response.statusCode == 200) {
@@ -42,8 +41,31 @@ class ReviewService {
       if (response.statusCode != 201) {
         throw Exception('Failed to create review: ${response.body}  ${review.productId}');
       }
+      else{
+        review.id = jsonDecode(response.body)['data']['id']; // Assuming the response contains the new review ID
+      }
     } catch (e) {
       print('Error in createProductReview: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> updateProductReview(ReviewModel review) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$apiBaseURL/v1/reviews/{id}${review.id}?userId=${review.customerId}'),
+        headers: {
+          'Content-Type': 'application/json',
+          testAuthHeader: testAuthValue,
+        },
+        body: jsonEncode(review.toJson()),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update review: ${response.body}');
+      }
+    } catch (e) {
+      print('Error in updateProductReview: $e');
       rethrow;
     }
   }

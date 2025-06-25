@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/size_config.dart';
 import '../../data/models/review_model.dart';
 import '../cubits/review_cubit.dart';
 import '../cubits/review_state.dart';
@@ -19,7 +20,6 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
   final _contentController = TextEditingController();
   final ValueNotifier<int> _rating = ValueNotifier<int>(0);
 
-  String nourdebug = "nourdeb";
   @override
   void dispose() {
     _titleController.dispose();
@@ -44,7 +44,6 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -59,46 +58,32 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
             );
             Navigator.pop(context);
           }
-          // else if (state is ReviewError) {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     SnackBar(content: Text('Error: ${state.message}')),
-          //   );
-          // }
           else if (state is ReviewError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Container(
-                  // height: 400, // Very big height
-                  child: SingleChildScrollView(
-                    child: Text(
-                      'Error: ${state.message}' , // Example to make it long text
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: Duration(seconds: 5), // Optional: control how long it appears
-              ),
+              SnackBar(content: Text('Error: ${state.message}')),
             );
           }
-
 
         },
         builder: (context, state) {
           if (state is ReviewLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
+          return Center (
+              child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 30* SizeConfig.horizontalBlock, vertical: 16* SizeConfig.verticalBlock),
             child: Form(
               key: _formKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
                     controller: _titleController,
-                    decoration:  InputDecoration(
-                      labelText: 'Review Title'+nourdebug+ widget.productId,
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: 'Title',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12), // Set the circular border here
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -107,14 +92,16 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20*SizeConfig.verticalBlock),
                   TextFormField(
                     controller: _contentController,
-                    decoration: const InputDecoration(
-                      labelText: 'Review Content',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: 'Content',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12), // Circular border here too
+                      ),
                     ),
-                    maxLines: 5,
+                    maxLines: 2,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please write your review';
@@ -122,6 +109,7 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -145,14 +133,14 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
                   ElevatedButton(
                     onPressed: state is ReviewLoading ? null : () => _submitForm(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+                      backgroundColor: theme.colorScheme.secondary,
+                      padding: EdgeInsets.symmetric(vertical: 10* SizeConfig.verticalBlock, horizontal: 20 * SizeConfig.horizontalBlock),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: state is ReviewLoading
-                        ? CircularProgressIndicator(color: theme.colorScheme.onPrimary)
+                        ? CircularProgressIndicator(color: Colors.grey[200])
                         : Text(
                       'Submit Review',
                       style: TextStyle(color: theme.colorScheme.onPrimary),
@@ -161,7 +149,7 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
 
                 ],
               ),
-            ),
+            ),)
           );
         },
       ),
