@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:elevate/features/product_details/data/models/review_model.dart';
-import 'package:elevate/features/product_details/presentation/screens/product_details_page.dart';
+import 'package:elevate/core/constants/constants.dart';
 import 'package:http/http.dart' as http;
 import '../models/product_card_model.dart';
 import '../models/product_details_model.dart';
+import '../models/review_model.dart';
 
 class ReviewService {
   static String baseUrl = "https://elevate-gp.vercel.app/api/v1/";
@@ -25,13 +25,13 @@ class ReviewService {
     }
   }
 
-  static Future<void> createProductReview(ReviewModel review, String productId) async {
+  static Future<void> createProductReview(ReviewModel review) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/products/${productId}/reviews'),
+        Uri.parse('$apiBaseURL/v1/products/${review.productId}/reviews?userId=${review.customerId}'),
         headers: {
           'Content-Type': 'application/json',
-          'productId': review.productId!, // if your backend expects this in header
+          testAuthHeader: testAuthValue,
         },
         body: jsonEncode(review.toJson()),
       );

@@ -31,7 +31,7 @@ class ReviewsSection extends StatelessWidget {
             return Center(child: Text(
                 'Error: ${state.message}')); // Fix: display the error message
           }
-
+          List<ReviewModel> reviews = context.read<ReviewCubit>().reviews;
           return Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: 8.0 * SizeConfig.horizontalBlock),
@@ -47,7 +47,7 @@ class ReviewsSection extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => ReviewsBar(reviews: state.reviews)));
+                      context, MaterialPageRoute(builder: (_) => ReviewsBar(reviews: reviews)));
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +74,7 @@ class ReviewsSection extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 20 * SizeConfig.verticalBlock),
-                    if (state is ReviewLoaded && state.reviews.isNotEmpty)
+                    if (state is ReviewSuccess && reviews.isNotEmpty)
                       Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 15 * SizeConfig.horizontalBlock),
@@ -82,9 +82,9 @@ class ReviewsSection extends StatelessWidget {
                               Column(
                                 children: [
 
-                                  RateCard(review: state.reviews[0]),
+                                  RateCard(review: reviews[0]),
                                   SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                  RateCard(review: state.reviews[1])]
+                                  RateCard(review: reviews[1])]
                               )
                           )
 

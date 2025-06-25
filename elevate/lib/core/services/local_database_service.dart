@@ -93,6 +93,21 @@ class LocalDatabaseService {
       throw Exception('Error getting image URL from Hive: $e');
     }
   }
+  static getToken()  {
+    try {
+      final customer = box.get('current');
+
+      if (customer == null) {
+        throw Exception('No customer found in local storage');
+      }
+      if (customer.token == null || customer.token!.isEmpty) {
+        throw Exception('Customer token is null or empty');
+      }
+      return customer.token;
+    } catch (e) {
+      throw Exception('Error getting token from Hive: $e');
+    }
+  }
   static void deleteCustomer()  {
     box.delete('current');
   }
