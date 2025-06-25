@@ -147,9 +147,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //product card info
                                 SizedBox(height: 16 * SizeConfig.verticalBlock),
                                 Text(
-                                  widget.productView.name +
-                                      ' - ' +
-                                      widget.productView.id,
+                                  widget.productView.name,
                                   style: TextStyle(
                                     fontSize: 18 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
