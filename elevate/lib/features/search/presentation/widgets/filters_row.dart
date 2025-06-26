@@ -17,6 +17,15 @@ class FiltersRow extends StatelessWidget {
     return Row(
       children: [
         FilterButton(
+        label: 'Category',
+        filterOptions: 2,
+        isHighlighted: false,
+        onFetch: () async {
+          await context.read<FilterCubit>().getAllBrands();
+        },
+      ),
+        SizedBox(width: 6* SizeConfig.horizontalBlock,),
+        FilterButton(
           label: 'Brand',
           filterOptions: 1,
           isHighlighted: false,
@@ -24,14 +33,8 @@ class FiltersRow extends StatelessWidget {
             await context.read<FilterCubit>().getAllBrands();
           },
         ),
-        FilterButton(
-          label: 'Category',
-          filterOptions: 2,
-          isHighlighted: false,
-          onFetch: () async {
-            await context.read<FilterCubit>().getAllBrands();
-          },
-        ),
+        SizedBox(width: 6* SizeConfig.horizontalBlock,),
+
         FilterButton(
           label: 'Dep',
           filterOptions: 3,
@@ -52,8 +55,8 @@ class FiltersRow extends StatelessWidget {
         ),
         SizedBox(width: 10 * SizeConfig.horizontalBlock),
         Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
-        SizedBox(width: 10 * SizeConfig.horizontalBlock),
-        Icon(Icons.filter_alt_outlined, size: 26 * SizeConfig.verticalBlock),
+        // SizedBox(width: 10 * SizeConfig.horizontalBlock),
+        // Icon(Icons.filter_alt_outlined, size: 26 * SizeConfig.verticalBlock),
       ],
     );
   }
