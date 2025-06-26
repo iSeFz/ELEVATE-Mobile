@@ -33,6 +33,16 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
 
   Future<void> _submitForm(BuildContext context) async {
     final cubit = context.read<ReviewCubit>();
+    if (!_formKey.currentState!.validate()) {
+      return; // Stop if title or content are empty
+    }
+    if (_rating.value == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a rating')),
+      );
+      return; // Stop submission if no rating selected
+    }
+
 
     final review = ReviewModel(
       productId: widget.productId,
