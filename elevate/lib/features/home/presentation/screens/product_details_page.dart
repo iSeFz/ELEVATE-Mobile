@@ -10,6 +10,7 @@ import '../widgets/reviews_section.dart';
 import '../widgets/recommendation_section.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/full_screen_image.dart';
+import '../../../../core/services/algolia_insights_service.dart';
 
 class ProductDetails extends StatefulWidget {
   ProductDetails({
@@ -28,6 +29,7 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
+  bool _hasTrackedView = false;
   String selectedSize = "S";
   String size = "M";
   List<String> sizes = ['S', 'M', 'L', 'XL'];
@@ -77,6 +79,23 @@ class _ProductDetailsState extends State<ProductDetails> {
                 } else if (state is ProductDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ProductDetailsLoaded) {
+                  // Track product view once when product details are loaded
+                  if (!_hasTrackedView) {
+                    _hasTrackedView = true;
+                    try {
+                      // Send the view event to Algolia
+                      if (AlgoliaInsightsService.insights != null) {
+                        AlgoliaInsightsService.insights!.viewedObjects(
+                          indexName: 'product',
+                          eventName: 'Product View',
+                          objectIDs: [state.product.id],
+                        );
+                      }
+                      print('Product view tracked: ${state.product.id}');
+                    } catch (e) {
+                      print('Error tracking product view: $e');
+                    }
+                  }
                   // Extract color-image pairs from product variantsf
                   return Stack(
                     children: [
@@ -256,11 +275,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   userId: widget.userId,
                                 ),
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                
+
                                 // Recommendation Section
-                                RecommendationSection(
-                                  userId: widget.userId,
-                                ),
+                                RecommendationSection(userId: widget.userId),
                               ],
                             ),
                           );

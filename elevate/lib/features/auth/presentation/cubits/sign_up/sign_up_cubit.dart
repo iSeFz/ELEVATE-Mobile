@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/customer.dart';
 import '../../../data/services/auth_service.dart';
 import 'sign_up_state.dart';
+import '../../../../../core/services/algolia_insights_service.dart';
+
 
 // Sign Up Cubit
 class SignUpCubit extends Cubit<SignUpState> {
@@ -90,6 +92,10 @@ class SignUpCubit extends Cubit<SignUpState> {
     try {
       _customer = await _authService.registerUser(customerData);
       if (_customer != null) {
+        // Initialize Algolia Insights with the user's ID
+        if (_customer!.id != null) {
+          AlgoliaInsightsService.initializeInsights(_customer!.id!);
+        }
         emit(SignUpSuccess());
       } else {
         // This case should ideally be handled by an exception in AuthService
@@ -123,6 +129,10 @@ class SignUpCubit extends Cubit<SignUpState> {
     try {
       _customer = await _authService.signUpWithGoogle();
       if (_customer != null) {
+        // Initialize Algolia Insights with the user's ID 
+        if (_customer!.id != null) {
+          AlgoliaInsightsService.initializeInsights(_customer!.id!);
+        }
         emit(SignUpWithGoogleSuccess());
       } else {
         // This case should ideally be handled by an exception in AuthService
