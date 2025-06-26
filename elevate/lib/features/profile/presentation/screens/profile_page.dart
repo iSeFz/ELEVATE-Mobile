@@ -30,7 +30,6 @@ class ProfilePage extends StatelessWidget {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              toolbarHeight: 70,
               centerTitle: true,
               backgroundColor: Colors.white,
               shadowColor: Colors.black26,

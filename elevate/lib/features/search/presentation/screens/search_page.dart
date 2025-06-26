@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/product_card.dart';
-import '../../../camera/presentation/screens/camera.dart';
+import '../../../common/camera.dart';
 import '../cubits/search_cubit.dart';
 import '../cubits/search_state.dart';
 

@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'package:elevate/features/product_details/data/models/review_model.dart';
-import 'package:elevate/features/product_details/presentation/screens/product_details_page.dart';
 import 'package:http/http.dart' as http;
+import '../../../../core/constants/constants.dart';
 
-class filterService {
-  static String baseUrl = "https://elevate-gp.vercel.app/api/v1/";
-
-  // ProductService({required this.baseUrl});
-
+class FilterService {
   static Future<Map<String, List<String>>> getAllProductsCategories() async {
-    final response = await http.get(Uri.parse('$baseUrl/products/categories'));
+    final response = await http.get(
+      Uri.parse('$apiBaseURL/v1/products/categories'),
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
@@ -38,6 +35,4 @@ class filterService {
       throw Exception('Failed to load products');
     }
   }
-
-
 }

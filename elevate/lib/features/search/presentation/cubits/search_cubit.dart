@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../product_details/data/models/product_card_model.dart';
 import '../../../../core/services/algolia_service.dart';
-import '../../services/filters_service.dart';
+import '../../data/services/filters_service.dart';
 import 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
@@ -25,7 +25,7 @@ class SearchCubit extends Cubit<SearchState> {
   Future<Map<String, List<String>>> getAllCategories() async {
     emit(SearchLoading());
     try {
-      final results = await filterService.getAllProductsCategories();
+      final results = await FilterService.getAllProductsCategories();
       // emit(SearchLoaded(results)); // Uncomment if you want to emit this state
       return results;
     } catch (e) {
