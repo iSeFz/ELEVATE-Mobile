@@ -8,8 +8,7 @@ import '../cubits/product_details_state.dart';
 class RecommendationSection extends StatelessWidget {
   final String userId;
 
-  const RecommendationSection({Key? key, required this.userId})
-    : super(key: key);
+  const RecommendationSection({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
