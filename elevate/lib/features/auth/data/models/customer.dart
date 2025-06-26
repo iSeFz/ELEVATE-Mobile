@@ -17,6 +17,7 @@ class Customer {
   @HiveField(4)
   String? username;
   String? password;
+  @HiveField(8)
   String? phoneNumber;
   @HiveField(5)
   String? imageURL;
@@ -24,6 +25,7 @@ class Customer {
   int? loyaltyPoints;
   @HiveField(7)
   String ? token;
+  @HiveField(9)
   List<UserAddress>? addresses;
 
   // Default constructor
