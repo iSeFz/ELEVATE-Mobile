@@ -8,9 +8,9 @@ class FilterLoading extends FilterState {}
 class FilterLoaded extends FilterState {
   final List<String> brandsName;
   final List<String> departments;
-  // final List<String> departments;
+  final Map<String,List<String>> categories;
 
-  FilterLoaded({required this.brandsName, required this.departments});
+  FilterLoaded({required this.brandsName, required this.departments, required this.categories});
 }
 
 class FilterError extends FilterState {

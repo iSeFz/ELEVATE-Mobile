@@ -115,7 +115,7 @@ class ProductService {
 
   //________________FILTERING____________________
 
-  static Future<Map<String, List<String>>> getAllProductsCategories() async {
+  static Future<Map<String, List<String>>> getAllCategories() async {
     final response = await http.get(
         Uri.parse('$apiBaseURL/v1/products/categories'));
 

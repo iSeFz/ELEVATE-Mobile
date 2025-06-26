@@ -1,5 +1,3 @@
-import 'package:elevate/features/product_details/data/models/product_card_model.dart';
-import 'package:elevate/features/search/data/models/brand_model.dart';
 import 'package:elevate/features/wishlist/presentation/cubits/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,11 +5,9 @@ import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/product_card.dart';
 import '../../../camera/presentation/screens/camera.dart';
 import '../cubits/filter/filter_cubit.dart';
-import '../cubits/filter/filter_state.dart';
 import '../cubits/search/search_cubit.dart';
 import '../cubits/search/search_state.dart';
 import '../widgets/filter_button.dart';
-import '../widgets/filters_row.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({super.key});
@@ -95,7 +91,50 @@ class SearchPage extends StatelessWidget {
                                   horizontal: 10 * SizeConfig.horizontalBlock,
                                   vertical: 10 * SizeConfig.verticalBlock,
                                 ),
-                                child:FiltersRow()
+                                child:Row(
+                                  children: [
+                                    FilterButton(
+                                      label: 'Category',
+                                      filterOptions: 1,
+                                      isHighlighted: false,
+                                      onFetch: () async {
+                                        await context.read<FilterCubit>().getAllCategories();
+                                      },
+                                    ),
+                                    SizedBox(width: 6* SizeConfig.horizontalBlock,),
+                                    FilterButton(
+                                      label: 'Brand',
+                                      filterOptions: 2,
+                                      isHighlighted: false,
+                                      onFetch: () async {
+                                        await context.read<FilterCubit>().getAllBrands();
+                                      },
+                                    ),
+                                    SizedBox(width: 6* SizeConfig.horizontalBlock,),
+
+                                    FilterButton(
+                                      label: 'Dep',
+                                      filterOptions: 3,
+                                      isHighlighted: false,
+                                      onFetch: () async {
+                                        await context.read<FilterCubit>().getAllDepartments();
+                                      },
+                                    ),
+                                    const Spacer(),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => const Camera()),
+                                        );
+                                      },
+                                      child: Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
+                                    ),
+                                    SizedBox(width: 10 * SizeConfig.horizontalBlock),
+                                    Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
+                                    // SizedBox(width: 10 * SizeConfig.horizontalBlock),
+                                    // Icon(Icons.filter_alt_outlined, size: 26 * SizeConfig.verticalBlock),
+                                  ],)
 
                               ),
                             ],

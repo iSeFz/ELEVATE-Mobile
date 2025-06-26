@@ -9,13 +9,14 @@ class FilterCubit extends Cubit<FilterState> {
 
   List<String> _brandsName = [];
   List<String> _departments = [];
+  Map<String,List<String>> _categories= {'':[]};
 
   Future<void> getAllBrands() async {
     emit(FilterLoading());
     try {
       _brandsName.clear();
       _brandsName = await BrandService.getAllBrandNames();
-      emit(FilterLoaded(brandsName: _brandsName, departments: _departments));
+      emit(FilterLoaded(brandsName: _brandsName, departments: _departments, categories: _categories));
     } catch (e) {
       emit(FilterError(e.toString()));
       rethrow;
@@ -27,11 +28,22 @@ class FilterCubit extends Cubit<FilterState> {
     try {
       _departments.clear();
       _departments = await ProductService.getAllDepartments();
-      emit(FilterLoaded(brandsName:_brandsName,departments:  _departments));
+      emit(FilterLoaded(brandsName:_brandsName,departments:  _departments, categories: _categories));
     } catch (e) {
       emit(FilterError(e.toString()));
       rethrow;
     }
   }
 
+  Future<void> getAllCategories() async {
+    emit(FilterLoading());
+    try {
+      _categories.clear();
+      _categories = await ProductService.getAllCategories();
+      emit(FilterLoaded(brandsName: _brandsName, departments: _departments, categories: _categories));
+    } catch (e) {
+      emit(FilterError(e.toString()));
+      rethrow;
+    }
+  }
 }

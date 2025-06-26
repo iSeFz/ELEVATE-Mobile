@@ -30,16 +30,16 @@ class SearchCubit extends Cubit<SearchState> {
       emit(SearchError(e.toString()));
     }
   }
-  Future<Map<String, List<String>>> getAllCategories() async {
-    emit(SearchLoading());
-    try {
-      final results = await ProductService.getAllProductsCategories();
-      // emit(SearchLoaded(results)); // Uncomment if you want to emit this state
-      return results;
-    } catch (e) {
-      emit(SearchError(e.toString()));
-      rethrow;
-    }
-  }
+  // Future<Map<String, List<String>>> getAllCategories() async {
+  //   emit(SearchLoading());
+  //   try {
+  //     final results = await ProductService.getAllCategories();
+  //     // emit(SearchLoaded(results)); // Uncomment if you want to emit this state
+  //     return results;
+  //   } catch (e) {
+  //     emit(SearchError(e.toString()));
+  //     rethrow;
+  //   }
+  // }
 
 }
