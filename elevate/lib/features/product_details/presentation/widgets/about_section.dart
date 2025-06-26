@@ -39,6 +39,74 @@ class AboutSection extends StatelessWidget {
                 title: Row(
                   children: [
                     Icon(
+                      Icons.person,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "Department",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18 * SizeConfig.textRatio,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min, // Keeps it tight
+                  children: product.department.map((gender) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Text(
+                      gender,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )).toList(),
+                ),
+                onExpansionChanged: (_) {}, // Disable expansion
+                children: const [],
+              ),
+              Divider(
+                color: Colors.grey.shade300,
+                height: 1 * SizeConfig.verticalBlock,
+              ),
+              ExpansionTile(
+                title: Row(
+                  children: [
+                    Icon(
+                      Icons.water_drop,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "Material",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18 * SizeConfig.textRatio,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Text(
+                      product.material,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                onExpansionChanged: (_) {}, // Disable expansion
+                children: const [],
+              ),
+              Divider(
+                color: Colors.grey.shade300,
+                height: 1 * SizeConfig.verticalBlock,
+              ),
+              ExpansionTile(
+                title: Row(
+                  children: [
+                    Icon(
                       Icons.checkroom,
                       color: Theme.of(context).colorScheme.secondary,
                     ),
@@ -71,83 +139,7 @@ class AboutSection extends StatelessWidget {
                 color: Colors.grey.shade300,
                 height: 1 * SizeConfig.verticalBlock,
               ),
-              ExpansionTile(
-                title: Row(
-                  children: [
-                    Icon(
-                      Icons.water_drop,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      "Material",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18 * SizeConfig.textRatio
-                      ),
-                    ),
-                  ],
-                ),
-                trailing: Icon(Icons.expand_more),
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(
-                      16 * SizeConfig.verticalBlock,),
-                    child: Text(
-                      product.material,
-                      style: TextStyle(
-                        fontSize: 14 * SizeConfig.textRatio,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ),
-                ],
-              ),Divider(
-                color: Colors.grey.shade300,
-                height: 1 * SizeConfig.verticalBlock,
-              ),
-              ExpansionTile(
-                title: Row(
-                  children: [
-                    Icon(
-                      Icons.straighten,
-                      color:Theme.of(context).colorScheme.secondary,
-                    ),
-                    SizedBox(
-                      width: 8 * SizeConfig.horizontalBlock,
-                    ),
-                    Text(
-                      "Size Chart",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18 * SizeConfig.textRatio
-                      ),
-                    ),
-                  ],
-                ),
-                trailing: Icon(Icons.expand_more),
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(
-                      8.0 * SizeConfig.verticalBlock,
-                    ),
-                    child: Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                      children: [
-                        Text("S: Chest 36-38 in"),
-                        Text("M: Chest 39-41 in"),
-                        Text("L: Chest 42-44 in"),
-                        Text("XL: Chest 45-47 in"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.grey.shade300,
-                height: 1 * SizeConfig.verticalBlock,
-              ),
+
               // ExpansionTile(
               //   title: Row(
               //     children: [

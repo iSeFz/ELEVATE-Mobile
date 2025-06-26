@@ -9,6 +9,7 @@ class ProductDetailsModel {
   final String category;
   final String description;
   final String material;
+  final List<String> department;
   // final DateTime updatedAt;
   final List<ProductVariant> variants;
 
@@ -25,6 +26,7 @@ class ProductDetailsModel {
     required this.category,
     required this.description,
     required this.material,
+    required this.department,
     // required this.updatedAt,
     required this.variants,
     required this.color,
@@ -48,6 +50,9 @@ class ProductDetailsModel {
       category: json['category'] as String,
       description: json['description'] as String,
       material: json['material'] as String,
+      department: (json['department'] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
       // createdAt: DateTime.fromMillisecondsSinceEpoch(
       //   (json['createdAt']['_seconds'] * 1000),
       // ),
