@@ -43,8 +43,7 @@ class ProductService {
   }
 
   static Future<List<ProductCardModel>> getRelatedProducts(
-    String productId,
-  ) async {
+      String productId,) async {
     final body = {
       "requests": [
         {
@@ -89,9 +88,9 @@ class ProductService {
             final variants = json['variants'] as List;
             final firstVariant = variants.isNotEmpty ? variants[0] : null;
             final images =
-                firstVariant != null && firstVariant['images'] != null
-                    ? firstVariant['images'] as List
-                    : [];
+            firstVariant != null && firstVariant['images'] != null
+                ? firstVariant['images'] as List
+                : [];
 
             return ProductCardModel(
               id: json['objectID'],
@@ -112,4 +111,61 @@ class ProductService {
       throw Exception('Failed to load related products: $e');
     }
   }
+
+
+  //________________FILTERING____________________
+
+  static Future<Map<String, List<String>>> getAllProductsCategories() async {
+    final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products/categories'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> categories = jsonResponse['data'];
+
+      final Map<String, List<String>> mappedCategories = {};
+
+      for (final item in categories) {
+        if (item.contains(' - ')) {
+          final parts = item.split(' - ');
+          final key = parts[0].trim();
+          final value = parts[1].trim();
+
+          if (!mappedCategories.containsKey(key)) {
+            mappedCategories[key] = [];
+          }
+          mappedCategories[key]!.add(value);
+        } else {
+          // categories without ' - '
+          mappedCategories.putIfAbsent(item, () => []);
+        }
+      }
+
+      return mappedCategories;
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+
+  static Future<List<String>> getAllDepartments() async {
+    final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products/departments'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> rawList = jsonResponse['data'];
+
+      // Cast each item to String
+      final List<String> departments = rawList.map((item) => item.toString()).toList();
+
+      return departments;
+    } else {
+      throw Exception('Failed to load departments');
+    }
+  }
+
 }
+
+
+
+
+

@@ -1,11 +1,17 @@
+import 'package:elevate/features/product_details/data/models/product_card_model.dart';
+import 'package:elevate/features/search/data/models/brand_model.dart';
 import 'package:elevate/features/wishlist/presentation/cubits/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/product_card.dart';
 import '../../../camera/presentation/screens/camera.dart';
-import '../cubits/search_cubit.dart';
-import '../cubits/search_state.dart';
+import '../cubits/filter/filter_cubit.dart';
+import '../cubits/filter/filter_state.dart';
+import '../cubits/search/search_cubit.dart';
+import '../cubits/search/search_state.dart';
+import '../widgets/filter_button.dart';
+import '../widgets/filters_row.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({super.key});
@@ -21,9 +27,15 @@ class SearchPage extends StatelessWidget {
         BlocProvider<SearchCubit>(
           create: (_) => SearchCubit(),
         ),
+        BlocProvider<FilterCubit>(
+          create: (_) => FilterCubit()
+        ),
       ],
       child: Builder(
         builder: (context) {
+          // cubit.getAllBrands();
+          // final List<String> brands = cubit.brands;
+          // final List<ProductCardModel>products = cubit.products;
           return Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
@@ -83,32 +95,8 @@ class SearchPage extends StatelessWidget {
                                   horizontal: 10 * SizeConfig.horizontalBlock,
                                   vertical: 10 * SizeConfig.verticalBlock,
                                 ),
-                                child: Row(
-                                  children: [
-                                    // _buildFilterButton('Category', context.read<SearchCubit>().categories),
-                                    // SizedBox(width: 8 * SizeConfig.horizontalBlock),
-                                    // _buildFilterButton('Brand', isHighlighted: true),
-                                    // SizedBox(width: 8 * SizeConfig.horizontalBlock),
-                                    // _buildFilterButton('Price'),
-                                    const Spacer(),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => const Camera()),
-                                        );
-                                      },
-                                      child: Icon(Icons.image_outlined,
-                                          size: 24 * SizeConfig.verticalBlock),
-                                    ),
-                                    SizedBox(width: 10 * SizeConfig.horizontalBlock),
-                                    Icon(Icons.compare_arrows_outlined,
-                                        size: 24 * SizeConfig.verticalBlock),
-                                    SizedBox(width: 10 * SizeConfig.horizontalBlock),
-                                    Icon(Icons.filter_alt_outlined,
-                                        size: 26 * SizeConfig.verticalBlock),
-                                  ],
-                                ),
+                                child:FiltersRow()
+
                               ),
                             ],
                           ),
@@ -122,6 +110,9 @@ class SearchPage extends StatelessWidget {
                           if (state is SearchLoading) {
                             return const Center(child: CircularProgressIndicator());
                           } else if (state is SearchLoaded) {
+
+                            // final cubit = context.read<SearchCubit>();
+                            // final List<ProductCardModel>products = cubit.products;
                             return GridView.builder(
                               padding: const EdgeInsets.all(8),
                               itemCount: state.products.length,
@@ -155,31 +146,5 @@ class SearchPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterButton(String label,
-      Map<String, dynamic> filterOptions,
-      {bool isHighlighted = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 12 * SizeConfig.horizontalBlock,
-        vertical: 8 * SizeConfig.verticalBlock,
-      ),
-      decoration: BoxDecoration(
-        color: isHighlighted ? const Color(0xFFA51930) : Colors.black,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12 * SizeConfig.textRatio,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Icon(Icons.arrow_drop_down, color: Colors.white, size: 20 * SizeConfig.verticalBlock),
-        ],
-      ),
-    );
-  }
+
 }
