@@ -12,6 +12,7 @@ class CartCubit extends Cubit<CartState> {
   String? orderId;
 
   List<CartItem> get cartItems => _cartItems;
+  double get cartItemsCount => subtotal;
 
   CartCubit({required this.userId}) : super(CartInitial());
 
@@ -54,7 +55,7 @@ class CartCubit extends Cubit<CartState> {
       // Try to update the quantity in the backend
       await _cartService.updateQuantity(userId, cartItem.id!, newQuantity);
       _cartItems[index].quantity = newQuantity;
-      // Reference changed, so the UI can detects the change and update quantity 
+      // Reference changed, so the UI can detects the change and update quantity
       // _cartItems = List<CartItem>.from(_cartItems);
       subtotal = _cartItems.fold(
         0.0,

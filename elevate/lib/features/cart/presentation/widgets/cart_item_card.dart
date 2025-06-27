@@ -37,7 +37,7 @@ class CartItemCard extends StatelessWidget {
                   errorBuilder:
                       (context, error, stackTrace) => Container(
                         color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image, size: 40),
+                        child: const Icon(Icons.broken_image, size: 60),
                       ),
                 ),
               ),
@@ -48,9 +48,16 @@ class CartItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.productName,
+                    item.productName
+                        .split(' ')
+                        .map((word) {
+                          if (word.isEmpty) return '';
+                          return word[0].toUpperCase() +
+                              word.substring(1).toLowerCase();
+                        })
+                        .join(' '),
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -59,48 +66,47 @@ class CartItemCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Brand: ${item.brandName}',
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   Text(
-                    'Size: ${item.size}',
-                    style: const TextStyle(color: Colors.grey),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  Text(
-                    'Colors: ${item.colors.join(", ")}',
-                    style: const TextStyle(color: Colors.grey),
+                    '${item.size} / ${item.colors.join(", ")}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   Text(
                     'In stock: ${item.productStock ?? "-"}',
-                    style: const TextStyle(color: Colors.green, fontSize: 13),
+                    style: const TextStyle(color: Colors.green, fontSize: 12),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 12),
             Column(
-              // crossAxisAlignment: CrossAxisAlignment.end, // optional: aligns text/buttons right
-              // mainAxisSize: MainAxisSize.min, // ensures the column takes only needed height
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   "EGP ${item.price.toStringAsFixed(2)}",
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 DropdownButton<int>(
+                  alignment: AlignmentDirectional.centerEnd,
                   value: item.quantity,
                   items: List.generate(
                     min(10, item.productStock ?? 10),
-                    (i) =>
-                        DropdownMenuItem(value: i + 1, child: Text('${i + 1}')),
+                    (i) => DropdownMenuItem(
+                      value: i + 1,
+                      child: Text(
+                        '${i + 1}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
                   ),
                   onChanged: (value) {
                     if (value != null) {
@@ -108,20 +114,39 @@ class CartItemCard extends StatelessWidget {
                     }
                   },
                 ),
-                TextButton.icon(
-                  onPressed: () => _confirmRemove(context),
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  label: const Text(
-                    'Remove',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    minimumSize: const Size(80, 30),
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text('Remove Item'),
+                            content: Text(
+                              'Remove ${item.productName.split(' ').map((word) {
+                                if (word.isEmpty) return '';
+                                return word[0].toUpperCase() + word.substring(1).toLowerCase();
+                              }).join(' ')} from your cart?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  onRemoveItem(index);
+                                },
+                                child: const Text('Remove'),
+                              ),
+                            ],
+                          ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.delete_forever_outlined,
+                    color: Colors.red,
+                    size: 24,
                   ),
                 ),
               ],
@@ -129,30 +154,6 @@ class CartItemCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _confirmRemove(BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Remove Item'),
-            content: Text('Remove ${item.productName} from your cart?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  onRemoveItem(index);
-                },
-                child: const Text('Remove'),
-              ),
-            ],
-          ),
     );
   }
 }

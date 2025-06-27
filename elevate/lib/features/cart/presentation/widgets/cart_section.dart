@@ -8,65 +8,63 @@ class CartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         final cartCubit = context.watch<CartCubit>();
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(10),
           decoration: const BoxDecoration(
             color: Colors.white,
             boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 4)],
           ),
-          child: Column(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Subtotal",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "EGP ${cartCubit.subtotal.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              const Text(
+                "Subtotal",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 9),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+              const Spacer(),
+              Text(
+                "EGP ${cartCubit.subtotal.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: screenWidth * 0.02),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.01,
+                    horizontal: screenWidth * 0.04,
                   ),
-                  onPressed:
-                      cartCubit.canProceedToCheckout()
-                          ? () {
-                            cartCubit.proceedToCheckout();
-                          }
-                          : () {
-                            // Show error message for out of stock items
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Cannot checkout. One or more items are out of stock.',
-                                ),
-                                backgroundColor: Colors.red,
-                                duration: Duration(seconds: 3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed:
+                    cartCubit.canProceedToCheckout()
+                        ? cartCubit.proceedToCheckout
+                        : () {
+                          // Show error message for out of stock items
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Cannot checkout. One or more items are out of stock.',
                               ),
-                            );
-                          },
-                  child: const Text(
-                    "Proceed to Checkout",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        },
+                child: Text(
+                  "Checkout",
+                  style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ),
             ],
