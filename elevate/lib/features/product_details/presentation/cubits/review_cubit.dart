@@ -2,8 +2,6 @@
 import 'package:elevate/core/services/local_database_service.dart';
 import 'package:elevate/features/product_details/presentation/cubits/review_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../auth/data/models/customer.dart';
 import '../../data/models/review_model.dart';
 import '../../data/services/review_service.dart';
 class ReviewCubit extends Cubit<ReviewState> {

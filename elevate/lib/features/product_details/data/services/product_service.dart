@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:elevate/features/product_details/data/models/review_model.dart';
-import 'package:elevate/features/product_details/presentation/screens/product_details_page.dart';
 import 'package:http/http.dart' as http;
 import '../models/product_card_model.dart';
 import '../models/product_details_model.dart';
@@ -42,14 +40,36 @@ class ProductService {
     }
   }
 
-  static Future<List<ProductCardModel>> getRelatedProducts(
+  static Future<List<ProductCardModel>> getSimilarProducts(
     String productId,
   ) async {
+    return _getRecommendedProducts(
+      productId: productId,
+      model: "looking-similar",
+      errorPrefix: "Failed to load similar products", 
+    );
+  }
+
+  static Future<List<ProductCardModel>> getCustomerViewedProducts(
+    String productId,
+  ) async {
+    return _getRecommendedProducts(
+      productId: productId,
+      model: "related-products",
+      errorPrefix: "Failed to load customer viewed products",
+    );
+  }
+
+  static Future<List<ProductCardModel>> _getRecommendedProducts({
+    required String productId,
+    required String model,
+    required String errorPrefix,
+  }) async {
     final body = {
       "requests": [
         {
           "indexName": "product",
-          "model": "related-products",
+          "model": model,
           "objectID": productId,
           "threshold": 0,
           "maxRecommendations": 5,
@@ -75,7 +95,6 @@ class ProductService {
         },
         body: json.encode(body),
       );
-      print(response.body);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
@@ -104,12 +123,10 @@ class ProductService {
         }
         return [];
       } else {
-        throw Exception(
-          'Failed to load related products: ${response.statusCode}',
-        );
+        throw Exception('$errorPrefix: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to load related products: $e');
+      throw Exception('$errorPrefix: $e');
     }
   }
 }

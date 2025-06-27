@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/customer.dart';
 import '../../../data/services/auth_service.dart';
 import 'login_state.dart';
+import '../../../../../core/services/algolia_insights_service.dart';
 
 // Login Cubit
 class LoginCubit extends Cubit<LoginState> {
@@ -54,6 +55,10 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       _customer = await _authService.loginUser(email, password);
       if (_customer != null) {
+        // Initialize Algolia Insights with the user's ID
+        if (_customer!.id != null) {
+          AlgoliaInsightsService.initializeInsights(_customer!.id!);
+        }
         emit(LoginSuccess());
       } else {
         emit(
@@ -83,6 +88,10 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       _customer = await _authService.signInWithGoogleLogin();
       if (_customer != null) {
+        // Initialize Algolia Insights with the user's ID
+        if (_customer!.id != null) {
+          AlgoliaInsightsService.initializeInsights(_customer!.id!);
+        }
         emit(LoginWithGoogleSuccess());
       } else {
         emit(
