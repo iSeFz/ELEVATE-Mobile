@@ -13,7 +13,7 @@ import '../../../../core/widgets/full_screen_image.dart';
 import '../../../../core/services/algolia_insights_service.dart';
 
 class ProductDetails extends StatefulWidget {
-  ProductDetails({
+  const ProductDetails({
     required this.productView,
     required this.userId,
     required this.productId,
@@ -85,15 +85,14 @@ class _ProductDetailsState extends State<ProductDetails> {
                     try {
                       // Send the view event to Algolia
                       if (AlgoliaInsightsService.insights != null) {
-                        AlgoliaInsightsService.insights!.viewedObjects(
+                        AlgoliaInsightsService.insights!.clickedObjects(
                           indexName: 'product',
-                          eventName: 'Product View',
+                          eventName: 'Product click',
                           objectIDs: [state.product.id],
                         );
                       }
-                      print('Product view tracked: ${state.product.id}');
                     } catch (e) {
-                      print('Error tracking product view: $e');
+                      print('Error tracking product click: $e');
                     }
                   }
                   // Extract color-image pairs from product variantsf
@@ -166,9 +165,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //product card info
                                 SizedBox(height: 16 * SizeConfig.verticalBlock),
                                 Text(
-                                  widget.productView.name +
-                                      ' - ' +
-                                      widget.productView.id,
+                                  widget.productView.name,
                                   style: TextStyle(
                                     fontSize: 18 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -185,7 +182,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 12 * SizeConfig.verticalBlock),
                                 Text(
-                                  'EGP ' + state.product.price.toString(),
+                                  'EGP ${state.product.price}',
                                   style: TextStyle(
                                     fontSize: 20 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -195,7 +192,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //color info
                                 SizedBox(height: 13 * SizeConfig.verticalBlock),
                                 Text(
-                                  'Color: ' + state.product.color,
+                                  'Color: ${state.product.color}',
                                   style: TextStyle(
                                     fontSize: 13 * SizeConfig.textRatio,
                                   ),
@@ -245,13 +242,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 ElevatedButton(
                                   onPressed: () {},
-                                  child: Text(
-                                    'ADD TO CART',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.black,
                                     minimumSize: Size(
@@ -260,6 +250,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'ADD TO CART',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
@@ -276,8 +273,19 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
 
-                                // Recommendation Section
-                                RecommendationSection(userId: widget.userId),
+                                // Similar Products Section
+                                RecommendationSection(
+                                  userId: widget.userId,
+                                  recommendationType: RecommendationType.similar,
+                                ),
+
+                                SizedBox(height: 30 * SizeConfig.verticalBlock),
+
+                                // Customer Viewed Section
+                                RecommendationSection(
+                                  userId: widget.userId,
+                                  recommendationType: RecommendationType.customerViewed,
+                                ),
                               ],
                             ),
                           );

@@ -21,30 +21,50 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
           product: product,
           selectedSizeId:
               product.variants.isNotEmpty ? product.variants.first.id : null,
-          relatedProducts: [],
+          similarProducts: [], 
+          customerViewedProducts: [],
         ),
       );
-
-      // Fetch related products after loading the main product
-      fetchRelatedProducts(productId);
+      fetchSimilarProducts(productId); 
+      fetchCustomerViewedProducts(productId);
     } catch (e) {
       emit(ProductDetailsError(e.toString()));
     }
   }
 
-  Future<void> fetchRelatedProducts(String productId) async {
+  Future<void> fetchSimilarProducts(String productId) async {
     try {
       if (state is ProductDetailsLoaded) {
-        List<ProductCardModel> relatedProducts =
-            await ProductService.getRelatedProducts(productId);
+        List<ProductCardModel> similarProducts =
+            await ProductService.getSimilarProducts(
+          productId,
+        ); 
         emit(
           (state as ProductDetailsLoaded).copyWith(
-            relatedProducts: relatedProducts,
+            similarProducts: similarProducts, 
           ),
         );
       }
     } catch (e) {
-      print('Error fetching related products: ${e.toString()}');
+      print(
+        'Error fetching similar products: ${e.toString()}',
+      ); 
+    }
+  }
+
+  Future<void> fetchCustomerViewedProducts(String productId) async {
+    try {
+      if (state is ProductDetailsLoaded) {
+        List<ProductCardModel> customerViewedProducts =
+            await ProductService.getCustomerViewedProducts(productId);
+        emit(
+          (state as ProductDetailsLoaded).copyWith(
+            customerViewedProducts: customerViewedProducts,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error fetching customer viewed products: ${e.toString()}');
     }
   }
 
@@ -57,7 +77,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       final firstLetter = afterX.isNotEmpty ? afterX[0].toUpperCase() : '';
       return '$xPart$firstLetter';
     } else {
-      return size; // fallback
+      return size;
     }
   }
 
