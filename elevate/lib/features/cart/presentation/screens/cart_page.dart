@@ -43,7 +43,7 @@ class CartPage extends StatelessWidget {
             ),
           ).then((_) {
             // Refresh the cart data when returning from the OrderScreen
-            if (!cartCubit.isClosed && context.mounted) {
+            if (context.mounted && !cartCubit.isClosed) {
               cartCubit.fetchCartItems();
             }
           });
@@ -121,14 +121,7 @@ class CartPage extends StatelessWidget {
                       ],
                     ),
                   )
-                  : state is CartLoaded || state is CartItemRemoved
-                  ? const CartBody()
-                  : Center(
-                    child: Text(
-                      'Something went wrong :(\nPlease try again.',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
+                  : const CartBody(),
         );
       },
     );

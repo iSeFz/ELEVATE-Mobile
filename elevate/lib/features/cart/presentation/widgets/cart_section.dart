@@ -48,7 +48,9 @@ class CartSection extends StatelessWidget {
                   ),
                 ),
                 onPressed:
-                    cartCubit.canProceedToCheckout()
+                    state is CartCheckoutLoading
+                        ? null // Disable button during loading
+                        : cartCubit.canProceedToCheckout()
                         ? cartCubit.proceedToCheckout
                         : () {
                           // Show error message for out of stock items
@@ -62,10 +64,35 @@ class CartSection extends StatelessWidget {
                             ),
                           );
                         },
-                child: Text(
-                  "Checkout",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
+                child:
+                    state is CartCheckoutLoading
+                        ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Checkout...",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        )
+                        : Text(
+                          "Checkout",
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
               ),
             ],
           ),

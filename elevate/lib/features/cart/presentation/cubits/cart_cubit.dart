@@ -113,6 +113,7 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> proceedToCheckout() async {
+    emit(CartCheckoutLoading());
     try {
       orderId = await _cartService.proceedToCheckout(userId, _cartItems);
       emit(CartCheckoutSuccess());

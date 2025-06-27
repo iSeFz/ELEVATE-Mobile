@@ -10,6 +10,8 @@ class CartItemRemoved extends CartState {}
 
 class CartEmpty extends CartState {}
 
+class CartCheckoutLoading extends CartState {}
+
 class CartCheckoutSuccess extends CartState {}
 
 class CartError extends CartState {
