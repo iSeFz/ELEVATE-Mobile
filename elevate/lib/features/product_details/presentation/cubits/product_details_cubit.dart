@@ -8,7 +8,7 @@ import '../../data/services/product_service.dart';
 class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   ProductDetailsCubit() : super(ProductDetailsInitial());
 
-  Future<void> fetchProductDetials(String productId) async {
+  Future<void> fetchProductDetails(String productId) async {
     try {
       emit(ProductDetailsLoading());
 
@@ -21,11 +21,11 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
           product: product,
           selectedSizeId:
               product.variants.isNotEmpty ? product.variants.first.id : null,
-          similarProducts: [], 
+          similarProducts: [],
           customerViewedProducts: [],
         ),
       );
-      fetchSimilarProducts(productId); 
+      fetchSimilarProducts(productId);
       fetchCustomerViewedProducts(productId);
     } catch (e) {
       emit(ProductDetailsError(e.toString()));
@@ -36,19 +36,15 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     try {
       if (state is ProductDetailsLoaded) {
         List<ProductCardModel> similarProducts =
-            await ProductService.getSimilarProducts(
-          productId,
-        ); 
+            await ProductService.getSimilarProducts(productId);
         emit(
           (state as ProductDetailsLoaded).copyWith(
-            similarProducts: similarProducts, 
+            similarProducts: similarProducts,
           ),
         );
       }
     } catch (e) {
-      print(
-        'Error fetching similar products: ${e.toString()}',
-      ); 
+      print('Error fetching similar products: ${e.toString()}');
     }
   }
 

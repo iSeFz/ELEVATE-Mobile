@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/widgets/product_card.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
@@ -10,9 +9,11 @@ import '../widgets/reviews_section.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/full_screen_image.dart';
 import '../widgets/size_container.dart';
+import '../widgets/recommendation_section.dart';
+import '../../../../core/services/algolia_insights_service.dart';
 
 class ProductDetails extends StatefulWidget {
-  ProductDetails({
+  const ProductDetails({
     required this.productView,
     required this.userId,
     required this.productId,
@@ -28,6 +29,7 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
+  bool _hasTrackedClick = false;
   String selectedSize = "S";
   String size = "M";
   List<String> sizes = ['S', 'M', 'L', 'XL'];
@@ -70,13 +72,29 @@ class _ProductDetailsState extends State<ProductDetails> {
             body: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
               builder: (context, state) {
                 if (state is ProductDetailsInitial) {
-                  context.read<ProductDetailsCubit>().fetchProductDetials(
+                  context.read<ProductDetailsCubit>().fetchProductDetails(
                     widget.productId,
                   );
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ProductDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ProductDetailsLoaded) {
+                  // Track product click once when product details are loaded
+                  if (!_hasTrackedClick) {
+                    _hasTrackedClick = true;
+                    try {
+                      // Send the click event to Algolia
+                      if (AlgoliaInsightsService.insights != null) {
+                        AlgoliaInsightsService.insights!.clickedObjects(
+                          indexName: 'product',
+                          eventName: 'Product click',
+                          objectIDs: [state.product.id],
+                        );
+                      }
+                    } catch (e) {
+                      print('Error tracking product click: $e');
+                    }
+                  }
                   // Extract color-image pairs from product variantsf
                   return Stack(
                     children: [
@@ -164,7 +182,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
                                 SizedBox(height: 12 * SizeConfig.verticalBlock),
                                 Text(
-                                  'EGP ' + state.product.price.toString(),
+                                  'EGP ${state.product.price}',
                                   style: TextStyle(
                                     fontSize: 20 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -174,7 +192,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //color info
                                 SizedBox(height: 13 * SizeConfig.verticalBlock),
                                 Text(
-                                  'Color: ' + state.product.color,
+                                  'Color: ${state.product.color}',
                                   style: TextStyle(
                                     fontSize: 13 * SizeConfig.textRatio,
                                   ),
@@ -224,13 +242,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
                                 ElevatedButton(
                                   onPressed: () {},
-                                  child: Text(
-                                    'ADD TO CART',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.black,
                                     minimumSize: Size(
@@ -239,6 +250,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'ADD TO CART',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
@@ -253,75 +271,22 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   productId: state.product.id,
                                   userId: widget.userId,
                                 ),
-
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        8.0 * SizeConfig.horizontalBlock,
-                                  ),
-                                  child: Text(
-                                    "Related Products",
-                                    style: TextStyle(
-                                      fontSize: 18 * SizeConfig.textRatio,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+
+                                // Similar Products Section
+                                RecommendationSection(
+                                  userId: widget.userId,
+                                  recommendationType:
+                                      RecommendationType.similar,
                                 ),
-                                SizedBox(height: 10 * SizeConfig.verticalBlock),
-                                SizedBox(
-                                  height:
-                                      350 *
-                                      SizeConfig
-                                          .verticalBlock, // Increased height to prevent overflow
-                                  child:
-                                      state.relatedProducts != null &&
-                                              state.relatedProducts!.isNotEmpty
-                                          ? ListView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  8.0 *
-                                                  SizeConfig.horizontalBlock,
-                                            ),
-                                            itemCount:
-                                                state.relatedProducts!.length,
-                                            itemBuilder: (context, index) {
-                                              return Padding(
-                                                padding: EdgeInsets.only(
-                                                  right:
-                                                      12 *
-                                                      SizeConfig
-                                                          .horizontalBlock,
-                                                ),
-                                                child: SizedBox(
-                                                  width:
-                                                      180 *
-                                                      SizeConfig
-                                                          .horizontalBlock,
-                                                  height:
-                                                      320 *
-                                                      SizeConfig.verticalBlock,
-                                                  child: ProductCard(
-                                                    product:
-                                                        state
-                                                            .relatedProducts![index],
-                                                    userId: widget.userId,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          )
-                                          : Center(
-                                            child: Text(
-                                              "Loading related products...",
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                                fontSize:
-                                                    14 * SizeConfig.textRatio,
-                                              ),
-                                            ),
-                                          ),
+
+                                SizedBox(height: 30 * SizeConfig.verticalBlock),
+
+                                // Customer Viewed Section
+                                RecommendationSection(
+                                  userId: widget.userId,
+                                  recommendationType:
+                                      RecommendationType.customerViewed,
                                 ),
                               ],
                             ),

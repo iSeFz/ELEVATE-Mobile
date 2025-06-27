@@ -1,5 +1,4 @@
 import 'package:elevate/features/product_details/data/models/product_variant_model.dart';
-import 'package:elevate/features/product_details/presentation/screens/product_details_page.dart';
 
 class ProductDetailsModel {
   final String id;
