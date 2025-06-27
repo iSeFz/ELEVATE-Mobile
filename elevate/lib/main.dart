@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'features/common/splash_screen.dart';
 import 'core/utils/size_config.dart';
+import 'firebase_options.dart'; // <-- Add this
 
-// Main function to start the run
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // <-- Important fix
+  );
   runApp(const MyApp());
 }
 
-// Main app widget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
