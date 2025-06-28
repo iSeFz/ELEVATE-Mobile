@@ -11,9 +11,12 @@ class HomeCubit extends Cubit<HomeState> {
   List<ProductCardModel> _homePageProducts = [];
   int _currentPage = 1;
   bool _isLoadingMore = false;
+  Map<String, List<ProductCardModel>> _departmentProducts = {};
 
   List<ProductCardModel> get homePageProducts => _homePageProducts;
   bool get isLoadingMore => _isLoadingMore;
+  Map<String, List<ProductCardModel>> get departmentProducts =>
+      _departmentProducts;
 
   // Retrieve a single page of products
   Future<void> fetchProductPage(int pageNumber) async {
@@ -53,6 +56,43 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> loadMoreProducts() async {
     if (!_isLoadingMore) {
       await fetchProductPage(_currentPage + 1);
+    }
+  }
+
+  Future<void> fetchProductsByDepartments(List<String> departments) async {
+    emit(HomeLoading());
+    try {
+      final results = await Future.wait(
+        departments.map(
+          (dept) => _productService.getProductsByDepartment(dept),
+        ),
+      );
+
+      final Map<String, List<ProductCardModel>> grouped = {};
+
+      // Ensure we don't access out-of-bounds indices
+      for (int i = 0; i < departments.length && i < results.length; i++) {
+        final departmentName = departments[i];
+        final products = results[i];
+        grouped[departmentName] = products;
+      }
+
+      _departmentProducts = grouped;
+
+      // Check if we have any products at all
+      final totalProducts = _departmentProducts.values.fold<int>(
+        0,
+        (sum, products) => sum + products.length,
+      );
+
+      if (totalProducts > 0) {
+        emit(HomeLoaded());
+      } else {
+        emit(HomeError(message: "No products found in any department"));
+      }
+    } catch (e) {
+      _departmentProducts = {}; // Reset to empty map on error
+      emit(HomeError(message: "Failed to load products: ${e.toString()}"));
     }
   }
 }

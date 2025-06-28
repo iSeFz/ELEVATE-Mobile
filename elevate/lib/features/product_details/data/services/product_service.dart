@@ -46,7 +46,7 @@ class ProductService {
     return _getRecommendedProducts(
       productId: productId,
       model: "looking-similar",
-      errorPrefix: "Failed to load similar products", 
+      errorPrefix: "Failed to load similar products",
     );
   }
 
@@ -127,6 +127,39 @@ class ProductService {
       }
     } catch (e) {
       throw Exception('$errorPrefix: $e');
+    }
+  }
+
+  Future<List<ProductCardModel>> getProductsByDepartment(
+    String department,
+  ) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products?department=$department'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        // Check if 'data' key exists and is a List
+        if (jsonResponse.containsKey('data') && jsonResponse['data'] is List) {
+          final List<dynamic> productsJson = jsonResponse['data'];
+          return productsJson
+              .map((json) => ProductCardModel.fromJson(json))
+              .toList();
+        } else {
+          // Return empty list if data structure is unexpected
+          return [];
+        }
+      } else {
+        throw Exception(
+          'Failed to load products for department $department: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      // Return empty list instead of throwing to prevent app crash
+      print('Error fetching products for department $department: $e');
+      return [];
     }
   }
 }
