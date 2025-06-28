@@ -22,7 +22,7 @@ class CartPage extends StatelessWidget {
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         }
-        if (state is CartItemRemoved) {
+        if (state is CartItemSuccess) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text('Item removed from cart')));

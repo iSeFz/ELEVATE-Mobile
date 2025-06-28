@@ -1,4 +1,8 @@
+import 'package:elevate/features/product_details/data/models/product_details_model.dart';
+import 'package:elevate/features/product_details/data/models/product_variant_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/services/local_database_service.dart';
+import '../../../product_details/data/models/product_card_model.dart';
 import '../../data/services/cart_service.dart';
 import '../../data/models/cart_item.dart';
 import 'cart_state.dart';
@@ -96,12 +100,18 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> removeFromCart(int index) async {
+  Future<void> removeFromCart({String variantId='', int index=-1}) async {
+    emit(CartItemLoading());
     try {
-      final cartItem = _cartItems[index];
-      await _cartService.removeItem(userId, cartItem.id!);
-      _cartItems.removeAt(index);
-      emit(CartItemRemoved());
+      if(index==-1){
+        index = _cartItems.indexWhere((item) => item.variantId == variantId);
+      }
+      if (index != -1) {
+        final cartItem = _cartItems[index];
+        await _cartService.removeItem(userId, cartItem.id!);
+        _cartItems.removeAt(index);
+        emit(CartItemSuccess());
+      }
       if (_cartItems.isEmpty) {
         emit(CartEmpty());
       } else {
@@ -144,6 +154,34 @@ class CartCubit extends Cubit<CartState> {
       } else {
         emit(CartEmpty());
       }
+    }
+  }
+
+  isInCart(String selectedVariantId) {
+    return _cartItems.any((item) =>
+        item.variantId == selectedVariantId);
+  }
+  // *__from product_details page__*
+  Future<void> addToCart(ProductCardModel product, ProductVariant selectedVariant) async{
+    emit(CartItemLoading());
+    try {
+      String customerId =LocalDatabaseService.getCustomerId() ?? userId;
+      final item = CartItem(
+        productId: product.id,
+        variantId: selectedVariant.id,
+        quantity: 1,
+        brandName: product.brandName,
+        productName: product.name,
+        size: selectedVariant.size ?? '',
+        colors: selectedVariant.colors ?? [],
+        price: selectedVariant.price,
+        imageURL: product.image,
+      );
+      _cartItems.add(item);
+      await _cartService.addItem(customerId, product.id, selectedVariant.id, 1);
+      emit(CartItemSuccess());
+    } catch (e) {
+      emit(CartError(message: e.toString()));
     }
   }
 

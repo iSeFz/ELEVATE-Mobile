@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../cart/presentation/cubits/cart_cubit.dart';
+import '../../../cart/presentation/cubits/cart_state.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
 import '../cubits/product_details_cubit.dart';
@@ -30,15 +32,18 @@ class ProductDetails extends StatefulWidget {
 
 class _ProductDetailsState extends State<ProductDetails> {
   bool _hasTrackedClick = false;
-  String selectedSize = "S";
-  String size = "M";
-  List<String> sizes = ['S', 'M', 'L', 'XL'];
+  // String selectedSizeId = "S";
+  // String size = "M";
+  // List<String> sizes = ['S', 'M', 'L', 'XL'];
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<WishlistCubit>(create: (context) => WishlistCubit()),
         BlocProvider<ProductDetailsCubit>(create: (_) => ProductDetailsCubit()),
+        BlocProvider<CartCubit>(
+          create: (context) => CartCubit(userId: widget.userId),
+        ),
       ],
       child: Builder(
         builder: (context) {
@@ -240,26 +245,45 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
 
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
-                                    minimumSize: Size(
-                                      double.infinity,
-                                      50 * SizeConfig.textRatio,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'ADD TO CART',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                            BlocBuilder<CartCubit, CartState>(
+                                  builder: (context, cartState) {
+                                    bool isLoading = cartState is CartItemLoading;
+                                    bool isInCart = context.read<CartCubit>().isInCart(state.selectedSizeId!);
+
+                                    return ElevatedButton(
+                                      onPressed: isLoading
+                                          ? null
+                                          : () {
+                                        if (isInCart) {
+                                          context.read<CartCubit>().removeFromCart(variantId: state.selectedSizeId!);
+                                        } else {
+                                          context.read<CartCubit>().addToCart(
+                                            widget.productView,
+                                            state.product.variants.firstWhere((v) => v.id == state.selectedSizeId),
+                                          );
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: isInCart ? Theme.of(context).primaryColor : Colors.black,
+                                        minimumSize: Size(double.infinity, 50 * SizeConfig.textRatio),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      child: isLoading
+                                          ? CircularProgressIndicator(color: Colors.white)
+                                          : Text(
+                                        isInCart ? 'ADDED TO CART' : 'ADD TO CART',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
+
+
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),
                                 //about prod
                                 AboutSection(product: state.product),
@@ -299,8 +323,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                   return Center(child: Text('Error: ${state.message}'));
                 }
                 return const Center(child: Text('loading...'));
+
               },
-            ),
+          ),
           );
         },
       ),
