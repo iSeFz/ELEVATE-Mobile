@@ -103,14 +103,14 @@ class CartCubit extends Cubit<CartState> {
   Future<void> removeFromCart({String variantId='', int index=-1}) async {
     emit(CartItemLoading());
     try {
+      String customerId = LocalDatabaseService.getCustomerId();
       if(index==-1){
         index = _cartItems.indexWhere((item) => item.variantId == variantId);
       }
       if (index != -1) {
         final cartItem = _cartItems[index];
-        await _cartService.removeItem(userId, cartItem.id!);
+        await _cartService.removeItem(customerId, cartItem.id!);
         _cartItems.removeAt(index);
-        _cartItems = List<CartItem>.from(_cartItems);
         emit(CartItemSuccess());
       }
       if (_cartItems.isEmpty) {
@@ -119,7 +119,7 @@ class CartCubit extends Cubit<CartState> {
         emit(CartLoaded());
       }
     } catch (e) {
-      emit(CartError(message: 'Failed to remove item: $e'));
+      emit(CartError(message: 'Failed to remove item:  $index $e'));
     }
   }
 

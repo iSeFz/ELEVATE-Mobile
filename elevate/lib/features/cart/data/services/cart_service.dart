@@ -72,7 +72,7 @@ class CartService {
       headers: {testAuthHeader: testAuthValue},
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to remove item.');
+      throw Exception('Failed to remove item. ${response.body}');
     }
   }
 

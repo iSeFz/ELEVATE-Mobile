@@ -32,7 +32,7 @@ class ProductDetails extends StatefulWidget {
 
 class _ProductDetailsState extends State<ProductDetails> {
   bool _hasTrackedClick = false;
-  // String selectedSizeId = "S";
+  String selectedSizeId = '';
   // String size = "M";
   // List<String> sizes = ['S', 'M', 'L', 'XL'];
   @override
@@ -219,7 +219,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         final shortLabel = context
                                             .read<ProductDetailsCubit>()
                                             .getShortSize(variant.size);
-                                        final selectedSizeId =
+                                        selectedSizeId =
                                             context
                                                 .watch<ProductDetailsCubit>()
                                                 .state
@@ -255,12 +255,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   },
                                   child: BlocBuilder<CartCubit, CartState>(
                                     builder: (context, cartState) {
-                                      bool isInCart = context.watch<CartCubit>().isInCart(state.selectedSizeId!);
+                                      bool isInCart = context.watch<CartCubit>().isInCart(selectedSizeId);
 
                                       return ElevatedButton(
                                         onPressed: () {
                                           if (isInCart) {
-                                            context.read<CartCubit>().removeFromCart(variantId: state.selectedSizeId!);
+                                            context.read<CartCubit>().removeFromCart(variantId: selectedSizeId);
                                           } else {
                                             context.read<CartCubit>().addToCart(
                                               widget.productView,
