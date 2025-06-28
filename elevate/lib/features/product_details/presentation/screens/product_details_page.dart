@@ -245,43 +245,50 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ),
 
                                 SizedBox(height: 20 * SizeConfig.verticalBlock),
-                            BlocBuilder<CartCubit, CartState>(
-                                  builder: (context, cartState) {
-                                    bool isLoading = cartState is CartItemLoading;
-                                    bool isInCart = context.read<CartCubit>().isInCart(state.selectedSizeId!);
-
-                                    return ElevatedButton(
-                                      onPressed: isLoading
-                                          ? null
-                                          : () {
-                                        if (isInCart) {
-                                          context.read<CartCubit>().removeFromCart(variantId: state.selectedSizeId!);
-                                        } else {
-                                          context.read<CartCubit>().addToCart(
-                                            widget.productView,
-                                            state.product.variants.firstWhere((v) => v.id == state.selectedSizeId),
-                                          );
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: isInCart ? Theme.of(context).primaryColor : Colors.black,
-                                        minimumSize: Size(double.infinity, 50 * SizeConfig.textRatio),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      child: isLoading
-                                          ? CircularProgressIndicator(color: Colors.white)
-                                          : Text(
-                                        isInCart ? 'ADDED TO CART' : 'ADD TO CART',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    );
+                                BlocListener<CartCubit, CartState>(
+                                  listener: (context, cartState) {
+                                    if (cartState is CartError) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(cartState.message)),
+                                      );
+                                    }
                                   },
+                                  child: BlocBuilder<CartCubit, CartState>(
+                                    builder: (context, cartState) {
+                                      bool isInCart = context.watch<CartCubit>().isInCart(state.selectedSizeId!);
+
+                                      return ElevatedButton(
+                                        onPressed: () {
+                                          if (isInCart) {
+                                            context.read<CartCubit>().removeFromCart(variantId: state.selectedSizeId!);
+                                          } else {
+                                            context.read<CartCubit>().addToCart(
+                                              widget.productView,
+                                              state.product.variants.firstWhere((v) => v.id == state.selectedSizeId),
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: isInCart ? Theme.of(context).primaryColor : Colors.black,
+                                          minimumSize: Size(double.infinity, 50 * SizeConfig.textRatio),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5),
+                                          ),
+                                        ),
+                                        child: (cartState is CartItemLoading)
+                                            ? CircularProgressIndicator(color: Colors.white)
+                                            : Text(
+                                          isInCart ? 'ADDED TO CART' : 'ADD TO CART',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
+
 
 
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),

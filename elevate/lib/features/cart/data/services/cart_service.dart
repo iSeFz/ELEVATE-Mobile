@@ -39,7 +39,7 @@ class CartService {
         'quantity': quantity,
       }),
     );
-    if (response.statusCode != 201) {
+    if (response.statusCode != 200) {
       throw Exception('Failed to add item to cart.'+response.body);
     }
   }

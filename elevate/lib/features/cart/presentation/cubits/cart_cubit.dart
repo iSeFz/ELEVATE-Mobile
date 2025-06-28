@@ -11,7 +11,7 @@ class CartCubit extends Cubit<CartState> {
   final CartService _cartService = CartService();
   final String userId;
 
-  List<CartItem> _cartItems = [];
+  static List<CartItem> _cartItems = [];
   double subtotal = 0.0;
   String? orderId;
 
@@ -110,6 +110,7 @@ class CartCubit extends Cubit<CartState> {
         final cartItem = _cartItems[index];
         await _cartService.removeItem(userId, cartItem.id!);
         _cartItems.removeAt(index);
+        _cartItems = List<CartItem>.from(_cartItems);
         emit(CartItemSuccess());
       }
       if (_cartItems.isEmpty) {
