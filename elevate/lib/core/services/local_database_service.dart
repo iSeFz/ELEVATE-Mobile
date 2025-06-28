@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart'; // For mobile platforms
 import '../../features/auth/data/models/customer.dart';
+import '../../features/profile/data/models/address.dart';
 
 class LocalDatabaseService {
   static late Box<Customer> box = Hive.box<Customer>('user');
@@ -9,6 +10,7 @@ class LocalDatabaseService {
     Hive.init(dir.path);
 
     Hive.registerAdapter(CustomerAdapter());
+    Hive.registerAdapter(UserAddressAdapter());
     await Hive.openBox<Customer>('user');
 
   }

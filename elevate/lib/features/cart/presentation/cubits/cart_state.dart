@@ -6,7 +6,8 @@ class CartLoading extends CartState {}
 
 class CartLoaded extends CartState {}
 
-class CartItemRemoved extends CartState {}
+class CartItemLoading extends CartState {}
+class CartItemSuccess extends CartState {}
 
 class CartEmpty extends CartState {}
 

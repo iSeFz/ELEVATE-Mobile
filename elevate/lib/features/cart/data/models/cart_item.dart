@@ -8,7 +8,7 @@ class CartItem {
   int? productStock;
   String size;
   List<String> colors;
-  double price;
+  int price;
   String imageURL;
 
   CartItem({
@@ -38,7 +38,7 @@ class CartItem {
               ?.map((c) => c.toString())
               .toList() ??
           [],
-      price: (json['price'] as num).toDouble(),
+      price: json['price'] as int,
       imageURL: json['imageURL'],
     );
   }

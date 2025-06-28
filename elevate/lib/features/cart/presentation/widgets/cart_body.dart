@@ -28,7 +28,7 @@ class CartBody extends StatelessWidget {
                       cartCubit.updateQuantity(idx, newQuantity);
                     },
                     onRemoveItem: (idx) {
-                      cartCubit.removeFromCart(idx);
+                      cartCubit.removeFromCart(index: idx);
                     },
                   );
                 },

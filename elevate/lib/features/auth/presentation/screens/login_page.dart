@@ -15,6 +15,11 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context);
+
+    // Initialize the LoginCubit
     return BlocProvider<LoginCubit>(
       create: (context) => LoginCubit(),
       child: Builder(
@@ -23,31 +28,72 @@ class LoginPage extends StatelessWidget {
           return BlocListener<LoginCubit, LoginState>(
             listener: (context, state) {
               if (state is LoginSuccess || state is LoginWithGoogleSuccess) {
-                String successMessage =
-                    state is LoginSuccess
-                        ? 'Login successful!\nWelcome back, ${loginCubit.customer?.firstName ?? 'User'}!'
-                        : 'Signed in with Google successfully!\nWelcome back, ${loginCubit.customer?.firstName ?? 'User'}!';
-
                 showDialog(
                   context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext dialogContext) {
+                  builder: (context) {
                     return AlertDialog(
-                      title: const Text(
-                        'Success ✅',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(height: screenHeight * 0.02),
+                          CircleAvatar(
+                            backgroundColor: theme.colorScheme.primary,
+                            radius: screenWidth * 0.1,
+                            child: Icon(
+                              Icons.check_circle_outlined,
+                              color: Colors.white,
+                              size: screenWidth * 0.2,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          Text(
+                            'Success',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: theme.textTheme.bodyMedium,
+                              children: [
+                                TextSpan(
+                                  text: 'Welcome back, ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '${loginCubit.customer?.firstName ?? 'User'}!',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      content: Text(
-                        successMessage,
-                        style: const TextStyle(fontSize: 20),
-                      ),
+                      actionsAlignment: MainAxisAlignment.center,
                       actions: [
                         TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: theme.colorScheme.primary,
+                            padding: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.005,
+                              horizontal: screenWidth * 0.1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
                           onPressed: () {
-                            Navigator.of(dialogContext).pop();
                             Navigator.pushReplacement(
                               context,
                               PageRouteBuilder(
@@ -69,9 +115,13 @@ class LoginPage extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
+                          child: Text(
                             'OK',
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],

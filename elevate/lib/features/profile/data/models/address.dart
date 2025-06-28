@@ -1,14 +1,34 @@
-class UserAddress {
-  String? id;
-  String? displayedAddress;
-  String? city;
-  String? street;
-  int? building;
-  int? postalCode;
-  double? latitude;
-  double? longitude;
-  bool? isDefault;
+import 'package:hive/hive.dart';
+part 'address.g.dart';
 
+@HiveType(typeId: 1)
+class UserAddress {
+  @HiveField(0)
+  String? id;
+
+  @HiveField(1)
+  String? displayedAddress;
+
+  @HiveField(2)
+  String? city;
+
+  @HiveField(3)
+  String? street;
+
+  @HiveField(4)
+  int? building;
+
+  @HiveField(5)
+  int? postalCode;
+
+  @HiveField(6)
+  double? latitude;
+
+  @HiveField(7)
+  double? longitude;
+
+  @HiveField(8)
+  bool? isDefault;
   UserAddress({
     required this.id,
     required this.displayedAddress,

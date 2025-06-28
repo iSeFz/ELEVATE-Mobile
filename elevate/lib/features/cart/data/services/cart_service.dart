@@ -20,6 +20,30 @@ class CartService {
     }
   }
 
+  Future<void> addItem(
+    String userId,
+    String productId,
+    String variantId,
+    int quantity,
+  ) async {
+    final url = "$apiBaseURL/v1/customers/me/cart/items?userId=$userId";
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        testAuthHeader: testAuthValue,
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'productId': productId,
+        'variantId': variantId,
+        'quantity': quantity,
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to add item to cart.'+response.body);
+    }
+  }
+
   Future<void> updateQuantity(
     String userId,
     String cartItemId,
@@ -48,7 +72,7 @@ class CartService {
       headers: {testAuthHeader: testAuthValue},
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to remove item.');
+      throw Exception('Failed to remove item. ${response.body}');
     }
   }
 
