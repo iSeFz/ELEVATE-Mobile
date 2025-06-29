@@ -6,6 +6,7 @@ import '../cubits/home_state.dart';
 import '/../core/widgets/product_card.dart';
 import '/core/widgets/video_player_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../cart/presentation/cubits/cart_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -102,7 +103,13 @@ class HomePage extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: (entry.key.toLowerCase() == 'men' || entry.key.toLowerCase() == 'women' || entry.key.toLowerCase() == 'kids') ? 32.0 : 16.0,
+                                  horizontal:
+                                      (entry.key.toLowerCase() == 'men' ||
+                                              entry.key.toLowerCase() ==
+                                                  'women' ||
+                                              entry.key.toLowerCase() == 'kids')
+                                          ? 32.0
+                                          : 16.0,
                                   vertical: 8.0,
                                 ),
                                 child: Text(
@@ -124,11 +131,16 @@ class HomePage extends StatelessWidget {
                                   separatorBuilder:
                                       (_, __) => const SizedBox(width: 12),
                                   itemBuilder: (context, index) {
+                                    final tempCartCubit =
+                                        context.read<CartCubit>();
                                     return SizedBox(
                                       width: 200 * SizeConfig.horizontalBlock,
-                                      child: ProductCard(
-                                        product: entry.value[index],
-                                        userId: '',
+                                      child: BlocProvider.value(
+                                        value: tempCartCubit,
+                                        child: ProductCard(
+                                          product: entry.value[index],
+                                          userId: tempCartCubit.userId,
+                                        ),
                                       ),
                                     );
                                   },

@@ -13,6 +13,7 @@ import '../../../../core/widgets/full_screen_image.dart';
 import '../widgets/size_container.dart';
 import '../widgets/recommendation_section.dart';
 import '../../../../core/services/algolia_insights_service.dart';
+import 'package:elevate/features/ai_tryon/presentation/screens/ai_tryon_camera.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({
@@ -120,11 +121,39 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ),
                                 );
                               },
-                              child: Image.network(
-                                imageUrl,
-                                width: double.infinity,
-                                fit: BoxFit.fitWidth,
-                                alignment: Alignment.topCenter,
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    imageUrl,
+                                    width: double.infinity,
+                                    fit: BoxFit.fitWidth,
+                                    alignment: Alignment.topCenter,
+                                  ),
+                                  Positioned(
+                                    top: 10 * SizeConfig.verticalBlock,
+                                    right: 10 * SizeConfig.horizontalBlock,
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.dry_cleaning_rounded,
+                                        color: Theme.of(context).primaryColor,
+                                        size: 40,
+                                      ),
+                                      tooltip: 'Try On Using AI',
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (_) => AITryonCamera(
+                                                  productImage: imageUrl,
+                                                  customerID: widget.userId,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -167,10 +196,17 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ),
                                 ),
 
-                                //product card info
+                                // Product card information
                                 SizedBox(height: 16 * SizeConfig.verticalBlock),
                                 Text(
-                                  widget.productView.name,
+                                  widget.productView.name
+                                      .split(' ')
+                                      .map((word) {
+                                        if (word.isEmpty) return '';
+                                        return word[0].toUpperCase() +
+                                            word.substring(1).toLowerCase();
+                                      })
+                                      .join(' '),
                                   style: TextStyle(
                                     fontSize: 18 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
@@ -248,48 +284,75 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 BlocListener<CartCubit, CartState>(
                                   listener: (context, cartState) {
                                     if (cartState is CartError) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(cartState.message)),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(cartState.message),
+                                        ),
                                       );
                                     }
                                   },
                                   child: BlocBuilder<CartCubit, CartState>(
                                     builder: (context, cartState) {
-                                      bool isInCart = context.watch<CartCubit>().isInCart(selectedSizeId);
+                                      bool isInCart = context
+                                          .watch<CartCubit>()
+                                          .isInCart(selectedSizeId);
 
                                       return ElevatedButton(
                                         onPressed: () {
                                           if (isInCart) {
-                                            context.read<CartCubit>().removeFromCart(variantId: selectedSizeId);
+                                            context
+                                                .read<CartCubit>()
+                                                .removeFromCart(
+                                                  variantId: selectedSizeId,
+                                                );
                                           } else {
                                             context.read<CartCubit>().addToCart(
                                               widget.productView,
-                                              state.product.variants.firstWhere((v) => v.id == state.selectedSizeId),
+                                              state.product.variants.firstWhere(
+                                                (v) =>
+                                                    v.id ==
+                                                    state.selectedSizeId,
+                                              ),
                                             );
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: isInCart ? Theme.of(context).primaryColor : Colors.black,
-                                          minimumSize: Size(double.infinity, 50 * SizeConfig.textRatio),
+                                          backgroundColor:
+                                              isInCart
+                                                  ? Theme.of(
+                                                    context,
+                                                  ).primaryColor
+                                                  : Colors.black,
+                                          minimumSize: Size(
+                                            double.infinity,
+                                            50 * SizeConfig.textRatio,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(5),
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
                                           ),
                                         ),
-                                        child: (cartState is CartItemLoading)
-                                            ? CircularProgressIndicator(color: Colors.white)
-                                            : Text(
-                                          isInCart ? 'ADDED TO CART' : 'ADD TO CART',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        child:
+                                            (cartState is CartItemLoading)
+                                                ? CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                )
+                                                : Text(
+                                                  isInCart
+                                                      ? 'ADDED TO CART'
+                                                      : 'ADD TO CART',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                       );
                                     },
                                   ),
                                 ),
-
-
 
                                 SizedBox(height: 30 * SizeConfig.verticalBlock),
                                 //about prod
@@ -330,9 +393,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                   return Center(child: Text('Error: ${state.message}'));
                 }
                 return const Center(child: Text('loading...'));
-
               },
-          ),
+            ),
           );
         },
       ),

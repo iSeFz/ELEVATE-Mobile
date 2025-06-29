@@ -6,6 +6,7 @@ import '../../../../core/widgets/product_card.dart';
 import '../../../common/camera.dart';
 import '../cubits/search_cubit.dart';
 import '../cubits/search_state.dart';
+import '../../../cart/presentation/cubits/cart_cubit.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({super.key});
@@ -132,9 +133,13 @@ class SearchPage extends StatelessWidget {
                                 mainAxisExtent: 350 * SizeConfig.verticalBlock,
                               ),
                               itemBuilder: (context, index) {
-                                return ProductCard(
-                                  product: state.products[index],
-                                  userId: '',
+                                final tempCartCubit = context.read<CartCubit>();
+                                return BlocProvider.value(
+                                  value: tempCartCubit,
+                                  child: ProductCard(
+                                    product: state.products[index],
+                                    userId: tempCartCubit.userId,
+                                  ),
                                 );
                               },
                             );
