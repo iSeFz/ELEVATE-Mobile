@@ -18,17 +18,21 @@ class FilterCubit extends Cubit<FilterState> {
   static List<String> _departments = [];
   List<String> get departments => List.unmodifiable(_departments);
 
-  Map<String,List<String>> _categories= {'':[]};
+  List<String> _categories= [];
+  List<String> get categories => List.unmodifiable(_categories);
+
+
+  // selected lists
+  List<String> _selectedCateg = [];
+  List<String> get selectedCateg => _selectedCateg;
+
   List<String> _selectedDep = [];
   List<String> get selectedDep => _selectedDep;
-
-
 
   List<String> _selectedBrands = [];
   List<String> get selectedBrands => _selectedBrands;
 
 
-  List<String> _selectedCat = [];
 
 
 
@@ -38,7 +42,7 @@ class FilterCubit extends Cubit<FilterState> {
     try {
       _brandsNames.clear();
       _brandsNames = await algoliaService.getAllBrandNames();
-      emit(FilterLoaded(brandsName: _brandsNames, departments: _departments, categories: _categories));
+      emit(FilterLoaded());
     } catch (e) {
       emit(FilterError(e.toString()));
       rethrow;
@@ -50,7 +54,7 @@ class FilterCubit extends Cubit<FilterState> {
     try {
       _departments.clear();
       _departments = await ProductService.getAllDepartments();
-      emit(FilterLoaded(brandsName:_brandsNames,departments:  _departments, categories: _categories));
+      emit(FilterLoaded());
     } catch (e) {
       emit(FilterError(e.toString()));
       rethrow;
@@ -62,7 +66,7 @@ class FilterCubit extends Cubit<FilterState> {
     try {
       _categories.clear();
       _categories = await ProductService.getAllCategories();
-      emit(FilterLoaded(brandsName: _brandsNames, departments: _departments, categories: _categories));
+      emit(FilterLoaded());
     } catch (e) {
       emit(FilterError(e.toString()));
       rethrow;
@@ -87,7 +91,14 @@ class FilterCubit extends Cubit<FilterState> {
     // Example: you can now use formattedBrands in your filters
     // print(formattedBrands);
   }
+  void updateSelectedCateg(List<String> selectedDep) async {
+    _selectedCateg.clear();
+    _selectedCateg = List.from(selectedCateg); // ✔ make a full copy, not a reference
+    algoliaService.addFacets(selectedCateg, 'department');    // await searchCubit.searchProducts(facets: [_selectedBrands]);
 
+    // Example: you can now use formattedBrands in your filters
+    // print(formattedBrands);
+  }
 
   // void selectBrand(String option, bool isSelected) {
   //   FilterInitial();
@@ -116,14 +127,7 @@ class FilterCubit extends Cubit<FilterState> {
       // selectedFacets.add(_selectedCat);
       // await searchCubit.searchProducts(facets: selectedFacets,);
 
-      emit(FilterLoaded(
-        brandsName: _brandsNames,
-        departments: _departments,
-        categories: _categories,
-        selectedBrands: _selectedBrands,
-        selectedDep: _selectedDep,
-        selectedCateg: _selectedCat,
-      ));
+      emit(FilterLoaded());
 
     } catch (e) {
       emit(FilterError(e.toString()));

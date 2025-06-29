@@ -5,23 +5,9 @@ abstract class FilterState {}
 class FilterInitial extends FilterState {}
 class FilterLoading extends FilterState {}
 
-class FilterLoaded extends FilterState {
-  final List<String> brandsName;
-  final List<String> departments;
-  final Map<String, List<String>> categories;
+class FilterLoaded extends FilterState {// Categories
 
-  final List<String> selectedBrands; // Brands & Departments
-  final List<String> selectedDep; // Brands & Departments
-  final List<String> selectedCateg; // Categories
-
-  FilterLoaded({
-    required this.brandsName,
-    required this.departments,
-    required this.categories,
-    this.selectedBrands = const [],
-    this.selectedDep = const [],
-    this.selectedCateg = const [],
-  });
+  FilterLoaded();
 }
 
 class FilterError extends FilterState {
