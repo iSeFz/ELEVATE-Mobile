@@ -34,9 +34,6 @@ class FilterCubit extends Cubit<FilterState> {
 
 
 
-
-
-
   Future<void> getAllBrands() async {
     emit(FilterLoading());
     try {
@@ -76,77 +73,23 @@ class FilterCubit extends Cubit<FilterState> {
 
   void updateSelectedBrands(List<String> selectedBrands) async {
     _selectedBrands.clear();
-    _selectedBrands = List.from(selectedBrands); // ✔ make a full copy, not a reference
-    algoliaService.addFacets(_selectedBrands, 'brandName');    // await searchCubit.searchProducts(facets: [_selectedBrands]);
+    _selectedBrands = List.from(selectedBrands);
+    algoliaService.addFacets(_selectedBrands, 'brandName');
 
-    // Example: you can now use formattedBrands in your filters
-    // print(formattedBrands);
   }
 
   void updateSelectedDep(List<String> selectedDep) async {
     _selectedDep.clear();
-    _selectedDep = List.from(selectedDep); // ✔ make a full copy, not a reference
-    algoliaService.addFacets(selectedDep, 'department');    // await searchCubit.searchProducts(facets: [_selectedBrands]);
+    _selectedDep = List.from(selectedDep);
+    algoliaService.addFacets(selectedDep, 'department');
 
     // Example: you can now use formattedBrands in your filters
     // print(formattedBrands);
   }
-  void updateSelectedCateg(List<String> selectedDep) async {
+  void updateSelectedCateg(List<String> selectedCateg) async {
     _selectedCateg.clear();
-    _selectedCateg = List.from(selectedCateg); // ✔ make a full copy, not a reference
-    algoliaService.addFacets(selectedCateg, 'department');    // await searchCubit.searchProducts(facets: [_selectedBrands]);
-
-    // Example: you can now use formattedBrands in your filters
-    // print(formattedBrands);
+    _selectedCateg = List.from(selectedCateg);
+    algoliaService.addFacets(selectedCateg, 'category');
+    print('Selected Categories: $_selectedCateg');
   }
-
-  // void selectBrand(String option, bool isSelected) {
-  //   FilterInitial();
-  //   if (isSelected) {
-  //     _selectedBrands.add('brandName:'+option);
-  //   } else {
-  //     _selectedBrands.remove('brandName:'+option);
-  //   }
-  //
-  //   emit(FilterLoaded(
-  //     brandsName: _brandsName,
-  //     departments: _departments,
-  //     categories: _categories,
-  //     selectedBrands: _selectedBrands,
-  //     selectedDep: _selectedDep,
-  //     selectedCateg: _selectedCat,
-  //   ));
-  // }
-
-  Future<void> applyStringFilter() async {
-    emit(FilterLoading());
-    try {
-      List<List<String>> selectedFacets = [];
-      selectedFacets.add(_selectedBrands);
-      // selectedFacets.add(_selectedDep);
-      // selectedFacets.add(_selectedCat);
-      // await searchCubit.searchProducts(facets: selectedFacets,);
-
-      emit(FilterLoaded());
-
-    } catch (e) {
-      emit(FilterError(e.toString()));
-    }
-
-  }
-
-  //
-  // // ✅ Selection for Categories
-  // void selectCategory(String category, List<String> selections) {
-  //   // _selectedItems[category] = selections;
-  //
-  //   emit(FilterLoaded(
-  //     brandsName: _brandsName,
-  //     departments: _departments,
-  //     categories: _categories,
-  //     selectedBrands: _selectedBrands,
-  //     selectedDep: _selectedDep,
-  //     selectedCateg: _selectedCat,
-  //   ));
-  // }
 }

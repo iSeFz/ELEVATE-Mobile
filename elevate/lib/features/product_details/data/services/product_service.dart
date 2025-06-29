@@ -115,38 +115,22 @@ class ProductService {
 
   //________________FILTERING____________________
 
-  static Future<Map<String, List<String>>> getAllCategories() async {
-    final response = await http.get(
-        Uri.parse('$apiBaseURL/v1/products/categories'));
 
+  static Future<List<String>> getAllCategories() async {
+    final response = await http.get(
+            Uri.parse('$apiBaseURL/v1/products/categories'));
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      final List<dynamic> categories = jsonResponse['data'];
+      final List<dynamic> rawList = jsonResponse['data'];
 
-      final Map<String, List<String>> mappedCategories = {};
+      // Cast each item to String
+      final List<String> departments = rawList.map((item) => item.toString()).toList();
 
-      for (final item in categories) {
-        if (item.contains(' - ')) {
-          final parts = item.split(' - ');
-          final key = parts[0].trim();
-          final value = parts[1].trim();
-
-          if (!mappedCategories.containsKey(key)) {
-            mappedCategories[key] = [];
-          }
-          mappedCategories[key]!.add(value);
-        } else {
-          // categories without ' - '
-          mappedCategories.putIfAbsent(item, () => []);
-        }
-      }
-
-      return mappedCategories;
+      return departments;
     } else {
-      throw Exception('Failed to load products');
+      throw Exception('Failed to load departments');
     }
   }
-
   static Future<List<String>> getAllDepartments() async {
     final response = await http.get(
         Uri.parse('$apiBaseURL/v1/products/departments'));

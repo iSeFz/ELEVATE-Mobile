@@ -9,15 +9,15 @@ import 'filter_sheet.dart';
 class FilterButton extends StatelessWidget {
   final String label;
   final int filterOptions;
-  final bool isHighlighted; // ✔️ Should be final
   final VoidCallback onFetch;
+  final bool isExpanded;
 
   const FilterButton({
     Key? key,
     required this.label,
     required this.filterOptions,
     required this.onFetch,
-    this.isHighlighted = true, // ✔️ Optional default value
+    this.isExpanded = false, // ✔️ Optional parameter to control expanded view
   }) : super(key: key);
 
   @override
@@ -31,7 +31,7 @@ class FilterButton extends StatelessWidget {
           vertical: 8 * SizeConfig.verticalBlock,
         ),
         decoration: BoxDecoration(
-          color: isHighlighted ? const Color(0xFFA51930) : Colors.black,
+          color:Colors.black,
           borderRadius: BorderRadius.circular(5),
         ),
         child: Row(
@@ -59,7 +59,7 @@ class FilterButton extends StatelessWidget {
             builder: (bottomSheetContext) {
               return BlocProvider.value(
                 value: BlocProvider.of<FilterCubit>(context),
-                child: FilterSheet(options: filterOptions),
+                child: FilterSheet(options: filterOptions, isExpanded:this.isExpanded),
               );
             },
           );
@@ -69,7 +69,7 @@ class FilterButton extends StatelessWidget {
             } else if (filterOptions == 3) {
               cubit.updateSelectedDep(selectedOptions);
             } else if (filterOptions == 1) {
-              // cubit.updateSelectedCategories(selectedOptions);
+              cubit.updateSelectedCateg(selectedOptions);
             }
             context.read<SearchCubit>().searchProducts(facets: [context.read<FilterCubit>().selectedBrands]);
 

@@ -23,10 +23,10 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> searchProducts({String query = '', List<List<String>> facets = const []}) async {
     final searchQuery = query.isEmpty ? _query : query;
     emit(SearchLoading());
-    final results = await algoliaService.searchProducts(searchQuery);
     // final List<ProductCardModel> products = results.map((json) => ProductCardModel.fromJson(json))
     //     .toList();
     try {
+      final results = await algoliaService.searchProducts(searchQuery);
 
       if (results.isEmpty) {  // searchProducts already guarantees a list, no need to check for null
         emit(SearchEmpty());
@@ -36,13 +36,13 @@ class SearchCubit extends Cubit<SearchState> {
       // Safely parse only valid JSON maps
       final List<ProductCardModel> products = results
           .where((json) => json != null && json is Map<String, dynamic>)
-          .map((json) => ProductCardModel.fromJson(json as Map<String, dynamic>))
+          .map((json) => ProductCardModel.fromJson(json))
           .toList();
 
 
       emit(SearchLoaded(products: products));
     } catch (e) {
-      emit(SearchError('Search failed: $e ${results.toString()}'));
+      emit(SearchError('Search failed: $e'));
     }
   }
 

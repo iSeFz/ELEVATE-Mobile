@@ -96,16 +96,15 @@ class SearchPage extends StatelessWidget {
                                     FilterButton(
                                       label: 'Category',
                                       filterOptions: 1,
-                                      isHighlighted: false,
                                       onFetch: () async {
                                         await context.read<FilterCubit>().getAllCategories();
                                       },
+                                      isExpanded: true,
                                     ),
                                     SizedBox(width: 6* SizeConfig.horizontalBlock,),
                                     FilterButton(
                                       label: 'Brand',
                                       filterOptions: 2,
-                                      isHighlighted: false,
                                       onFetch: () async {
                                         await context.read<FilterCubit>().getAllBrands();
                                       },
@@ -115,7 +114,6 @@ class SearchPage extends StatelessWidget {
                                     FilterButton(
                                       label: 'Dep',
                                       filterOptions: 3,
-                                      isHighlighted: false,
                                       onFetch: () async {
                                         await context.read<FilterCubit>().getAllDepartments();
                                       },

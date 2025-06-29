@@ -24,6 +24,7 @@ class AlgoliaService {
       var response;
       if (selectedFacets.isNotEmpty) {
         final facets = buildAlgoliaFilters(selectedFacets.values.toList());
+        print('Applying filters: $facets');
         response = await index.query(query).setFilters(facets).getObjects();
       } else {
         response = await index.query(query).getObjects();
@@ -51,7 +52,7 @@ class AlgoliaService {
 
     for (var facetGroup in selectedFacets) {
       if (facetGroup.isNotEmpty) {
-        String orGroup = '(' + facetGroup.join(' OR ') + ')';
+        String orGroup = '(' + facetGroup.map((e) => '${e.split(":")[0]}:"${e.split(":")[1]}"').join(' OR ') + ')';
         andGroups.add(orGroup);
       }
     }
