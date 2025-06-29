@@ -5,7 +5,7 @@ abstract class SearchState {}
 class SearchInitial extends SearchState {}
 
 class SearchLoading extends SearchState {}
-
+class SearchEmpty extends SearchState {}
 class SearchLoaded extends SearchState {
   final List<ProductCardModel> products;
   final List<String> brands = [];

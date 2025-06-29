@@ -38,9 +38,19 @@ class _ExpandedFilterChecklistState extends State<ExpandedFilterChecklist> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  widget.onApply(localSelectedItems);
+                  final List<String> formattedSelections = [];
+
+                  // Convert the map into the required list format: "category - option"
+                  localSelectedItems.forEach((category, selections) {
+                    for (var selection in selections) {
+                      formattedSelections.add('$category - $selection');
+                    }
+                  });
+
+                  // widget.onApply(formattedSelections);
                   Navigator.pop(context);
                 },
+
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFA51930),
                   shape: RoundedRectangleBorder(

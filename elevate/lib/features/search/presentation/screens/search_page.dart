@@ -81,7 +81,7 @@ class SearchPage extends StatelessWidget {
                                   ),
                                   textInputAction: TextInputAction.search,
                                   onSubmitted: (value) {
-                                    context.read<SearchCubit>().searchProducts(value);
+                                    context.read<SearchCubit>().searchProducts(query: value);
                                   },
                                 ),
                               ),
@@ -148,7 +148,17 @@ class SearchPage extends StatelessWidget {
                         builder: (context, state) {
                           if (state is SearchLoading) {
                             return const Center(child: CircularProgressIndicator());
-                          } else if (state is SearchLoaded) {
+                          }
+                          else if(state is SearchEmpty) {
+                            return const Center(
+                              child: Text(
+                                'No results found.',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            );
+                          }
+                          else if (state is SearchLoaded)
+                        {
 
                             // final cubit = context.read<SearchCubit>();
                             // final List<ProductCardModel>products = cubit.products;

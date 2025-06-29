@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../cubits/filter/filter_cubit.dart';
-import '../cubits/filter/filter_state.dart';
-import 'expanded_filter_checklist.dart';
-import 'filter_bottom_sheet.dart';
-import 'filter_checklist.dart';
+import '../cubits/search/search_cubit.dart';
+import '../utils/filters_utils.dart';
+import 'filter_sheet.dart';
 
 class FilterButton extends StatelessWidget {
   final String label;
   final int filterOptions;
-  final bool isHighlighted;
+  final bool isHighlighted; // ✔️ Should be final
   final VoidCallback onFetch;
 
   const FilterButton({
@@ -18,11 +17,13 @@ class FilterButton extends StatelessWidget {
     required this.label,
     required this.filterOptions,
     required this.onFetch,
-    this.isHighlighted = false,
+    this.isHighlighted = true, // ✔️ Optional default value
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<FilterCubit>();
+
     return InkWell(
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -48,19 +49,32 @@ class FilterButton extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () async {
-        onFetch();
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (bottomSheetContext) {
-            return BlocProvider.value(
-              value: BlocProvider.of<FilterCubit>(context),
-              child: FilterBottomSheet(filterOptions: filterOptions),
-            );
-          },
-        );
-      },
+        onTap: () async {
+        if(FilterUtils.getFacetsViewByOption(filterOptions,cubit).isEmpty) {
+          onFetch();
+        }
+          final selectedOptions = await showModalBottomSheet<List<String>>(
+            context: context,
+            isScrollControlled: true,
+            builder: (bottomSheetContext) {
+              return BlocProvider.value(
+                value: BlocProvider.of<FilterCubit>(context),
+                child: FilterSheet(options: filterOptions),
+              );
+            },
+          );
+          if (selectedOptions != null && selectedOptions.isNotEmpty) {
+            if (filterOptions == 2) {
+              cubit.updateSelectedBrands(selectedOptions);
+            } else if (filterOptions == 3) {
+              cubit.updateSelectedDep(selectedOptions);
+            } else if (filterOptions == 1) {
+              // cubit.updateSelectedCategories(selectedOptions);
+            }
+            context.read<SearchCubit>().searchProducts(facets: [context.read<FilterCubit>().selectedBrands]);
+
+          }
+        }
     );
   }
 }
