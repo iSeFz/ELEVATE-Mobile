@@ -130,8 +130,8 @@ class HomePage extends StatelessWidget {
                                   'SUMMER IS HERE',
                                   style: GoogleFonts.bebasNeue(
                                     textStyle: TextStyle(
-                                      color: Colors.black.withValues(alpha: 0.6),
-                                      fontSize: 32 * SizeConfig.textRatio,
+                                      color: const Color(0xFFA51930).withValues(alpha: 0.6),
+                                      fontSize: 44 * SizeConfig.textRatio,
                                       fontWeight: FontWeight.w400,
                                       letterSpacing: 1.2,
                                       shadows: [
@@ -190,7 +190,13 @@ class HomePage extends StatelessWidget {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) => BrandProductsPage(brandId: brand.id, brandName: brand.brandName),
+                                              builder: (_) => MultiBlocProvider(
+                                                providers: [
+                                                  BlocProvider.value(value: context.read<WishlistCubit>()),
+                                                  BlocProvider.value(value: context.read<CartCubit>()),
+                                                ],
+                                                child: BrandProductsPage(brandId: brand.id, brandName: brand.brandName),
+                                              ),
                                             ),
                                           );
                                         },
@@ -266,11 +272,8 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               );
-            } else if (state is HomeLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return const SizedBox();
-          },
+            },
+          ),
         ),
       ),
     );
