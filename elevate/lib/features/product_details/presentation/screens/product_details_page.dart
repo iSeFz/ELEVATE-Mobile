@@ -134,28 +134,61 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   Positioned(
                                     top: 10 * SizeConfig.verticalBlock,
                                     right: 10 * SizeConfig.horizontalBlock,
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.dry_cleaning_rounded,
-                                        color: Theme.of(context).primaryColor,
-                                        size: 40,
+                                    child:GestureDetector(
+                                      onTap: () {
+                                      Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                      builder: (_) => AITryonCamera(
+                                      productImage: imageUrl,
+                                      customerID: widget.userId,
                                       ),
-                                      tooltip: 'Try On Using AI',
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) => AITryonCamera(
-                                                  productImage: imageUrl,
-                                                  customerID: widget.userId,
-                                                ),
+                                      ),
+                                  );
+                                  },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white, // Background color
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Theme.of(context).primaryColor.withOpacity(0.3),
+                                            blurRadius: 10,
+                                            spreadRadius: 6,
+                                            offset: Offset(0, 4),
                                           ),
-                                        );
-                                      },
+                                        ],
+                                      ),
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                      ClipOval(
+                                      child: Image.asset(
+                                      'assets/AR.png', // your asset image
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                        Text(
+                                          'AI',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 6,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.black.withOpacity(0.7),
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                    ),
+                                  )
+                                ],)
                                     ),
                                   ),
-                                ],
+                              ),
+                              ],
                               ),
                             );
                           },
@@ -255,8 +288,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   children:
                                       state.product.variants.map((variant) {
                                         final shortLabel = FilterUtils.getShortSize(variant.size);
-                                        final selectedSizeId =
-                                            context
+                                        selectedSizeId =context
                                                 .watch<ProductDetailsCubit>()
                                                 .state
                                                 .selectedSizeId;
@@ -274,6 +306,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                                               context
                                                   .read<ProductDetailsCubit>()
                                                   .selectSize(variant.id);
+                                              setState(() {
+                                                selectedSizeId = variant.id;
+                                              });
                                             },
                                           ),
                                         );
@@ -284,71 +319,42 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 BlocListener<CartCubit, CartState>(
                                   listener: (context, cartState) {
                                     if (cartState is CartError) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(cartState.message),
-                                        ),
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(cartState.message)),
                                       );
                                     }
                                   },
                                   child: BlocBuilder<CartCubit, CartState>(
                                     builder: (context, cartState) {
-                                      bool isInCart = context
-                                          .watch<CartCubit>()
-                                          .isInCart(selectedSizeId);
+                                      bool isInCart = context.watch<CartCubit>().isInCart(selectedSizeId);
 
                                       return ElevatedButton(
                                         onPressed: () {
                                           if (isInCart) {
-                                            context
-                                                .read<CartCubit>()
-                                                .removeFromCart(
-                                                  variantId: selectedSizeId,
-                                                );
+                                            context.read<CartCubit>().removeFromCart(variantId: selectedSizeId);
                                           } else {
                                             context.read<CartCubit>().addToCart(
                                               widget.productView,
-                                              state.product.variants.firstWhere(
-                                                (v) =>
-                                                    v.id ==
-                                                    state.selectedSizeId,
-                                              ),
+                                              state.product.variants.firstWhere((v) => v.id == state.selectedSizeId),
                                             );
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              isInCart
-                                                  ? Theme.of(
-                                                    context,
-                                                  ).primaryColor
-                                                  : Colors.black,
-                                          minimumSize: Size(
-                                            double.infinity,
-                                            50 * SizeConfig.textRatio,
-                                          ),
+                                          backgroundColor: isInCart ? Theme.of(context).primaryColor : Colors.black,
+                                          minimumSize: Size(double.infinity, 50 * SizeConfig.textRatio),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              5,
-                                            ),
+                                            borderRadius: BorderRadius.circular(5),
                                           ),
                                         ),
-                                        child:
-                                            (cartState is CartItemLoading)
-                                                ? CircularProgressIndicator(
-                                                  color: Colors.white,
-                                                )
-                                                : Text(
-                                                  isInCart
-                                                      ? 'ADDED TO CART'
-                                                      : 'ADD TO CART',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
+                                        child: (cartState is CartItemLoading)
+                                            ? CircularProgressIndicator(color: Colors.white)
+                                            : Text(
+                                          isInCart ? 'ADDED TO CART' : 'ADD TO CART',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       );
                                     },
                                   ),
