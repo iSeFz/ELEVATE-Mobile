@@ -22,9 +22,7 @@ class PasswordChanged extends ProfileState {}
 class ChangePasswordVisibilityChanged extends ProfileState {
   final bool isCurrentPasswordVisible;
 
-  ChangePasswordVisibilityChanged({
-    required this.isCurrentPasswordVisible,
-  });
+  ChangePasswordVisibilityChanged({required this.isCurrentPasswordVisible});
 }
 
 // --- Address Related States ---
@@ -37,3 +35,10 @@ class AddressExpanded extends ProfileState {}
 class DefaultAddressUpdated extends ProfileState {}
 
 class AddressDeleted extends ProfileState {}
+
+// --- Orders States ---
+class OrdersLoading extends ProfileState {}
+
+class OrdersLoaded extends ProfileState {}
+
+class OrdersEmpty extends ProfileState {}

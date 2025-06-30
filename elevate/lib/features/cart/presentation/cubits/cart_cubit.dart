@@ -1,4 +1,3 @@
-import 'package:elevate/features/product_details/data/models/product_details_model.dart';
 import 'package:elevate/features/product_details/data/models/product_variant_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/services/local_database_service.dart';

@@ -9,6 +9,7 @@ import '../../../auth/data/models/customer.dart';
 import '../cubits/profile_cubit.dart';
 import '../cubits/profile_state.dart';
 import '../widgets/profile_page_option.dart';
+import 'order_history_page.dart';
 
 // Profile Page
 class ProfilePage extends StatelessWidget {
@@ -172,7 +173,16 @@ class ProfilePage extends StatelessWidget {
                             icon: Icons.history_outlined,
                             text: 'Order History',
                             onTap: () {
-                              // TODO: Implement Order History navigation/action
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => BlocProvider.value(
+                                        value: profileCubit,
+                                        child: const OrderHistoryPage(),
+                                      ),
+                                ),
+                              );
                             },
                           ),
                           ProfilePageOption(
