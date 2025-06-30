@@ -1,4 +1,5 @@
 import 'package:elevate/core/utils/filters_utils.dart';
+import 'package:elevate/core/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../cart/presentation/cubits/cart_cubit.dart';
@@ -268,7 +269,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 //color info
                                 SizedBox(height: 13 * SizeConfig.verticalBlock),
                                 Text(
-                                  'Color: ${state.product.color}',
+                                  'Color: ${state.product.color.capitalize()}',
                                   style: TextStyle(
                                     fontSize: 13 * SizeConfig.textRatio,
                                   ),

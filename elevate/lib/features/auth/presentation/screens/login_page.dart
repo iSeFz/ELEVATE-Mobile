@@ -174,7 +174,7 @@ class LoginPage extends StatelessWidget {
                                 keyboardType: TextInputType.text,
                                 label: 'Password',
                                 hint: 'Enter your password',
-                                validationFunc: validatePassword,
+                                validationFunc: validatePasswordLogin,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     state.isPasswordVisible

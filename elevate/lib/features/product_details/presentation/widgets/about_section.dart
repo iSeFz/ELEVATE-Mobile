@@ -1,3 +1,4 @@
+import 'package:elevate/core/utils/string_extensions.dart';
 import 'package:elevate/features/product_details/data/models/product_details_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class AboutSection extends StatelessWidget {
                   children: product.department.map((gender) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: Text(
-                      gender,
+                      gender.capitalize(),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -90,7 +91,7 @@ class AboutSection extends StatelessWidget {
                   ],
                 ),
                 trailing: Text(
-                      product.material,
+                      product.material.capitalize(),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,

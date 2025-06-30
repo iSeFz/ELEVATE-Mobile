@@ -66,6 +66,15 @@ String? validatePassword(String? value) {
   }
 }
 
+// Validation logic for the password field for login
+String? validatePasswordLogin(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Password is required';
+  } else {
+    return null;
+  }
+}
+
 // Validation logic for email or phone number field at login page
 String? validateEmailNPhoneNumber(String? value) {
   if (validateEmail(value) == null || validatePhoneNumber(value) == null) {
