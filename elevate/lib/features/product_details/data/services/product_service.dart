@@ -112,7 +112,6 @@ class ProductService {
     }
   }
 
-
   //________________FILTERING____________________
 
 
@@ -146,6 +145,24 @@ class ProductService {
       throw Exception('Failed to load departments');
     }
   }
+
+  static Future<List<String>> getAllSizes() async {
+    final response = await http.get(
+      Uri.parse('$apiBaseURL/v1/products/sizes'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> rawList = jsonResponse['data'];
+
+      // Cast each item to String
+      final List<String> sizes = rawList.map((item) => item.toString()).toList();
+
+      return sizes;
+    } else {
+      throw Exception('Failed to load sizes');
+    }
+  }
+
 
 }
 

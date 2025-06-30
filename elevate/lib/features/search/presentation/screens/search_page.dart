@@ -131,6 +131,14 @@ class SearchPage extends StatelessWidget {
                                 await context.read<FilterCubit>().getAllColors();
                               },
                             ),
+                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                            FilterButton(
+                              label: 'Size',
+                              filterOptions: 5,
+                              onFetch: () async {
+                                await context.read<FilterCubit>().getAllSizes();
+                              },
+                            ),
                           ],
                         ),
                       ),

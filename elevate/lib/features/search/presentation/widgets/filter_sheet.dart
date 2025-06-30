@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../cubits/filter/filter_cubit.dart';
 import '../cubits/filter/filter_state.dart';
-import '../utils/filters_utils.dart';
+import '../../../../core/utils/filters_utils.dart';
 
 class FilterSheet extends StatefulWidget {
   final int options;

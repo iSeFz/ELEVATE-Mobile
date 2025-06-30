@@ -1,3 +1,4 @@
+import 'package:elevate/core/utils/filters_utils.dart';
 import 'package:elevate/features/product_details/data/services/product_service.dart';
 import 'package:elevate/features/search/presentation/cubits/search/search_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,6 @@ class FilterCubit extends Cubit<FilterState> {
   static List<String> _brandsNames = [];
   List<String> get brandsNames => List.unmodifiable(_brandsNames);
 
-
   static List<String> _departments = [];
   List<String> get departments => List.unmodifiable(_departments);
 
@@ -23,6 +23,9 @@ class FilterCubit extends Cubit<FilterState> {
 
   static List<String> _colors= [];
   List<String> get colors => List.unmodifiable(_colors);
+
+  static List<String> _sizes= [];
+  List<String> get sizes => List.unmodifiable(_sizes);
 
   // selected lists
   List<String> _selectedCateg = [];
@@ -37,6 +40,8 @@ class FilterCubit extends Cubit<FilterState> {
   List<String> _selectedColors = [];
   List<String> get selectedColors => _selectedColors;
 
+  List<String> _selectedSizes = [];
+  List<String> get selectedSizes => _selectedSizes;
 
   Future<void> getAllBrands() async {
     emit(FilterLoading());
@@ -87,6 +92,21 @@ class FilterCubit extends Cubit<FilterState> {
     }
   }
 
+  Future<void> getAllSizes() async {
+    emit(FilterLoading());
+    try {
+      _sizes.clear();
+      // List<String> longSizes = await algoliaService.getStaticNames('variants.size');
+      // _sizes = FilterUtils.getshortSizes(longSizes);
+      _sizes = await algoliaService.getStaticNames('variants.size');
+      emit(FilterLoaded());
+    } catch (e) {
+      emit(FilterError(e.toString()));
+      rethrow;
+    }
+  }
+
+
   void updateSelectedBrands(List<String> selected) async {
     _selectedBrands.clear();
     _selectedBrands = List.from(selected);
@@ -112,5 +132,12 @@ class FilterCubit extends Cubit<FilterState> {
     _selectedColors = List.from(selected);
     algoliaService.addFacets(selected, 'variants.colors');
     print('Selected Colors: $_selectedColors');
+  }
+
+  void updateSelectedSizes(List<String> selected) async {
+    _selectedSizes.clear();
+    _selectedSizes = List.from(selected);
+    algoliaService.addFacets(selected, 'variants.size');
+    print('Selected Sizes: $_selectedSizes');
   }
 }

@@ -1,16 +1,18 @@
-import '../cubits/filter/filter_cubit.dart';
+import '../../features/search/presentation/cubits/filter/filter_cubit.dart';
 
 class FilterUtils {
   static List<String> getFacetsViewByOption(int option, FilterCubit cubit) {
     switch (option) {
       case 1:
-        return cubit.categories; // Uncomment if you add category list
+        return cubit.categories;
       case 2:
         return cubit.brandsNames;
       case 3:
         return cubit.departments;
       case 4:
         return cubit.colors;
+      case 5:
+        return cubit.sizes;
       default:
         return [];
     }
@@ -26,6 +28,8 @@ class FilterUtils {
         return cubit.selectedDep;
       case 4:
         return cubit.selectedColors;
+      case 5:
+        return cubit.selectedSizes;
       default:
         return [];
     }
@@ -45,8 +49,10 @@ class FilterUtils {
       case 4:
         cubit.updateSelectedColors(selectedOptions);
         break;
+      case 5:
+        cubit.updateSelectedSizes(selectedOptions);
+        break;
       default:
-      // Optional: Handle unknown cases if needed
         break;
     }
   }
@@ -72,4 +78,21 @@ class FilterUtils {
       return mappedCategories;
 
   }
+
+  static String getShortSize(String size) {
+    final regex = RegExp(r'^(X+)?(.*)$', caseSensitive: false);
+    final match = regex.firstMatch(size);
+    if (match != null) {
+      final xPart = match.group(1) ?? '';
+      final afterX = match.group(2)?.trim() ?? '';
+      final firstLetter = afterX.isNotEmpty ? afterX[0].toUpperCase() : '';
+      return '$xPart$firstLetter';
+    } else {
+      return size; // fallback
+    }
+  }
+  static List<String> getshortSizes(List<String> sizesList) {
+    return sizesList.map((size) => getShortSize(size)).toList();
+  }
+
 }

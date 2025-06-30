@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../cubits/filter/filter_cubit.dart';
 import '../cubits/search/search_cubit.dart';
-import '../utils/filters_utils.dart';
+import '../../../../core/utils/filters_utils.dart';
 import 'filter_sheet.dart';
 
 class FilterButton extends StatelessWidget {
