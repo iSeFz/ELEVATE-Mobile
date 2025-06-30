@@ -86,72 +86,75 @@ class SearchPage extends StatelessWidget {
                                 ),
                               ),
                               Divider(height: 1, color: Colors.grey.shade200),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10 * SizeConfig.horizontalBlock,
-                  vertical: 10 * SizeConfig.verticalBlock,
-                ),
-                child: Row(
-                  children: [
-                    // 👉 Scrollable buttons
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            FilterButton(
-                              label: 'Category',
-                              filterOptions: 1,
-                              onFetch: () async {
-                                await context.read<FilterCubit>().getAllCategories();
-                              },
-                              isExpanded: true,
-                            ),
-                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
-                            FilterButton(
-                              label: 'Brand',
-                              filterOptions: 2,
-                              onFetch: () async {
-                                await context.read<FilterCubit>().getAllBrands();
-                              },
-                            ),
-                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
-                            FilterButton(
-                              label: 'Dep',
-                              filterOptions: 3,
-                              onFetch: () async {
-                                await context.read<FilterCubit>().getAllDepartments();
-                              },
-                            ),
-                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
-                            FilterButton(
-                              label: 'Color',
-                              filterOptions: 4,
-                              onFetch: () async {
-                                await context.read<FilterCubit>().getAllColors();
-                              },
-                            ),
-                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
-                            FilterButton(
-                              label: 'Size',
-                              filterOptions: 5,
-                              onFetch: () async {
-                                await context.read<FilterCubit>().getAllSizes();
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10 * SizeConfig.horizontalBlock,
+                      vertical: 10 * SizeConfig.verticalBlock,
                     ),
-                    // 👉 Fixed icons
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Camera()),
-                        );
+                    child: Row(
+                      children: [
+                        // 👉 Scrollable buttons
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                FilterButton(
+                                  label: 'Category',
+                                  filterOptions: 1,
+                                  onFetch: () async {
+                                    await context.read<FilterCubit>().getAllCategories();
+                                  },
+                                  isExpanded: true,
+                                ),
+                                SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                                FilterButton(
+                                  label: 'Brand',
+                                  filterOptions: 2,
+                                  onFetch: () async {
+                                    await context.read<FilterCubit>().getAllBrands();
+                                  },
+                                ),
+                                SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                                FilterButton(
+                                  label: 'Dep',
+                                  filterOptions: 3,
+                                  onFetch: () async {
+                                    await context.read<FilterCubit>().getAllDepartments();
+                                  },
+                                ),
+                                SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                                FilterButton(
+                                  label: 'Color',
+                                  filterOptions: 4,
+                                  onFetch: () async {
+                                    await context.read<FilterCubit>().getAllColors();
+                                  },
+                                ),
+                                SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                                FilterButton(
+                                  label: 'Size',
+                                  filterOptions: 5,
+                                  onFetch: () async {
+                                    await context.read<FilterCubit>().getAllSizes();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // 👉 Fixed icons
+                        SizedBox(width: 6 * SizeConfig.horizontalBlock),
+
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const Camera()),
+                            );
                       },
-                      child: Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
+                      child:
+                      Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
                     ),
                     SizedBox(width: 10 * SizeConfig.horizontalBlock),
                     Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
@@ -180,7 +183,6 @@ class SearchPage extends StatelessWidget {
                           }
                           else if (state is SearchLoaded)
                         {
-
                             // final cubit = context.read<SearchCubit>();
                             // final List<ProductCardModel>products = cubit.products;
                             return GridView.builder(

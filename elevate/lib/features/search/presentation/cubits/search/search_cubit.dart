@@ -1,6 +1,3 @@
-import 'package:elevate/features/product_details/data/services/product_service.dart';
-import 'package:elevate/features/search/data/models/brand_model.dart';
-import 'package:elevate/features/search/data/services/brand_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../product_details/data/models/product_card_model.dart';
 import '../../../../../core/services/algolia_service.dart';

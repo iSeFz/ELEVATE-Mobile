@@ -3,8 +3,7 @@ import 'package:elevate/features/product_details/data/services/product_service.d
 import 'package:elevate/features/search/presentation/cubits/search/search_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/services/algolia_service.dart' show AlgoliaService;
-import '../../../data/models/brand_model.dart';
-import '../../../data/services/brand_service.dart';
+
 import 'filter_state.dart';
 
 class FilterCubit extends Cubit<FilterState> {

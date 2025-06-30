@@ -1,5 +1,3 @@
-import '../../../data/models/brand_model.dart';
-
 abstract class FilterState {}
 
 class FilterInitial extends FilterState {}
