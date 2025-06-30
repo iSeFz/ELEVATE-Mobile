@@ -61,7 +61,7 @@ class SearchPage extends StatelessWidget {
                                   controller: _searchController,
                                   textAlign: TextAlign.start,
                                   decoration: InputDecoration(
-                                    hintText: 'Pants, Shoes, etc.',
+                                    hintText: 'Tops, Pants, etc.',
                                     hintStyle: TextStyle(
                                       fontSize: 14 * SizeConfig.textRatio,
                                       color: Colors.grey,

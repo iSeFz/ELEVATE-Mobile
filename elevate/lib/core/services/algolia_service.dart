@@ -19,31 +19,48 @@ class AlgoliaService {
   }
 
   Future<List<Map<String, dynamic>>> searchProducts(String myQuery) async {
-    List<Map<String, dynamic>> prod = [];
+    List<Map<String, dynamic>> allProducts = [];
+
     if (myQuery.isNotEmpty) {
       query = myQuery;
     }
+
     try {
-      var response;
-      if (selectedFacets.isNotEmpty) {
-        final facets = buildAlgoliaFilters(selectedFacets.values.toList());
-        print('Applying filters: $facets');
-        response = await index.query(query).setFilters(facets).getObjects();
-      } else {
-        response = await index.query(query).getObjects();
+      int page = 0;
+      bool hasMore = true;
+
+      while (hasMore) {
+        var response;
+
+        if (selectedFacets.isNotEmpty) {
+          final facets = buildAlgoliaFilters(selectedFacets.values.toList());
+          print('Applying filters: $facets');
+          response = await index.query(query).setFilters(facets).setPage(page).getObjects();
+        } else {
+          response = await index.query(query).setPage(page).getObjects();
+        }
+
+        if (response == null || response.hits == null || response.hits.isEmpty) {
+          break;
+        }
+
+        final currentPageProducts = response.hits
+            .map((hit) => hit.data)
+            .where((hit) => hit != null && hit is Map<String, dynamic>)
+            .cast<Map<String, dynamic>>()
+            .toList();
+
+        allProducts.addAll(currentPageProducts);
+
+        // Check if this is the last page
+        if (page >= response.nbPages - 1) {
+          hasMore = false;
+        } else {
+          page++;
+        }
       }
 
-      if (response == null || response.hits == null || response.hits.isEmpty) {
-        return [];
-      }
-
-      prod = response.hits
-          .map((hit) => hit.data)
-          .where((hit) => hit != null && hit is Map<String, dynamic>)
-          .cast<Map<String, dynamic>>()
-          .toList();
-
-      return prod;
+      return allProducts;
     } catch (e) {
       print('Search error: $e');
       return [];

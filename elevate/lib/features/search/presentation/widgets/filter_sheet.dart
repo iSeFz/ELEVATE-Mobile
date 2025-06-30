@@ -79,7 +79,7 @@ class _FilterSheetState extends State<FilterSheet> {
                             backgroundColor: Colors.white, // grey button
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
-                              side: BorderSide(color: Colors.black, width: 2), // black border
+                              side: BorderSide(color: theme.colorScheme.tertiary, width: 2), // black border
                             ),
                           ),
                           onPressed: () {
@@ -137,14 +137,19 @@ class _FilterSheetState extends State<FilterSheet> {
         final option = data[index];
         final isSelected = selectedOptions.contains(option);
 
-        return CheckboxListTile(
+        return ListTile(
           title: Text(option),
-          value: isSelected,
-          onChanged: (bool? value) => toggleSelection(option, isSelected),
+          leading: Checkbox(
+            shape: CircleBorder(),
+            value: isSelected,
+            onChanged: (bool? value) => toggleSelection(option, isSelected),
+          ),
+          onTap: () => toggleSelection(option, isSelected),
         );
       },
     );
   }
+
 
   Widget buildExpandableList(List<String> data, ScrollController controller) {
     Map<String, List<String>> groupedItems = {};
@@ -169,22 +174,25 @@ class _FilterSheetState extends State<FilterSheet> {
     return ListView(
       controller: controller,
       children: [
-        // Items without dash (ungrouped)
+        // Single (ungrouped) items with circular checkbox
         ...singleItems.map((option) {
           final isSelected = selectedOptions.contains(option);
-          return CheckboxListTile(
+          return ListTile(
             title: Text(option),
-            value: isSelected,
-            onChanged: (bool? value) => toggleSelection(option, isSelected),
+            leading: Checkbox(
+              shape: CircleBorder(),
+              value: isSelected,
+              onChanged: (bool? value) => toggleSelection(option, isSelected),
+            ),
+            onTap: () => toggleSelection(option, isSelected),
           );
         }).toList(),
 
-        // Grouped items (categories, sets, etc.)
+        // Grouped items (sets)
         ...groupedItems.entries.map((entry) {
           final groupTitle = entry.key;
           final groupItems = entry.value;
 
-          // Check if all group items are selected
           final isGroupSelected = groupItems.every((val) => selectedOptions.contains('$groupTitle - $val'));
 
           return ExpansionTile(
@@ -196,7 +204,6 @@ class _FilterSheetState extends State<FilterSheet> {
                   onChanged: (bool? value) {
                     setState(() {
                       if (value == true) {
-                        // Select all items in this group
                         groupItems.forEach((val) {
                           final fullValue = '$groupTitle - $val';
                           if (!selectedOptions.contains(fullValue)) {
@@ -204,7 +211,6 @@ class _FilterSheetState extends State<FilterSheet> {
                           }
                         });
                       } else {
-                        // Deselect all items in this group
                         groupItems.forEach((val) {
                           final fullValue = '$groupTitle - $val';
                           selectedOptions.remove(fullValue);
@@ -219,18 +225,36 @@ class _FilterSheetState extends State<FilterSheet> {
             children: groupItems.map((val) {
               final fullValue = '$groupTitle - $val';
               final isSelected = selectedOptions.contains(fullValue);
-              return CheckboxListTile(
-                shape: CircleBorder(),
-                title: Text(val),
-                value: isSelected,
-                onChanged: (bool? value) => toggleSelection(fullValue, isSelected),
+
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22*SizeConfig.horizontalBlock, vertical: 2*SizeConfig.verticalBlock), // Add side and vertical padding
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.15), // Background color
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                  child: ListTile(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    title: Text(val),
+                    trailing: Checkbox(
+                      shape: CircleBorder(),
+                      value: isSelected,
+                      onChanged: (bool? value) => toggleSelection(fullValue, isSelected),
+                    ),
+                    onTap: () => toggleSelection(fullValue, isSelected),
+                  ),
+                ),
               );
+
+
             }).toList(),
           );
         }).toList(),
       ],
     );
   }
+
 
 
 }
