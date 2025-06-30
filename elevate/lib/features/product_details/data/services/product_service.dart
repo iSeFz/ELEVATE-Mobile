@@ -163,8 +163,32 @@ class ProductService {
     }
   }
 
-  //________________FILTERING____________________
-
+  Future<Map<String, dynamic>> getProductsByBrand({
+    required String brandId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products?brand=$brandId&page=$page&limit=$limit'),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final List<ProductCardModel> products = (jsonResponse['data'] as List)
+            .map((json) => ProductCardModel.fromJson(json))
+            .toList();
+        final pagination = jsonResponse['pagination'] ?? {};
+        return {
+          'products': products,
+          'pagination': pagination,
+        };
+      } else {
+        throw Exception('Failed to load products for brand $brandId: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching products for brand $brandId: $e');
+    }
+  }
 
   static Future<List<String>> getAllCategories() async {
     final response = await http.get(
@@ -213,7 +237,6 @@ class ProductService {
       throw Exception('Failed to load sizes');
     }
   }
-
 
 }
 

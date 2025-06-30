@@ -9,6 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../cart/presentation/cubits/cart_cubit.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../../wishlist/presentation/cubits/wishlist_state.dart';
+import 'package:elevate/features/brands/data/models/brand_model.dart';
+import 'package:elevate/features/brands/data/services/brand_service.dart';
+import 'package:elevate/features/brands/presentation/widgets/brand_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -105,26 +108,105 @@ class HomePage extends StatelessWidget {
                         ),
                         Positioned(
                           bottom: 40,
-                          child: Text(
-                            'Summer is here!',
-                            style: GoogleFonts.lobster(
-                              textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: 32 * SizeConfig.textRatio,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                                shadows: [
-                                  Shadow(blurRadius: 10, color: Colors.black),
-                                ],
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0, end: 1),
+                            duration: const Duration(seconds: 2),
+                            builder: (context, opacity, child) {
+                              return Opacity(
+                                opacity: opacity,
+                                child: child,
+                              );
+                            },
+                            child: SizedBox(
+                              width: 260,
+                              height: 80,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'SUMMER IS HERE',
+                                  style: GoogleFonts.bebasNeue(
+                                    textStyle: TextStyle(
+                                      color: Colors.black.withValues(alpha: 0.6),
+                                      fontSize: 32 * SizeConfig.textRatio,
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: 1.2,
+                                      shadows: [
+                                        Shadow(blurRadius: 4, color: Colors.black12),
+                                      ],
+                                    ),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
+                    // Shop By Brand
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Shop by Brand',
+                            style: TextStyle(
+                              fontSize: 22 * SizeConfig.textRatio,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SafeArea(
+                            bottom: true,
+                            child: SizedBox(
+                              height: 80,
+                              child: FutureBuilder<List<Brand>>(
+                                future: BrandService.fetchBrands(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Center(child: CircularProgressIndicator());
+                                  } else if (snapshot.hasError) {
+                                    return Center(child: Text('Failed to load brands'));
+                                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                    return Center(child: Text('No brands found'));
+                                  }
+                                  final brands = snapshot.data!;
+                                  return ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: brands.length,
+                                    separatorBuilder: (_, __) => const SizedBox(width: 18),
+                                    itemBuilder: (context, index) {
+                                      final brand = brands[index];
+                                      return BrandIcon(
+                                        imageUrl: brand.imageURL,
+                                        brandName: brand.brandName,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => BrandProductsPage(brandId: brand.id, brandName: brand.brandName),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 16),
-
-                    // Products by department (only non-empty ones)
+                    // Shop by department
                     ...departmentProducts.entries
                         .where((entry) => entry.value.isNotEmpty)
                         .map(
@@ -181,27 +263,14 @@ class HomePage extends StatelessWidget {
                             ],
                           ),
                         ),
-
-                    // OPTIONAL: Uncomment if you want to show empty categories as well
-                    /*
-                    ...departmentProducts.entries
-                        .where((entry) => entry.value.isEmpty)
-                        .map((entry) => Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                              child: Text(
-                                '${entry.key} has no products available.',
-                                style: TextStyle(
-                                  fontSize: 16 * SizeConfig.textRatio,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            )),
-                    */
                   ],
                 ),
               );
-            },
-          ),
+            } else if (state is HomeLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return const SizedBox();
+          },
         ),
       ),
     );
