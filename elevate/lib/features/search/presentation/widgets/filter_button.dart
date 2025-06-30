@@ -63,7 +63,7 @@ class FilterButton extends StatelessWidget {
               );
             },
           );
-          if (selectedOptions != null && selectedOptions.isNotEmpty) {
+          if (selectedOptions != null) {
             if (filterOptions == 2) {
               cubit.updateSelectedBrands(selectedOptions);
             } else if (filterOptions == 3) {

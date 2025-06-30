@@ -86,57 +86,72 @@ class SearchPage extends StatelessWidget {
                                 ),
                               ),
                               Divider(height: 1, color: Colors.grey.shade200),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10 * SizeConfig.horizontalBlock,
-                                  vertical: 10 * SizeConfig.verticalBlock,
-                                ),
-                                child:Row(
-                                  children: [
-                                    FilterButton(
-                                      label: 'Category',
-                                      filterOptions: 1,
-                                      onFetch: () async {
-                                        await context.read<FilterCubit>().getAllCategories();
-                                      },
-                                      isExpanded: true,
-                                    ),
-                                    SizedBox(width: 6* SizeConfig.horizontalBlock,),
-                                    FilterButton(
-                                      label: 'Brand',
-                                      filterOptions: 2,
-                                      onFetch: () async {
-                                        await context.read<FilterCubit>().getAllBrands();
-                                      },
-                                    ),
-                                    SizedBox(width: 6* SizeConfig.horizontalBlock,),
-
-                                    FilterButton(
-                                      label: 'Dep',
-                                      filterOptions: 3,
-                                      onFetch: () async {
-                                        await context.read<FilterCubit>().getAllDepartments();
-                                      },
-                                    ),
-                                    const Spacer(),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => const Camera()),
-                                        );
-                                      },
-                                      child: Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
-                                    ),
-                                    SizedBox(width: 10 * SizeConfig.horizontalBlock),
-                                    Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
-                                    // SizedBox(width: 10 * SizeConfig.horizontalBlock),
-                                    // Icon(Icons.filter_alt_outlined, size: 26 * SizeConfig.verticalBlock),
-                                  ],)
-
-                              ),
-                            ],
-                          ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 10 * SizeConfig.horizontalBlock,
+                  vertical: 10 * SizeConfig.verticalBlock,
+                ),
+                child: Row(
+                  children: [
+                    // 👉 Scrollable buttons
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterButton(
+                              label: 'Category',
+                              filterOptions: 1,
+                              onFetch: () async {
+                                await context.read<FilterCubit>().getAllCategories();
+                              },
+                              isExpanded: true,
+                            ),
+                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                            FilterButton(
+                              label: 'Brand',
+                              filterOptions: 2,
+                              onFetch: () async {
+                                await context.read<FilterCubit>().getAllBrands();
+                              },
+                            ),
+                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                            FilterButton(
+                              label: 'Dep',
+                              filterOptions: 3,
+                              onFetch: () async {
+                                await context.read<FilterCubit>().getAllDepartments();
+                              },
+                            ),
+                            SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                            FilterButton(
+                              label: 'Color',
+                              filterOptions: 3,
+                              onFetch: () async {
+                                await context.read<FilterCubit>().getAllDepartments();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // 👉 Fixed icons
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Camera()),
+                        );
+                      },
+                      child: Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
+                    ),
+                    SizedBox(width: 10 * SizeConfig.horizontalBlock),
+                    Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
+                  ],
+                ),
+              ),
+              ]
+            ),
                         ),
                       ],
                     ),
