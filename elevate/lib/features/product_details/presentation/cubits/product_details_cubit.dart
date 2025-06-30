@@ -64,19 +64,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     }
   }
 
-  String getShortSize(String size) {
-    final regex = RegExp(r'^(X+)?(.*)$', caseSensitive: false);
-    final match = regex.firstMatch(size);
-    if (match != null) {
-      final xPart = match.group(1) ?? '';
-      final afterX = match.group(2)?.trim() ?? '';
-      final firstLetter = afterX.isNotEmpty ? afterX[0].toUpperCase() : '';
-      return '$xPart$firstLetter';
-    } else {
-      return size;
-    }
-  }
-
   void selectSize(String id) {
     if (state is ProductDetailsLoaded) {
       emit((state as ProductDetailsLoaded).copyWith(selectedSizeId: id));

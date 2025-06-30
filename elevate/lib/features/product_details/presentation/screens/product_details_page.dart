@@ -1,9 +1,11 @@
+import 'package:elevate/core/utils/filters_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../cart/presentation/cubits/cart_cubit.dart';
 import '../../../cart/presentation/cubits/cart_state.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../../data/models/product_card_model.dart';
+import '../../data/services/product_service.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
 import '../widgets/about_section.dart';
@@ -252,10 +254,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children:
                                       state.product.variants.map((variant) {
-                                        final shortLabel = context
-                                            .read<ProductDetailsCubit>()
-                                            .getShortSize(variant.size);
-                                        selectedSizeId =
+                                        final shortLabel = FilterUtils.getShortSize(variant.size);
+                                        final selectedSizeId =
                                             context
                                                 .watch<ProductDetailsCubit>()
                                                 .state
