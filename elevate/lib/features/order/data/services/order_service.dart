@@ -22,10 +22,9 @@ class OrderService {
 
   static Future<void> releaseItems(String orderId, String userId) async {
     if (orderId.isEmpty) return;
-    final url =
-        "$apiBaseURL/v1/customers/me/orders/$orderId/cancel?userId=$userId";
+    final url = "$apiBaseURL/v1/customers/me/orders/$orderId?userId=$userId";
     try {
-      await http.patch(
+      await http.delete(
         Uri.parse(url),
         headers: {testAuthHeader: testAuthValue},
       );
@@ -39,8 +38,7 @@ class OrderService {
     String userId,
     String requestBody,
   ) async {
-    final url =
-        "$apiBaseURL/v1/customers/me/orders/$orderId/calculate-shipment-fees?userId=$userId";
+    final url = "$apiBaseURL/v1/customers/me/orders/$orderId/calculate-shipment-fees?userId=$userId";
 
     try {
       final response = await http.put(

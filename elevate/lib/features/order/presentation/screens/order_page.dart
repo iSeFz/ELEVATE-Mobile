@@ -421,7 +421,7 @@ class _OrderScreenBody extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: cartItems.length,
           itemBuilder: (context, index) {
-            return OrderItemCard(index: index);
+            return OrderItemCard(item: cartItems[index]);
           },
         ),
         const SizedBox(height: 16),
@@ -430,7 +430,11 @@ class _OrderScreenBody extends StatelessWidget {
   }
 
   Widget _buildBottomBar(BuildContext context) {
-    context.read<OrderCubit>();
+    final cubit = context.read<OrderCubit>();
+    final subtotal = cubit.subtotal;
+    final shipmentFee = cubit.shipmentFee;
+    final itemCount = cartItems.length;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -440,7 +444,11 @@ class _OrderScreenBody extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OrderSummary(),
+          OrderSummary(
+            subtotal: subtotal,
+            shipmentFee: shipmentFee,
+            itemCount: itemCount,
+          ),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () {

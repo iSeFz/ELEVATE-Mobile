@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubits/order_cubit.dart';
 
 class OrderSummary extends StatelessWidget {
-  const OrderSummary({super.key});
+  final double subtotal;
+  final double shipmentFee;
+  final int itemCount;
+
+  const OrderSummary({
+    super.key,
+    required this.subtotal,
+    required this.shipmentFee,
+    required this.itemCount,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<OrderCubit>();
-
-    final double subtotal = cubit.subtotal;
-    final double shipmentFee = cubit.shipmentFee;
-    final int itemCount = cubit.cartItems.length;
     final double total = subtotal + shipmentFee;
 
     final List<Map<String, dynamic>> summaryItems = [
