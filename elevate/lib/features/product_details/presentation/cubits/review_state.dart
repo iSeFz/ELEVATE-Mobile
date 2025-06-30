@@ -1,5 +1,3 @@
-import '../../data/models/review_model.dart';
-
 abstract class ReviewState {}
 
 class ReviewInitial extends ReviewState {}

@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/product_card.dart';
-import '../../../camera/presentation/screens/camera.dart';
+import '../../../common/camera.dart';
 import '../cubits/filter/filter_cubit.dart';
 import '../cubits/filter/filter_state.dart';
 import '../widgets/filter_button.dart';
+import '../../../cart/presentation/cubits/cart_cubit.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({super.key});
@@ -193,9 +194,14 @@ class SearchPage extends StatelessWidget {
                                 mainAxisExtent: 350 * SizeConfig.verticalBlock,
                               ),
                               itemBuilder: (context, index) {
-                                return ProductCard(
-                                  product: cubit.products[index],
-                                  userId: '',
+
+                                final tempCartCubit = context.read<CartCubit>();
+                                return BlocProvider.value(
+                                  value: tempCartCubit,
+                                  child: ProductCard(
+                                    product: cubit.products[index],
+                                    userId: tempCartCubit.userId,
+                                  ),
                                 );
                               },
                             );

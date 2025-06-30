@@ -16,6 +16,7 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
 
     return BlocProvider<SignUpCubit>(
       create: (context) => SignUpCubit(),
@@ -25,31 +26,73 @@ class SignUpPage extends StatelessWidget {
 
           return BlocListener<SignUpCubit, SignUpState>(
             listener: (context, state) {
-              String successMessage =
-                  state is SignUpSuccess
-                      ? 'Account created successfully!\nWelcome, ${signUpCubit.customer?.firstName ?? 'User'}!'
-                      : 'Account linked with Google successfully!\nWelcome, ${signUpCubit.customer?.firstName ?? 'User'}!';
               if (state is SignUpSuccess || state is SignUpWithGoogleSuccess) {
                 showDialog(
                   context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext dialogContext) {
+                  builder: (context) {
                     return AlertDialog(
-                      title: Text(
-                        'Success ✅',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(height: screenHeight * 0.02),
+                          CircleAvatar(
+                            backgroundColor: theme.colorScheme.primary,
+                            radius: screenWidth * 0.1,
+                            child: Icon(
+                              Icons.check_circle_outlined,
+                              color: Colors.white,
+                              size: screenWidth * 0.2,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          Text(
+                            'Success',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: theme.textTheme.bodyMedium,
+                              children: [
+                                TextSpan(
+                                  text: 'Account created!\nWelcome, ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '${signUpCubit.customer?.firstName ?? 'User'}!',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      content: Text(
-                        successMessage,
-                        style: TextStyle(fontSize: 20),
-                      ),
+                      actionsAlignment: MainAxisAlignment.center,
                       actions: [
                         TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: theme.colorScheme.primary,
+                            padding: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.005,
+                              horizontal: screenWidth * 0.1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
                           onPressed: () {
-                            Navigator.of(dialogContext).pop();
                             Navigator.pushReplacement(
                               context,
                               PageRouteBuilder(
@@ -71,7 +114,14 @@ class SignUpPage extends StatelessWidget {
                               ),
                             );
                           },
-                          child: Text('OK', style: TextStyle(fontSize: 20)),
+                          child: Text(
+                            'OK',
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     );

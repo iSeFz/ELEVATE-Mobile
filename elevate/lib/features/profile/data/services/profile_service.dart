@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../auth/data/models/customer.dart';
+import '../models/order.dart';
 import '../../../../core/constants/constants.dart';
 
 class ProfileService {
@@ -94,6 +95,34 @@ class ProfileService {
       return response.statusCode == 200;
     } catch (e) {
       throw Exception('Error changing password: $e');
+    }
+  }
+
+  // Fetch customer orders
+  Future<List<Order>> getCustomerOrders(String userId) async {
+    try {
+      String url = "$apiBaseURL/v1/customers/me/orders?userId=$userId";
+      final response = await http.get(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          testAuthHeader: testAuthValue,
+        },
+      );
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 && responseData['status'] == 'success') {
+        if (responseData['data'] != null) {
+          return (responseData['data'] as List<dynamic>)
+              .map((order) => Order.fromJson(order as Map<String, dynamic>))
+              .toList();
+        } else {
+          return [];
+        }
+      } else {
+        throw Exception('Failed to load customer orders');
+      }
+    } catch (e) {
+      throw Exception('Error fetching customer orders: $e');
     }
   }
 }
