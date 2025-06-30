@@ -178,14 +178,21 @@ class _FilterSheetState extends State<FilterSheet> {
         ...singleItems.map((option) {
           final isSelected = selectedOptions.contains(option);
           return ListTile(
-            title: Text(option),
-            leading: Checkbox(
-              shape: CircleBorder(),
-              value: isSelected,
-              onChanged: (bool? value) => toggleSelection(option, isSelected),
+            title: Row(
+              mainAxisSize: MainAxisSize.min, // prevent Row from taking full width
+              children: [
+                Checkbox(
+                  shape: CircleBorder(),
+                  value: isSelected,
+                  onChanged: (bool? value) => toggleSelection(option, isSelected),
+                ),
+                SizedBox(width: 4), // optional, small space
+                Text(option),
+              ],
             ),
             onTap: () => toggleSelection(option, isSelected),
           );
+
         }).toList(),
 
         // Grouped items (sets)
