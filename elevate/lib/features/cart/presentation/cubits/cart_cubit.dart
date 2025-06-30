@@ -106,12 +106,12 @@ class CartCubit extends Cubit<CartState> {
       if(index==-1){
         index = _cartItems.indexWhere((item) => item.variantId == variantId);
       }
-      if (index != -1) {
-        final cartItem = _cartItems[index];
-        await _cartService.removeItem(customerId, cartItem.id!);
-        _cartItems.removeAt(index);
-        emit(CartItemSuccess());
-      }
+
+      final cartItem = _cartItems[index];
+      await _cartService.removeItem(customerId, cartItem.id!);
+      _cartItems.removeAt(index);
+      emit(CartItemSuccess());
+
       if (_cartItems.isEmpty) {
         emit(CartEmpty());
       } else {
@@ -159,7 +159,7 @@ class CartCubit extends Cubit<CartState> {
 
   isInCart(String selectedVariantId) {
     return _cartItems.any((item) =>
-        item.variantId == selectedVariantId);
+    item.variantId == selectedVariantId);
   }
   // *__from product_details page__*
   Future<void> addToCart(ProductCardModel product, ProductVariant selectedVariant) async{
@@ -177,8 +177,10 @@ class CartCubit extends Cubit<CartState> {
         price: selectedVariant.price,
         imageURL: product.image,
       );
-      _cartItems.add(item);
-      await _cartService.addItem(customerId, product.id, selectedVariant.id, 1);
+      CartItem? itemReturned = await _cartService.addItem(customerId, product.id, selectedVariant.id, 1);
+      if(itemReturned.id != null){
+        _cartItems.add(itemReturned);
+      }
       emit(CartItemSuccess());
     } catch (e) {
       emit(CartError(message: e.toString()));

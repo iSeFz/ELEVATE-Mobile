@@ -125,8 +125,8 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           Icon(
                             _selectedIndex == 2
-                                ? Icons.shopping_cart_rounded
-                                : Icons.shopping_cart_outlined,
+                                ? Icons.shopping_bag_rounded
+                                : Icons.shopping_bag_outlined,
                           ),
                           if (cartCount > 0)
                             Positioned(
