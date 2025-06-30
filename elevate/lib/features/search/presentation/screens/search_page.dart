@@ -5,8 +5,7 @@ import '../../../../core/utils/size_config.dart';
 import '../../../../core/widgets/product_card.dart';
 import '../../../camera/presentation/screens/camera.dart';
 import '../cubits/filter/filter_cubit.dart';
-import '../cubits/search/search_cubit.dart';
-import '../cubits/search/search_state.dart';
+import '../cubits/filter/filter_state.dart';
 import '../widgets/filter_button.dart';
 
 class SearchPage extends StatelessWidget {
@@ -19,9 +18,6 @@ class SearchPage extends StatelessWidget {
       providers: [
         BlocProvider<WishlistCubit>(
           create: (context) => WishlistCubit(),
-        ),
-        BlocProvider<SearchCubit>(
-          create: (_) => SearchCubit(),
         ),
         BlocProvider<FilterCubit>(
           create: (_) => FilterCubit()
@@ -81,7 +77,7 @@ class SearchPage extends StatelessWidget {
                                   ),
                                   textInputAction: TextInputAction.search,
                                   onSubmitted: (value) {
-                                    context.read<SearchCubit>().searchProducts(query: value);
+                                    context.read<FilterCubit>().searchProducts(query: value);
                                   },
                                 ),
                               ),
@@ -168,7 +164,7 @@ class SearchPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Expanded(
-                      child: BlocBuilder<SearchCubit, SearchState>(
+                      child: BlocBuilder<FilterCubit, FilterState>(
                         builder: (context, state) {
                           if (state is SearchLoading) {
                             return const Center(child: CircularProgressIndicator());
@@ -181,13 +177,15 @@ class SearchPage extends StatelessWidget {
                               ),
                             );
                           }
-                          else if (state is SearchLoaded)
-                        {
-                            // final cubit = context.read<SearchCubit>();
-                            // final List<ProductCardModel>products = cubit.products;
+                          else if (state is SearchError) {
+                            return Center(child: Text('Error: ${state.message}'));
+                          }
+                          else
+                          {
+                            final cubit = context.read<FilterCubit>();
                             return GridView.builder(
                               padding: const EdgeInsets.all(8),
-                              itemCount: state.products.length,
+                              itemCount: cubit.products.length,
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 8,
@@ -196,15 +194,13 @@ class SearchPage extends StatelessWidget {
                               ),
                               itemBuilder: (context, index) {
                                 return ProductCard(
-                                  product: state.products[index],
+                                  product: cubit.products[index],
                                   userId: '',
                                 );
                               },
                             );
-                          } else if (state is SearchError) {
-                            return Center(child: Text('Error: ${state.message}'));
                           }
-                          return const Center(child: Text('Start searching...'));
+                          // return const Center(child: Text('Start searching...'));
                         },
                       ),
                     ),

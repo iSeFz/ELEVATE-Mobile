@@ -57,7 +57,7 @@ class _FilterSheetState extends State<FilterSheet> {
               return Center(child: CircularProgressIndicator());
             } else if (state is FilterError) {
               return Center(child: Text('Error: ${state.message}'));
-            } else if (state is FilterLoaded) {
+            } else{
               List<String> facetsData = FilterUtils.getFacetsViewByOption(widget.options, cubit);
 
               if (facetsData.isEmpty) {
@@ -85,6 +85,7 @@ class _FilterSheetState extends State<FilterSheet> {
                           onPressed: () {
                             setState(() {
                               selectedOptions.clear(); // clear selections
+                              Navigator.pop(context, selectedOptions);
                             });
                           },
                           child: Text('Clear', style: TextStyle(color: theme.primaryColor)),
@@ -118,9 +119,10 @@ class _FilterSheetState extends State<FilterSheet> {
                   ),
                 ],
               );
-            } else {
-              return const Center(child: Text('Start searching...'));
             }
+            // else {
+            //   return const Center(child: Text('Start searching...'));
+            // }
           },
         );
       },

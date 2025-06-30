@@ -22,53 +22,81 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<FilterCubit>();
+    final cubit = context.watch<FilterCubit>();
+    final selectedOptionsCount = FilterUtils.getSelectedFacetsByOption(filterOptions, cubit).length;
+    final bool isActive = selectedOptionsCount > 0;
 
     return InkWell(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 12 * SizeConfig.horizontalBlock,
-          vertical: 8 * SizeConfig.verticalBlock,
-        ),
-        decoration: BoxDecoration(
-          color:Colors.black,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '$label ',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12 * SizeConfig.textRatio,
-                fontWeight: FontWeight.w500,
+      child: Stack(
+        clipBehavior: Clip.none, // Allow overflow for the badge
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 12 * SizeConfig.horizontalBlock,
+              vertical: 8 * SizeConfig.verticalBlock,
+            ),
+            decoration: BoxDecoration(
+              color: isActive ? Theme.of(context).primaryColor : Colors.black,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$label ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12 * SizeConfig.textRatio,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Icon(Icons.arrow_drop_down, color: Colors.white, size: 20 * SizeConfig.verticalBlock),
+              ],
+            ),
+          ),
+          if (isActive)
+            Positioned(
+              top: -16,
+              right: -6,
+              child: Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+                ),
+                child: Text(
+                  '$selectedOptionsCount',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 10 * SizeConfig.textRatio,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
-            Icon(Icons.arrow_drop_down, color: Colors.white, size: 20 * SizeConfig.verticalBlock),
-          ],
-        ),
+        ],
       ),
-        onTap: () async {
-        if(FilterUtils.getFacetsViewByOption(filterOptions,cubit).isEmpty) {
+      onTap: () async {
+        if (FilterUtils.getFacetsViewByOption(filterOptions, cubit).isEmpty) {
           onFetch();
         }
-          final selectedOptions = await showModalBottomSheet<List<String>>(
-            context: context,
-            isScrollControlled: true,
-            builder: (bottomSheetContext) {
-              return BlocProvider.value(
-                value: BlocProvider.of<FilterCubit>(context),
-                child: FilterSheet(options: filterOptions, isExpanded:this.isExpanded),
-              );
-            },
-          );
-          if (selectedOptions != null) {
-            FilterUtils.updateSelectedOptions(filterOptions, selectedOptions, cubit);
-            context.read<SearchCubit>().searchProducts(facets: [context.read<FilterCubit>().selectedBrands]);
-
-          }
+        final selectedOptions = await showModalBottomSheet<List<String>>(
+          context: context,
+          isScrollControlled: true,
+          builder: (bottomSheetContext) {
+            return BlocProvider.value(
+              value: BlocProvider.of<FilterCubit>(context),
+              child: FilterSheet(options: filterOptions, isExpanded: this.isExpanded),
+            );
+          },
+        );
+        if (selectedOptions != null) {
+          FilterUtils.updateSelectedOptions(filterOptions, selectedOptions, cubit);
+          cubit.searchProducts();
         }
+      },
     );
   }
+
 }

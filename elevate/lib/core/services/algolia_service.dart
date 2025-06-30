@@ -22,8 +22,6 @@ class AlgoliaService {
     List<Map<String, dynamic>> prod = [];
     if (myQuery.isNotEmpty) {
       query = myQuery;
-    } else {
-      query = '';
     }
     try {
       var response;

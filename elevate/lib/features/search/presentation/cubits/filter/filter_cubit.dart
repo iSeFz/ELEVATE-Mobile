@@ -3,12 +3,15 @@ import 'package:elevate/features/search/presentation/cubits/search/search_cubit.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/services/algolia_service.dart' show AlgoliaService;
 
+import '../../../../product_details/data/models/product_card_model.dart';
 import 'filter_state.dart';
 
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit() : super(FilterInitial());
-  final SearchCubit searchCubit = SearchCubit();
   final AlgoliaService algoliaService = AlgoliaService();
+
+  List<ProductCardModel> _products = <ProductCardModel>[];
+  List<ProductCardModel> get products => List.unmodifiable(_products);
 
   static List<String> _brandsNames = [];
   List<String> get brandsNames => List.unmodifiable(_brandsNames);
@@ -40,6 +43,27 @@ class FilterCubit extends Cubit<FilterState> {
 
   List<String> _selectedSizes = [];
   List<String> get selectedSizes => _selectedSizes;
+
+  Future<void> searchProducts({String query = ''}) async {
+    emit(SearchLoading());
+    try {
+      final results = await algoliaService.searchProducts(query);
+
+      if (results.isEmpty) {  // searchProducts already guarantees a list, no need to check for null
+        emit(SearchEmpty());
+        return;
+      }
+
+      // Safely parse only valid JSON maps
+      _products = List.from(results.map((json) => ProductCardModel.fromJson(json))
+          .toList());
+
+      emit(SearchLoaded());
+    } catch (e) {
+      emit(SearchError('Search failed: $e'));
+    }
+  }
+
 
   Future<void> getAllBrands() async {
     emit(FilterLoading());
