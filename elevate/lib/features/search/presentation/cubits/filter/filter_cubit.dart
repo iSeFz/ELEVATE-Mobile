@@ -1,5 +1,4 @@
 import 'package:elevate/features/product_details/data/services/product_service.dart';
-import 'package:elevate/features/search/presentation/cubits/search/search_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/services/algolia_service.dart' show AlgoliaService;
 
