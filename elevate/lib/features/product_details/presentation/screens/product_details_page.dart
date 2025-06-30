@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../cart/presentation/cubits/cart_cubit.dart';
 import '../../../cart/presentation/cubits/cart_state.dart';
 import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
+import '../../../wishlist/presentation/cubits/wishlist_state.dart';
 import '../../data/models/product_card_model.dart';
-import '../../data/services/product_service.dart';
 import '../cubits/product_details_cubit.dart';
 import '../cubits/product_details_state.dart';
 import '../widgets/about_section.dart';
@@ -16,7 +16,8 @@ import '../../../../core/widgets/full_screen_image.dart';
 import '../widgets/size_container.dart';
 import '../widgets/recommendation_section.dart';
 import '../../../../core/services/algolia_insights_service.dart';
-import 'package:elevate/features/ai_tryon/presentation/screens/ai_tryon_camera.dart';
+import 'package:elevate/features/ai_tryon/presentation/widgets/ai_tryon_dialog.dart';
+import 'package:elevate/features/ai_tryon/presentation/cubits/ai_tryon_cubit.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({
@@ -43,7 +44,6 @@ class _ProductDetailsState extends State<ProductDetails> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<WishlistCubit>(create: (context) => WishlistCubit()),
         BlocProvider<ProductDetailsCubit>(create: (_) => ProductDetailsCubit()),
         BlocProvider<CartCubit>(
           create: (context) => CartCubit(userId: widget.userId),
@@ -132,64 +132,131 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     fit: BoxFit.fitWidth,
                                     alignment: Alignment.topCenter,
                                   ),
+                                  // Wishlist Toggle Button
                                   Positioned(
-                                    top: 10 * SizeConfig.verticalBlock,
-                                    right: 10 * SizeConfig.horizontalBlock,
-                                    child:GestureDetector(
-                                      onTap: () {
-                                      Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                      builder: (_) => AITryonCamera(
-                                      productImage: imageUrl,
-                                      customerID: widget.userId,
-                                      ),
-                                      ),
-                                  );
-                                  },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white, // Background color
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Theme.of(context).primaryColor.withOpacity(0.3),
-                                            blurRadius: 10,
-                                            spreadRadius: 6,
-                                            offset: Offset(0, 4),
+                                    top: 15 * SizeConfig.verticalBlock,
+                                    left: 15 * SizeConfig.horizontalBlock,
+                                    child: BlocBuilder<
+                                      WishlistCubit,
+                                      WishlistState
+                                    >(
+                                      builder: (context, state) {
+                                        final wishlistCubit =
+                                            context.read<WishlistCubit>();
+                                        final bool isInWishlist = wishlistCubit
+                                            .isProductInWishlist(
+                                              widget.productView.id,
+                                            );
+
+                                        return CircleAvatar(
+                                          radius:
+                                              24 * SizeConfig.horizontalBlock,
+                                          backgroundColor: Colors.white,
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            icon: Icon(
+                                              isInWishlist
+                                                  ? Icons.favorite_rounded
+                                                  : Icons
+                                                      .favorite_outline_rounded,
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                              size:
+                                                  32 *
+                                                  SizeConfig.horizontalBlock,
+                                            ),
+                                            tooltip:
+                                                isInWishlist
+                                                    ? 'Remove from Wishlist'
+                                                    : 'Add to Wishlist',
+                                            onPressed: () {
+                                              if (isInWishlist) {
+                                                wishlistCubit
+                                                    .removeFromWishlist(
+                                                      widget.userId,
+                                                      widget.productView.id,
+                                                    );
+                                              } else {
+                                                wishlistCubit.addToWishlist(
+                                                  widget.userId,
+                                                  widget.productView.id,
+                                                );
+                                              }
+                                            },
                                           ),
-                                        ],
-                                      ),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                      ClipOval(
-                                      child: Image.asset(
-                                      'assets/AR.png', // your asset image
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                        Text(
-                                          'AI',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 6,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black.withOpacity(0.7),
-                                                blurRadius: 4,
-                                              ),
-                                            ],
-                                    ),
-                                  )
-                                ],)
+                                        );
+                                      },
                                     ),
                                   ),
-                              ),
-                              ],
+                                  // AI Try-On Button
+                                  Positioned(
+                                    top: 15 * SizeConfig.verticalBlock,
+                                    right: 15 * SizeConfig.horizontalBlock,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return BlocProvider(
+                                              create:
+                                                  (context) => AITryOnCubit(
+                                                    productImage: imageUrl,
+                                                    customerID: widget.userId,
+                                                  ),
+                                              child: AITryOnDialog(),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Theme.of(
+                                                context,
+                                              ).primaryColor.withAlpha(80),
+                                              blurRadius: 10,
+                                              spreadRadius: 6,
+                                              offset: Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            ClipOval(
+                                              child: Image.asset(
+                                                'assets/AR.png', // your asset image
+                                                width: 50,
+                                                height: 50,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            Text(
+                                              'AI',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 6,
+                                                shadows: [
+                                                  Shadow(
+                                                    color: Colors.black
+                                                        .withAlpha(180),
+                                                    blurRadius: 4,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },

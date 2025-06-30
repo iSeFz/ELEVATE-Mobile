@@ -20,12 +20,14 @@ class ProductCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            //user id waiting for local authentication database
             builder:
-                (_) => ProductDetails(
-                  productId: product.id,
-                  userId: userId,
-                  productView: product,
+                (_) => BlocProvider.value(
+                  value: wishlistCubit,
+                  child: ProductDetails(
+                      productId: product.id,
+                      userId: userId,
+                      productView: product,
+                    ),
                 ),
           ),
         );

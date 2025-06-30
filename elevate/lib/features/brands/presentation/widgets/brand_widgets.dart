@@ -3,12 +3,16 @@ import 'package:elevate/features/product_details/data/services/product_service.d
 import 'package:elevate/core/widgets/product_card.dart';
 import 'package:elevate/features/product_details/data/models/product_card_model.dart';
 import 'package:elevate/core/utils/size_config.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:elevate/features/cart/presentation/cubits/cart_cubit.dart';
+import 'package:elevate/features/wishlist/presentation/cubits/wishlist_cubit.dart';
+import 'package:elevate/features/wishlist/presentation/cubits/wishlist_state.dart';
 
 class BrandIcon extends StatelessWidget {
   final String imageUrl;
   final String brandName;
   final VoidCallback onTap;
-  const BrandIcon({required this.imageUrl, required this.brandName, required this.onTap});
+  const BrandIcon({super.key, required this.imageUrl, required this.brandName, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -129,13 +133,33 @@ class _BrandProductsPageState extends State<BrandProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.brandName)),
-      body: _error.isNotEmpty
-          ? Center(child: Text(_error))
-          : _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
+    return BlocListener<WishlistCubit, WishlistState>(
+      listener: (context, state) {
+        if (state is WishlistProductRemoved) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Product removed from wishlist')),
+          );
+        } else if (state is WishlistProductAdded) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Product added to wishlist')));
+        } else if (state is WishlistError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(widget.brandName)),
+        body:
+            _error.isNotEmpty
+                ? Center(child: Text(_error))
+                : _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
                   children: [
                     Expanded(
                       child: NotificationListener<ScrollNotification>(
@@ -149,16 +173,25 @@ class _BrandProductsPageState extends State<BrandProductsPage> {
                           controller: _scrollController,
                           padding: const EdgeInsets.all(15),
                           itemCount: _products.length,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            mainAxisExtent: 350 * (SizeConfig.verticalBlock ?? 1),
-                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                                mainAxisExtent:
+                                    350 * (SizeConfig.verticalBlock),
+                              ),
                           itemBuilder: (context, index) {
-                            return ProductCard(
-                              product: _products[index],
-                              userId: '',
+                            return SizedBox(
+                              width: 200 * SizeConfig.horizontalBlock,
+                              child: BlocBuilder<WishlistCubit, WishlistState>(
+                                builder: (context, state) {
+                                  return ProductCard(
+                                    product: _products[index],
+                                    userId: context.read<CartCubit>().userId,
+                                  );
+                                },
+                              ),
                             );
                           },
                         ),
@@ -172,6 +205,7 @@ class _BrandProductsPageState extends State<BrandProductsPage> {
                       ),
                   ],
                 ),
+      ),
     );
   }
-} 
+}
