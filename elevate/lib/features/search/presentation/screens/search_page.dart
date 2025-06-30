@@ -111,7 +111,7 @@ class SearchPage extends StatelessWidget {
                                     await context.read<FilterCubit>().getAllBrands();
                                   },
                                 ),
-                                SizedBox(width: 6 * SizeConfig.horizontalBlock),
+                                SizedBox(width: 14 * SizeConfig.horizontalBlock),
                                 FilterButton(
                                   label: 'Dep',
                                   filterOptions: 3,

@@ -56,20 +56,20 @@ class FilterButton extends StatelessWidget {
           ),
           if (isActive)
             Positioned(
-              top: -16,
-              right: -6,
+              top: selectedOptionsCount > 9 ? -1*SizeConfig.verticalBlock: -4*SizeConfig.verticalBlock,
+              right: -4*SizeConfig.horizontalBlock,
               child: Container(
-                padding: EdgeInsets.all(6),
+                padding: EdgeInsets.all(4*SizeConfig.horizontalBlock),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.black,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+                  border: Border.all(color: Colors.white, width: 1 * SizeConfig.horizontalBlock),
                 ),
                 child: Text(
                   '$selectedOptionsCount',
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 10 * SizeConfig.textRatio,
+                    color: Colors.white,
+                    fontSize: selectedOptionsCount > 9 ? 6 * SizeConfig.textRatio : 8 * SizeConfig.textRatio,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
