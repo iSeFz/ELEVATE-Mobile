@@ -126,9 +126,9 @@ class SearchPage extends StatelessWidget {
                             SizedBox(width: 6 * SizeConfig.horizontalBlock),
                             FilterButton(
                               label: 'Color',
-                              filterOptions: 3,
+                              filterOptions: 4,
                               onFetch: () async {
-                                await context.read<FilterCubit>().getAllDepartments();
+                                await context.read<FilterCubit>().getAllColors();
                               },
                             ),
                           ],

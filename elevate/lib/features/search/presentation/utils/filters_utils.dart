@@ -5,11 +5,12 @@ class FilterUtils {
     switch (option) {
       case 1:
         return cubit.categories; // Uncomment if you add category list
-        return []; // Placeholder
       case 2:
         return cubit.brandsNames;
       case 3:
         return cubit.departments;
+      case 4:
+        return cubit.colors;
       default:
         return [];
     }
@@ -18,16 +19,38 @@ class FilterUtils {
   static List<String> getSelectedFacetsByOption(int option, FilterCubit cubit) {
     switch (option) {
       case 1:
-        return cubit.selectedCateg; // Uncomment if you add category list
-        return []; // Placeholder
+        return cubit.selectedCateg;
       case 2:
         return cubit.selectedBrands;
       case 3:
         return cubit.selectedDep;
+      case 4:
+        return cubit.selectedColors;
       default:
         return [];
     }
   }
+
+  static void updateSelectedOptions(int filterOptions, List<String> selectedOptions, FilterCubit cubit) {
+    switch (filterOptions) {
+      case 1:
+        cubit.updateSelectedCateg(selectedOptions);
+        break;
+      case 2:
+        cubit.updateSelectedBrands(selectedOptions);
+        break;
+      case 3:
+        cubit.updateSelectedDep(selectedOptions);
+        break;
+      case 4:
+        cubit.updateSelectedColors(selectedOptions);
+        break;
+      default:
+      // Optional: Handle unknown cases if needed
+        break;
+    }
+  }
+
 
   static Map<String, List<String>> getMappedCategories(List<String>categories){
 

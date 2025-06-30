@@ -18,9 +18,11 @@ class FilterCubit extends Cubit<FilterState> {
   static List<String> _departments = [];
   List<String> get departments => List.unmodifiable(_departments);
 
-  List<String> _categories= [];
+  static List<String> _categories= [];
   List<String> get categories => List.unmodifiable(_categories);
 
+  static List<String> _colors= [];
+  List<String> get colors => List.unmodifiable(_colors);
 
   // selected lists
   List<String> _selectedCateg = [];
@@ -32,13 +34,15 @@ class FilterCubit extends Cubit<FilterState> {
   List<String> _selectedBrands = [];
   List<String> get selectedBrands => _selectedBrands;
 
+  List<String> _selectedColors = [];
+  List<String> get selectedColors => _selectedColors;
 
 
   Future<void> getAllBrands() async {
     emit(FilterLoading());
     try {
       _brandsNames.clear();
-      _brandsNames = await algoliaService.getAllBrandNames();
+      _brandsNames = await algoliaService.getStaticNames('brandName');
       emit(FilterLoaded());
     } catch (e) {
       emit(FilterError(e.toString()));
@@ -71,25 +75,42 @@ class FilterCubit extends Cubit<FilterState> {
   }
 
 
-  void updateSelectedBrands(List<String> selectedBrands) async {
+  Future<void> getAllColors() async {
+    emit(FilterLoading());
+    try {
+      _colors.clear();
+      _colors = await algoliaService.getStaticNames('variants.colors');
+      emit(FilterLoaded());
+    } catch (e) {
+      emit(FilterError(e.toString()));
+      rethrow;
+    }
+  }
+
+  void updateSelectedBrands(List<String> selected) async {
     _selectedBrands.clear();
-    _selectedBrands = List.from(selectedBrands);
+    _selectedBrands = List.from(selected);
     algoliaService.addFacets(_selectedBrands, 'brandName');
 
   }
 
-  void updateSelectedDep(List<String> selectedDep) async {
+  void updateSelectedDep(List<String> selected) async {
     _selectedDep.clear();
-    _selectedDep = List.from(selectedDep);
-    algoliaService.addFacets(selectedDep, 'department');
+    _selectedDep = List.from(selected);
+    algoliaService.addFacets(selected, 'department');
 
-    // Example: you can now use formattedBrands in your filters
-    // print(formattedBrands);
   }
-  void updateSelectedCateg(List<String> selectedCateg) async {
+  void updateSelectedCateg(List<String> selected) async {
     _selectedCateg.clear();
-    _selectedCateg = List.from(selectedCateg);
-    algoliaService.addFacets(selectedCateg, 'category');
+    _selectedCateg = List.from(selected);
+    algoliaService.addFacets(selected, 'category');
     print('Selected Categories: $_selectedCateg');
+  }
+
+  void updateSelectedColors(List<String> selected) async {
+    _selectedColors.clear();
+    _selectedColors = List.from(selected);
+    algoliaService.addFacets(selected, 'variants.colors');
+    print('Selected Colors: $_selectedColors');
   }
 }

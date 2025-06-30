@@ -64,13 +64,7 @@ class FilterButton extends StatelessWidget {
             },
           );
           if (selectedOptions != null) {
-            if (filterOptions == 2) {
-              cubit.updateSelectedBrands(selectedOptions);
-            } else if (filterOptions == 3) {
-              cubit.updateSelectedDep(selectedOptions);
-            } else if (filterOptions == 1) {
-              cubit.updateSelectedCateg(selectedOptions);
-            }
+            FilterUtils.updateSelectedOptions(filterOptions, selectedOptions, cubit);
             context.read<SearchCubit>().searchProducts(facets: [context.read<FilterCubit>().selectedBrands]);
 
           }

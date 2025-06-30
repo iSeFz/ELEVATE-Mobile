@@ -60,27 +60,29 @@ class AlgoliaService {
     return andGroups.join(' AND ');
   }
 
-  // ✅ Proper method to get all brand names using facets
-  Future<List<String>> getAllBrandNames() async {
+  // ✅ Proper method to get all field names using facets
+  Future<List<String>> getStaticNames(String field) async {
     try {
       final response = await index
           .search('') // Empty query to fetch facets only
-          .setFacets(['brandName'])
+          .setFacets([field])
           .setHitsPerPage(0)
           .getObjects();
 
-      List<String> brandNames = [];
+      List<String> fields = [];
 
-      if (response.facets != null && response.facets!.containsKey('brandName')) {
-        final facets = response.facets!['brandName'] as Map<String, dynamic>;
-        brandNames = facets.keys.toList();
+      if (response.facets != null && response.facets!.containsKey(field)) {
+        final facets = response.facets![field] as Map<String, dynamic>;
+        fields = facets.keys.toList();
       }
 
-      print('Fetched brand names: $brandNames');
-      return brandNames;
+      print('Fetched field names: $field');
+      return fields;
     } catch (e) {
-      print('Error fetching brand names: $e');
+      print('Error fetching field names: $e');
       return [];
     }
   }
+
+
 }
