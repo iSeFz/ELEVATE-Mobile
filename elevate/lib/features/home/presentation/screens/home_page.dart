@@ -233,7 +233,7 @@ class HomePage extends StatelessWidget {
                                 child: Text(
                                   entry.key,
                                   style: TextStyle(
-                                    fontSize: 20 * SizeConfig.textRatio,
+                                    fontSize: 22 * SizeConfig.textRatio,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
