@@ -15,7 +15,9 @@ class TryOnService {
   ) async {
     try {
       final response = await http.post(
-        Uri.parse("$apiBaseURL/v1/utilities/try-on/start?userId=$customerID"),
+        Uri.parse(
+          "$apiBaseURL/v1/utilities/try-on/start?userId=$customerID&platform=replicate",
+        ),
         headers: {
           testAuthHeader: testAuthValue,
           'Content-Type': 'application/json',

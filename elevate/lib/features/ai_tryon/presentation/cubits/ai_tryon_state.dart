@@ -8,6 +8,8 @@ class CameraInitialized extends AITryOnState {}
 
 class CameraSwitched extends AITryOnState {}
 
+class PictureSelected extends AITryOnState {}
+
 class PictureUploaded extends AITryOnState {}
 
 class AITryOnSuccess extends AITryOnState {}

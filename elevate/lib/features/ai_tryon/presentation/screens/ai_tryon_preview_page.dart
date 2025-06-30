@@ -11,7 +11,6 @@ class AITryonPreviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final aiTryOnCubit = context.read<AITryOnCubit>();
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -41,6 +40,10 @@ class AITryonPreviewPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Try-on result is ready!')),
             );
+          } else if (state is AITryOnFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${state.errorMessage}')),
+            );
           }
         },
         builder: (context, state) {
@@ -63,51 +66,54 @@ class AITryonPreviewPage extends StatelessWidget {
                 child: Column(
                   children: [
                     // Try-On button
-                    if (aiTryOnCubit.customerUploadedImageURL != null)
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton.icon(
-                          onPressed:
-                              state is AITryOnLoading || state is AITryOnSuccess
-                                  ? null
-                                  : () => aiTryOnCubit.tryOnProduct(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed:
+                            state is AITryOnLoading ||
+                                    state is AITryOnSuccess ||
+                                    state is PictureUploaded
+                                ? null
+                                : () {
+                                  aiTryOnCubit.tryOnProduct();
+                                },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          icon:
-                              state is AITryOnLoading
-                                  ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                  : const Icon(Icons.auto_awesome),
-                          label: Text(
+                        ),
+                        icon:
                             state is AITryOnLoading
-                                ? 'Processing...'
-                                : 'Try On Product',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : const Icon(Icons.auto_awesome),
+                        label: Text(
+                          state is AITryOnLoading
+                              ? 'Processing...'
+                              : 'Try On Product',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
+                    ),
                     const SizedBox(height: 12),
                     // Secondary action buttons
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () => aiTryOnCubit.selectImage("camera"),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.black,
                               side: BorderSide(color: Colors.grey.shade400),
@@ -124,7 +130,7 @@ class AITryonPreviewPage extends StatelessWidget {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed:
-                                () => aiTryOnCubit.pickImageFromGallery(),
+                                () => aiTryOnCubit.selectImage("gallery"),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.black,
                               side: BorderSide(color: Colors.grey.shade400),

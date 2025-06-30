@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
@@ -13,113 +12,50 @@ class AITryOnCubit extends Cubit<AITryOnState> {
   final String productImage;
   final String customerID;
   final TryOnService _tryOnService = TryOnService();
+  File? customerSelectedImage;
   String? customerUploadedImageURL;
   String? resultImageURL;
 
-  List<CameraDescription>? _cameras;
-  CameraController? _controller;
-
-  List<CameraDescription>? get cameras => _cameras;
-  CameraController? get controller => _controller;
-
-  // Initialize the camera and set up the controller
-  Future<void> initializeCamera() async {
-    emit(AITryOnLoading());
+  // Pick an image from the photo library or camera
+  Future<void> selectImage(String imageSource) async {
     try {
-      _cameras = await availableCameras();
-      if (_cameras != null && _cameras!.isNotEmpty) {
-        _controller = CameraController(
-          _cameras![1],
-          ResolutionPreset.veryHigh,
-          enableAudio: false,
-        );
-        await _controller!.initialize();
-        emit(CameraInitialized());
-      } else {
-        emit(AITryOnFailure('No cameras available'));
-      }
-    } catch (e) {
-      emit(AITryOnFailure('Failed to initialize camera: $e'));
-    }
-  }
+      // Clear previous selection to avoid wrong data
+      customerSelectedImage = null;
+      customerUploadedImageURL = null;
+      resultImageURL = null;
 
-  // Switch between front and back cameras
-  Future<void> switchCamera() async {
-    if (_cameras == null || _cameras!.length < 2 || _controller == null) {
-      return;
-    }
+      emit(AITryOnLoading());
 
-    try {
-      final currentCamera = _controller!.description;
-      CameraDescription newCamera;
-
-      if (currentCamera == _cameras![0]) {
-        newCamera = _cameras![1];
-      } else {
-        newCamera = _cameras![0];
-      }
-
-      await _controller!.dispose();
-      _controller = CameraController(
-        newCamera,
-        ResolutionPreset.veryHigh,
-        enableAudio: false,
+      // Use ImagePicker to select an image from the gallery or camera
+      XFile? selectedImage = await ImagePicker().pickImage(
+        source:
+            imageSource == "camera" ? ImageSource.camera : ImageSource.gallery,
+        imageQuality: 90,
       );
 
-      await _controller!.initialize();
-      emit(CameraSwitched());
+      if (selectedImage != null) {
+        // Convert XFile to File
+        final File imageFile = File(selectedImage.path);
+
+        // Save the cropped image file for uploading later
+        customerSelectedImage = imageFile;
+        customerUploadedImageURL = imageFile.path;
+        emit(PictureSelected());
+      } else {
+        emit(AITryOnFailure("No image selected."));
+      }
     } catch (e) {
-      emit(AITryOnFailure('Failed to switch camera: $e'));
-    }
-  }
-
-  // Take a picture using the camera
-  Future<void> takePicture() async {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      emit(AITryOnFailure('Camera not initialized'));
-      return;
-    }
-
-    try {
-      emit(AITryOnLoading());
-
-      // Capture the image
-      final XFile imageFile = await _controller!.takePicture();
-
-      // Convert XFile to File
-      final File file = File(imageFile.path);
-
-      // Upload the image to Firebase Storage
-      await uploadSelectedImage(file);
-    } catch (e) {
-      emit(AITryOnFailure('Failed to take picture: $e'));
-    }
-  }
-
-  // Pick an image from the gallery
-  Future<void> pickImageFromGallery() async {
-    try {
-      emit(AITryOnLoading());
-
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-      final File file = File(image!.path);
-
-      // Upload the selected image to Firebase Storage
-      await uploadSelectedImage(file);
-    } catch (e) {
-      emit(AITryOnFailure('Failed to pick image from gallery: $e'));
+      emit(AITryOnFailure('Failed to process image: $e'));
     }
   }
 
   // Upload the image to Firebase Storage
-  Future<void> uploadSelectedImage(File selectedImage) async {
+  Future<void> uploadSelectedImage() async {
     try {
       // Upload the image to Firebase Storage
       customerUploadedImageURL = await _tryOnService.uploadImage(
         customerID,
-        selectedImage,
+        customerSelectedImage!,
       );
       emit(PictureUploaded());
     } catch (e) {
@@ -127,6 +63,7 @@ class AITryOnCubit extends Cubit<AITryOnState> {
     }
   }
 
+  // Send the try on request and wait for the result
   Future<void> tryOnProduct() async {
     if (customerUploadedImageURL == null) {
       emit(AITryOnFailure('No image uploaded'));
@@ -135,7 +72,10 @@ class AITryOnCubit extends Cubit<AITryOnState> {
 
     try {
       emit(AITryOnLoading());
+      // Upload the image to firebase storage to get a link for it
+      await uploadSelectedImage();
 
+      // Send the try on request with the updated image URL
       final tryOnResponse = await _tryOnService.tryOnRequest(
         productImage,
         customerUploadedImageURL!,
@@ -168,17 +108,5 @@ class AITryOnCubit extends Cubit<AITryOnState> {
     } catch (e) {
       emit(AITryOnFailure('Error during try-on: $e'));
     }
-  }
-
-  void disposeCamera() {
-    _controller?.dispose();
-    _controller = null;
-    _cameras = null;
-  }
-
-  @override
-  Future<void> close() {
-    disposeCamera();
-    return super.close();
   }
 }
