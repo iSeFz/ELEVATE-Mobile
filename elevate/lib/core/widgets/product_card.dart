@@ -12,6 +12,9 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wishlistCubit = context.read<WishlistCubit>();
+    final bool isInWishlist = wishlistCubit.isProductInWishlist(product.id);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -71,15 +74,24 @@ class ProductCard extends StatelessWidget {
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         icon: Icon(
-                          Icons.favorite_rounded,
-                          color: Color(0xFFA51930),
+                          isInWishlist
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_outline_rounded,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        tooltip: 'Remove from Wishlist',
+                        tooltip:
+                            isInWishlist
+                                ? 'Remove from Wishlist'
+                                : 'Add to Wishlist',
                         onPressed: () {
-                          context.read<WishlistCubit>().removeFromWishlist(
-                            userId,
-                            product.id,
-                          );
+                          if (isInWishlist) {
+                            wishlistCubit.removeFromWishlist(
+                              userId,
+                              product.id,
+                            );
+                          } else {
+                            wishlistCubit.addToWishlist(userId, product.id);
+                          }
                         },
                       ),
                     ),
