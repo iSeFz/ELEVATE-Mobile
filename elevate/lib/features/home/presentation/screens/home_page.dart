@@ -6,6 +6,9 @@ import '../cubits/home_state.dart';
 import '/../core/widgets/product_card.dart';
 import '/core/widgets/video_player_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../cart/presentation/cubits/cart_cubit.dart';
+import '../../../wishlist/presentation/cubits/wishlist_cubit.dart';
+import '../../../wishlist/presentation/cubits/wishlist_state.dart';
 import 'package:elevate/features/brands/data/models/brand_model.dart';
 import 'package:elevate/features/brands/data/services/brand_service.dart';
 import 'package:elevate/features/brands/presentation/widgets/brand_widgets.dart';
@@ -15,6 +18,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocProvider(
       // Initialize HomeCubit and fetch products grouped by department
       create:
@@ -35,7 +40,7 @@ class HomePage extends StatelessWidget {
             child: Text(
               'ELEVATE',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colorScheme.primary,
                 fontSize: 24 * SizeConfig.textRatio,
                 fontWeight: FontWeight.bold,
               ),
@@ -47,19 +52,45 @@ class HomePage extends StatelessWidget {
             child: Container(color: Colors.grey[300], height: 1),
           ),
         ),
-        body: BlocConsumer<HomeCubit, HomeState>(
-          listener: (context, state) {
-            if (state is HomeError) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-            }
-          },
-          builder: (context, state) {
-            final homeCubit = context.read<HomeCubit>();
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<HomeCubit, HomeState>(
+              listener: (context, state) {
+                if (state is HomeError) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
+                }
+              },
+            ),
+            BlocListener<WishlistCubit, WishlistState>(
+              listener: (context, state) {
+                if (state is WishlistProductRemoved) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Product removed from wishlist')),
+                  );
+                } else if (state is WishlistProductAdded) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Product added to wishlist')),
+                  );
+                } else if (state is WishlistError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: theme.primaryColor,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              final departmentProducts = context.read<HomeCubit>().departmentProducts;
 
-            if (state is HomeLoaded) {
-              final departmentProducts = homeCubit.departmentProducts;
+              if (state is HomeLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
               return SingleChildScrollView(
                 child: Column(
@@ -184,7 +215,13 @@ class HomePage extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: (entry.key.toLowerCase() == 'men' || entry.key.toLowerCase() == 'women' || entry.key.toLowerCase() == 'kids') ? 32.0 : 16.0,
+                                  horizontal:
+                                      (entry.key.toLowerCase() == 'men' ||
+                                              entry.key.toLowerCase() ==
+                                                  'women' ||
+                                              entry.key.toLowerCase() == 'kids')
+                                          ? 32.0
+                                          : 16.0,
                                   vertical: 8.0,
                                 ),
                                 child: Text(
@@ -208,9 +245,15 @@ class HomePage extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     return SizedBox(
                                       width: 200 * SizeConfig.horizontalBlock,
-                                      child: ProductCard(
-                                        product: entry.value[index],
-                                        userId: '',
+                                      child: BlocBuilder<WishlistCubit, WishlistState>(
+                                        builder: (context, state) {
+                                          return ProductCard(
+                                            product: entry.value[index],
+                                            userId: context.read<CartCubit>().userId,
+                                            // Here we get the userId from the cart cubit which seems to be confusing but we use the provided cubits to get the information we need
+                                            // It is not the best practice but it is a workaround to avoid passing the whole profile cubit to the whole app
+                                          );
+                                        }
                                       ),
                                     );
                                   },

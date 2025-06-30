@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '/../features/auth/data/models/customer.dart';
 import 'profile_state.dart';
 import '../../data/models/address.dart';
+import '../../data/models/order.dart';
 import '../../data/services/profile_service.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
@@ -15,6 +16,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   Customer? _customer;
   Map<String, dynamic>? _customerJSON;
   List<UserAddress> _addresses = [];
+  List<Order> _orders = [];
   String? _expandedAddressId;
 
   // Map to track which fields have been changed
@@ -42,6 +44,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   // Getters for easier access to customer data
   Customer? get customer => _customer;
   List<UserAddress> get addresses => _addresses;
+  List<Order> get orders => _orders;
   String? get expandedAddressId => _expandedAddressId;
 
   String get fullName => '${_customer?.firstName} ${_customer?.lastName}';
@@ -50,6 +53,31 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   String get loyaltyPoints =>
       '${_customer?.loyaltyPoints == 0 ? "Loyalty" : _customer?.loyaltyPoints.toString()} Points';
+
+  // --- Orders History Methods ---
+
+  // Fetch customer orders
+  Future<void> fetchCustomerOrders() async {
+    try {
+      if (_customer?.id == null) {
+        throw Exception("Customer ID is not available");
+      }
+      emit(OrdersLoading());
+      _orders = await _profileService.getCustomerOrders(_customer!.id!);
+      
+      if (_orders.isEmpty) {
+        emit(OrdersEmpty());
+      } else {
+        emit(OrdersLoaded());
+      }
+    } catch (e) {
+      emit(
+        ProfileError(
+          message: "Failed to fetch customer orders: ${e.toString()}",
+        ),
+      );
+    }
+  }
 
   // --- Profile Related Methods ---
 
@@ -206,9 +234,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   void submitChangePassword() {
     if (changePasswordFormKey.currentState!.validate()) {
       changePasswordFormKey.currentState!.save();
-      changePassword(
-        changePasswordEmailController.text,
-      );
+      changePassword(changePasswordEmailController.text);
     }
   }
 

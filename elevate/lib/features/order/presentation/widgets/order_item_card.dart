@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubits/order_cubit.dart';
+import '../../../cart/data/models/cart_item.dart';
 
 class OrderItemCard extends StatelessWidget {
-  final int index;
+  final CartItem item;
 
-  const OrderItemCard({super.key, required this.index});
+  const OrderItemCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<OrderCubit>();
-    final item = cubit.cartItems[index];
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);

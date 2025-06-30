@@ -108,9 +108,9 @@ class ProductService {
             final variants = json['variants'] as List;
             final firstVariant = variants.isNotEmpty ? variants[0] : null;
             final images =
-                firstVariant != null && firstVariant['images'] != null
-                    ? firstVariant['images'] as List
-                    : [];
+            firstVariant != null && firstVariant['images'] != null
+                ? firstVariant['images'] as List
+                : [];
 
             return ProductCardModel(
               id: json['objectID'],
@@ -189,4 +189,58 @@ class ProductService {
       throw Exception('Error fetching products for brand $brandId: $e');
     }
   }
+
+  static Future<List<String>> getAllCategories() async {
+    final response = await http.get(
+            Uri.parse('$apiBaseURL/v1/products/categories'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> rawList = jsonResponse['data'];
+
+      // Cast each item to String
+      final List<String> departments = rawList.map((item) => item.toString()).toList();
+
+      return departments;
+    } else {
+      throw Exception('Failed to load departments');
+    }
+  }
+  static Future<List<String>> getAllDepartments() async {
+    final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products/departments'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> rawList = jsonResponse['data'];
+
+      // Cast each item to String
+      final List<String> departments = rawList.map((item) => item.toString()).toList();
+
+      return departments;
+    } else {
+      throw Exception('Failed to load departments');
+    }
+  }
+
+  static Future<List<String>> getAllSizes() async {
+    final response = await http.get(
+      Uri.parse('$apiBaseURL/v1/products/sizes'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> rawList = jsonResponse['data'];
+
+      // Cast each item to String
+      final List<String> sizes = rawList.map((item) => item.toString()).toList();
+
+      return sizes;
+    } else {
+      throw Exception('Failed to load sizes');
+    }
+  }
+
 }
+
+
+
+
+

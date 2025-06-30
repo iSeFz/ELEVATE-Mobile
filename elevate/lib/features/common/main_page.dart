@@ -9,6 +9,7 @@ import '../wishlist/presentation/screens/wishlist_page.dart';
 import '../cart/presentation/screens/cart_page.dart';
 import '../cart/presentation/cubits/cart_cubit.dart';
 import '../cart/presentation/cubits/cart_state.dart';
+import '../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../profile/presentation/screens/profile_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -19,25 +20,19 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 4;
+  int _selectedIndex = 0;
   late final PageController _pageController;
   late final List<Widget> _pages;
-  late final CartCubit _cartCubit;
 
   @override
   void initState() {
     super.initState();
     LocalDatabaseService.saveCustomer(widget.customer);
-
-    _cartCubit = CartCubit(userId: widget.customer.id!)..fetchCartItems();
     _pageController = PageController(initialPage: _selectedIndex);
     _pages = [
       HomePage(),
       SearchPage(),
-      BlocProvider.value(
-        value: _cartCubit,
-        child: CartPage(userID: widget.customer.id!),
-      ),
+      CartPage(userID: widget.customer.id!),
       WishlistPage(userID: widget.customer.id!),
       ProfilePage(customer: widget.customer),
     ];
@@ -52,7 +47,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
-    _cartCubit.close();
     _pageController.dispose();
     super.dispose();
   }
@@ -61,8 +55,15 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return BlocProvider.value(
-      value: _cartCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CartCubit>.value(
+          value: CartCubit(userId: widget.customer.id!)..fetchCartItems(),
+        ),
+        BlocProvider<WishlistCubit>.value(
+          value: WishlistCubit()..fetchWishlist(widget.customer.id!),
+        ),
+      ],
       child: Scaffold(
         body: PageView(
           controller: _pageController,

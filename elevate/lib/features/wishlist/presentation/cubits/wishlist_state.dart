@@ -7,7 +7,9 @@ class WishlistLoading extends WishlistState {}
 
 class WishlistLoaded extends WishlistState {}
 
-class WishlistItemRemoved extends WishlistState {}
+class WishlistProductRemoved extends WishlistState {}
+
+class WishlistProductAdded extends WishlistState {}
 
 class WishlistEmpty extends WishlistState {}
 
