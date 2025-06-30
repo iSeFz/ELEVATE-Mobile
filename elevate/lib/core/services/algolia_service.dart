@@ -2,6 +2,7 @@ import 'package:algolia/algolia.dart';
 
 class AlgoliaService {
   static Map<String, List<String>> selectedFacets = {};
+  static String query='';
 
   final index = _algolia.index('product');
 
@@ -17,9 +18,13 @@ class AlgoliaService {
     selectedFacets[field] = updatedFacets;
   }
 
-  Future<List<Map<String, dynamic>>> searchProducts(String query) async {
+  Future<List<Map<String, dynamic>>> searchProducts(String myQuery) async {
     List<Map<String, dynamic>> prod = [];
-
+    if (myQuery.isNotEmpty) {
+      query = myQuery;
+    } else {
+      query = '';
+    }
     try {
       var response;
       if (selectedFacets.isNotEmpty) {

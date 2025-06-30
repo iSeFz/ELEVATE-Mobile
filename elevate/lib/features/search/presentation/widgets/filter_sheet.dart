@@ -42,6 +42,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.5,
@@ -66,8 +67,29 @@ class _FilterSheetState extends State<FilterSheet> {
               return Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12 * SizeConfig.horizontalBlock,
+                          vertical: 10 * SizeConfig.verticalBlock,
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white, // grey button
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: Colors.black, width: 2), // black border
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              selectedOptions.clear(); // clear selections
+                            });
+                          },
+                          child: Text('Clear', style: TextStyle(color: theme.primaryColor)),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 12 * SizeConfig.horizontalBlock,
@@ -88,6 +110,7 @@ class _FilterSheetState extends State<FilterSheet> {
                       ),
                     ],
                   ),
+
                   Expanded(
                     child: widget.isExpanded
                         ? buildExpandableList(facetsData, scrollController)
@@ -166,6 +189,7 @@ class _FilterSheetState extends State<FilterSheet> {
             title: Row(
               children: [
                 Checkbox(
+                  shape: CircleBorder(),
                   value: isGroupSelected,
                   onChanged: (bool? value) {
                     setState(() {
@@ -193,8 +217,8 @@ class _FilterSheetState extends State<FilterSheet> {
             children: groupItems.map((val) {
               final fullValue = '$groupTitle - $val';
               final isSelected = selectedOptions.contains(fullValue);
-
               return CheckboxListTile(
+                shape: CircleBorder(),
                 title: Text(val),
                 value: isSelected,
                 onChanged: (bool? value) => toggleSelection(fullValue, isSelected),
