@@ -52,10 +52,24 @@ class FilterCubit extends Cubit<FilterState> {
         emit(SearchEmpty());
         return;
       }
+      List<ProductCardModel> cleanedProducts = [];
 
+      for (var json in results) {
+        try {
+          if (json != null && json is Map<String, dynamic>) {
+            cleanedProducts.add(ProductCardModel.fromJson(json));
+          }
+        } catch (e) {
+          print('Skipping invalid product: $e');
+          continue;
+        }
+      }
+      if (cleanedProducts.isEmpty) {
+        emit(SearchEmpty());
+        return;
+      }
       // Safely parse only valid JSON maps
-      _products = List.from(results.map((json) => ProductCardModel.fromJson(json))
-          .toList());
+      _products = List.from(cleanedProducts);
 
       emit(SearchLoaded());
     } catch (e) {
