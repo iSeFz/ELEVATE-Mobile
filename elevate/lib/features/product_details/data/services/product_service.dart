@@ -132,10 +132,11 @@ class ProductService {
 
   Future<List<ProductCardModel>> getProductsByDepartment(
     String department,
+    int page,
   ) async {
     try {
       final response = await http.get(
-        Uri.parse('$apiBaseURL/v1/products?department=$department'),
+        Uri.parse('$apiBaseURL/v1/products?department=$department&page=$page'),
       );
 
       if (response.statusCode == 200) {
