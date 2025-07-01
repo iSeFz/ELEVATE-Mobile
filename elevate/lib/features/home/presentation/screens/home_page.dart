@@ -136,7 +136,7 @@ class HomePage extends StatelessWidget {
                                   style: GoogleFonts.bebasNeue(
                                     textStyle: TextStyle(
                                       color: const Color(0xFFA51930).withValues(alpha: 0.6),
-                                      fontSize: 44 * SizeConfig.textRatio,
+                                      fontSize: 40 * SizeConfig.textRatio,
                                       fontWeight: FontWeight.w400,
                                       letterSpacing: 1.2,
                                       shadows: [
