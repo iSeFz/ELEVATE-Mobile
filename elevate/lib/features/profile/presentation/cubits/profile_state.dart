@@ -42,3 +42,7 @@ class OrdersLoading extends ProfileState {}
 class OrdersLoaded extends ProfileState {}
 
 class OrdersEmpty extends ProfileState {}
+
+class OrderCancelled extends ProfileState {}
+
+class ProductReturned extends ProfileState {}
