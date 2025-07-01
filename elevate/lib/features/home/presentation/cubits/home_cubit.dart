@@ -12,11 +12,13 @@ class HomeCubit extends Cubit<HomeState> {
   int _currentPage = 1;
   bool _isLoadingMore = false;
   Map<String, List<ProductCardModel>> _departmentProducts = {};
+  List<ProductCardModel> _topRatedProducts = [];
 
   List<ProductCardModel> get homePageProducts => _homePageProducts;
   bool get isLoadingMore => _isLoadingMore;
   Map<String, List<ProductCardModel>> get departmentProducts =>
       _departmentProducts;
+  List<ProductCardModel> get topRatedProducts => _topRatedProducts;
 
   // Retrieve a single page of products
   Future<void> fetchProductPage(int pageNumber) async {
@@ -93,6 +95,21 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       _departmentProducts = {}; // Reset to empty map on error
       emit(HomeError(message: "Failed to load products: ${e.toString()}"));
+    }
+  }
+
+  Future<void> fetchTopRatedProducts({int page = 1}) async {
+    emit(HomeLoading());
+    try {
+      final products = await _productService.getTopRatedProducts(page: page);
+      _topRatedProducts = products;
+      if (_topRatedProducts.isNotEmpty) {
+        emit(HomeLoaded());
+      } else {
+        emit(HomeError(message: "No top rated products found"));
+      }
+    } catch (e) {
+      emit(HomeError(message: e.toString()));
     }
   }
 }

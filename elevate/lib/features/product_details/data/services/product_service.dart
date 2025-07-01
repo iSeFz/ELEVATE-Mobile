@@ -190,6 +190,27 @@ class ProductService {
     }
   }
 
+  Future<List<ProductCardModel>> getTopRatedProducts({int page = 1}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseURL/v1/products/top-rated?page=$page'),
+      );
+
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> productsJson = jsonResponse['data'];
+        return productsJson
+            .map((json) => ProductCardModel.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to load top rated products');
+      }
+    } catch (e) {
+      throw Exception('Error fetching top rated products: $e');
+    }
+  }
+
   static Future<List<String>> getAllCategories() async {
     final response = await http.get(
             Uri.parse('$apiBaseURL/v1/products/categories'));
