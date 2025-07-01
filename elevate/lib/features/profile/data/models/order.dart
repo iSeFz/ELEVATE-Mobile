@@ -43,10 +43,13 @@ class Order {
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    final orderCreatedAt = _parseDate(json['createdAt']);
+    final status = json['status'];
+    
     return Order(
       id: json['id'],
       customerId: json['customerId'],
-      status: json['status'],
+      status: status,
       address: json['address'] != null ? UserAddress.fromJson(json['address']) : null,
       phoneNumber: json['phoneNumber'],
       pointsRedeemed: json['pointsRedeemed'],
@@ -58,8 +61,10 @@ class Order {
               .toList()
           : null,
       paymentMethod: "Cash on Delivery",
-      shipment: json['shipment'] != null ? Shipment.fromJson(json['shipment']) : null,
-      createdAt: _parseDate(json['createdAt']),
+      shipment: json['shipment'] != null 
+          ? Shipment.fromJson(json['shipment'], orderCreatedAt, status) 
+          : null,
+      createdAt: orderCreatedAt,
       updatedAt: _parseDate(json['updatedAt']),
     );
   }
@@ -67,29 +72,46 @@ class Order {
 
 class Shipment {
   DateTime? createdAt;
-  DateTime? deliveredAt;
-  double? fees;
+  DateTime? deliveredAt; // Only set for delivered orders
+  DateTime? estimatedDeliveryDate; // For all orders
+  double? totalFees;
+  int? estimatedDeliveryDays;
   String? method;
-  String? trackingNumber;
-  String? carrier;
+
+  double? get fees => totalFees;
 
   Shipment({
     this.createdAt,
     this.deliveredAt,
-    this.fees,
+    this.estimatedDeliveryDate,
+    this.totalFees,
+    this.estimatedDeliveryDays,
     this.method,
-    this.trackingNumber,
-    this.carrier,
   });
 
-  factory Shipment.fromJson(Map<String, dynamic> json) {
+  factory Shipment.fromJson(Map<String, dynamic> json, [DateTime? orderCreatedAt, String? orderStatus]) {
+    final estimatedDeliveryDays = json['estimatedDeliveryDays'] as int?;
+    
+    DateTime? deliveredAt;
+    DateTime? estimatedDeliveryDate;
+    
+    // For delivered orders, use the actual deliveredAt date
+    if (orderStatus == 'delivered') {
+      deliveredAt = _parseDate(json['deliveredAt']);
+    }
+    
+    // For all orders, calculate the estimatedDeliveryDate
+    if (orderCreatedAt != null && estimatedDeliveryDays != null) {
+      estimatedDeliveryDate = orderCreatedAt.add(Duration(days: estimatedDeliveryDays));
+    }
+    
     return Shipment(
       createdAt: _parseDate(json['createdAt']),
-      deliveredAt: _parseDate(json['deliveredAt']),
-      fees: json['fees'] is num ? (json['fees'] as num).toDouble() : null,
+      deliveredAt: deliveredAt, // Only set for delivered orders
+      estimatedDeliveryDate: estimatedDeliveryDate, // For all orders
+      totalFees: json['totalFees'] is num ? (json['totalFees'] as num).toDouble() : null,
+      estimatedDeliveryDays: estimatedDeliveryDays,
       method: json['method'],
-      trackingNumber: json['trackingNumber'],
-      carrier: json['carrier'],
     );
   }
 }
