@@ -64,7 +64,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       }
       emit(OrdersLoading());
       _orders = await _profileService.getCustomerOrders(_customer!.id!);
-      
+
       if (_orders.isEmpty) {
         emit(OrdersEmpty());
       } else {
@@ -76,6 +76,64 @@ class ProfileCubit extends Cubit<ProfileState> {
           message: "Failed to fetch customer orders: ${e.toString()}",
         ),
       );
+    }
+  }
+
+  // Cancel customer order
+  Future<void> cancelOrder(String orderId) async {
+    try {
+      if (_customer?.id == null) {
+        throw Exception("Customer ID is not available");
+      }
+
+      emit(OrdersLoading());
+
+      bool isCancelled = await _profileService.cancelOrder(
+        _customer!.id!,
+        orderId,
+      );
+
+      if (isCancelled) {
+        // Refresh the orders list after successful cancellation
+        await fetchCustomerOrders();
+        emit(OrderCancelled());
+      } else {
+        emit(ProfileError(message: "Failed to cancel order"));
+      }
+    } catch (e) {
+      emit(ProfileError(message: "Error canceling order: ${e.toString()}"));
+    }
+  }
+
+  // Refund product from order
+  Future<void> returnProduct(
+    String orderId,
+    String productId,
+    String variantId,
+  ) async {
+    try {
+      if (_customer?.id == null) {
+        throw Exception("Customer ID is not available");
+      }
+
+      emit(OrdersLoading());
+
+      bool isReturned = await _profileService.returnProduct(
+        _customer!.id!,
+        orderId,
+        productId,
+        variantId,
+      );
+
+      if (isReturned) {
+        // Refresh the orders list after successful return
+        await fetchCustomerOrders();
+        emit(ProductReturned());
+      } else {
+        emit(ProfileError(message: "Failed to return product"));
+      }
+    } catch (e) {
+      emit(ProfileError(message: "Error returning product: ${e.toString()}"));
     }
   }
 

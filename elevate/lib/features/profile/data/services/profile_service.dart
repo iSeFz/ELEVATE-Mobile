@@ -125,4 +125,58 @@ class ProfileService {
       throw Exception('Error fetching customer orders: $e');
     }
   }
+
+  // Cancel customer order
+  Future<bool> cancelOrder(String userId, String orderId) async {
+    try {
+      String url =
+          "$apiBaseURL/v1/customers/me/orders/$orderId/cancel?userId=$userId";
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          testAuthHeader: testAuthValue,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['status'] == 'success';
+      } else {
+        throw Exception('Failed to cancel order');
+      }
+    } catch (e) {
+      throw Exception('Error canceling order: $e');
+    }
+  }
+
+  // Return product from order
+  Future<bool> returnProduct(
+    String userId,
+    String orderId,
+    String productId,
+    String variantId,
+  ) async {
+    try {
+      String url =
+          "$apiBaseURL/v1/customers/me/orders/$orderId/refund?userId=$userId";
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          testAuthHeader: testAuthValue,
+        },
+        body: json.encode({'productId': productId, 'variantId': variantId}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['status'] == 'success';
+      } else {
+        throw Exception('Failed to return product');
+      }
+    } catch (e) {
+      throw Exception('Error returning product: $e');
+    }
+  }
 }
