@@ -23,8 +23,12 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       // Initialize HomeCubit and fetch products grouped by department
       create:
-          (_) =>
-              HomeCubit()..fetchProductsByDepartments(['Men', 'Women', 'Kids']),
+          (_) {
+            final cubit = HomeCubit();
+            cubit.fetchTopRatedProducts();
+            cubit.fetchProductsByDepartments(['Men', 'Women', 'Kids']);
+            return cubit;
+          },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -87,6 +91,7 @@ class HomePage extends StatelessWidget {
           child: BlocBuilder<HomeCubit, HomeState>(
             builder: (context, state) {
               final departmentProducts = context.read<HomeCubit>().departmentProducts;
+              final topRatedProducts = context.read<HomeCubit>().topRatedProducts;
 
               if (state is HomeLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -101,7 +106,7 @@ class HomePage extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         AspectRatio(
-                          aspectRatio: 9 / 16,
+                          aspectRatio: 5 / 7,
                           child: VideoPlayerWidget(
                             assetPath: 'assets/hs_video.mp4',
                           ),
@@ -147,6 +152,42 @@ class HomePage extends StatelessWidget {
                         ),
                       ],
                     ),
+                    // Top Rated Products Section
+                    if (topRatedProducts.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
+                        child: Text(
+                          'Top Rated Products',
+                          style: TextStyle(
+                            fontSize: 22 * SizeConfig.textRatio,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 350 * SizeConfig.verticalBlock,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          itemCount: topRatedProducts.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 200 * SizeConfig.horizontalBlock,
+                              child: BlocBuilder<WishlistCubit, WishlistState>(
+                                builder: (context, state) {
+                                  return ProductCard(
+                                    product: topRatedProducts[index],
+                                    userId: context.read<CartCubit>().userId,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                     // Shop By Brand
                     const SizedBox(height: 24),
                     Padding(
