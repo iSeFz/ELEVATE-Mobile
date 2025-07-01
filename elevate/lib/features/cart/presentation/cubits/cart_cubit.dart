@@ -55,55 +55,45 @@ class CartCubit extends Cubit<CartState> {
     final cartItem = _cartItems[index];
 
     try {
-      // Try to update the quantity in the backend
-      await _cartService.updateQuantity(userId, cartItem.id!, newQuantity);
-      _cartItems[index].quantity = newQuantity;
-      // Reference changed, so the UI can detects the change and update quantity
-      // _cartItems = List<CartItem>.from(_cartItems);
-      subtotal = _cartItems.fold(
-        0.0,
-        (sum, item) => sum + item.price * item.quantity,
+      // Fetch the current stock to ensure we have the latest value
+      final currentStock = await _cartService.fetchProductStock(
+        cartItem.productId,
+        cartItem.variantId,
       );
-      emit(CartLoaded());
-    } catch (e) {
-      try {
-        final latestStock = await _cartService.fetchProductStock(
-          cartItem.productId,
-          cartItem.variantId,
-        );
-        _cartItems[index].productStock = latestStock;
 
-        // Set the quantity to the max available stock
-        if (latestStock > 0) {
-          _cartItems[index].quantity = latestStock;
-          // Update the backend with the new max stock value
-          await _cartService.updateQuantity(userId, cartItem.id!, latestStock);
-        }
+      // Update the stock value in our local model
+      _cartItems[index].productStock = currentStock;
 
-        subtotal = _cartItems.fold(
-          0.0,
-          (sum, item) => sum + item.price * item.quantity,
-        );
-
+      // Validate quantity against current stock
+      if (newQuantity > currentStock) {
+        newQuantity = currentStock;
         emit(
           CartError(
             message:
                 "Quantity exceeds available stock. Updated to max available.",
           ),
         );
-        emit(CartLoaded());
-      } catch (stockError) {
-        emit(CartError(message: "Failed to update quantity: $e"));
-        emit(CartLoaded());
       }
+
+      // if the newQuantity is valid
+      _cartItems[index].quantity = newQuantity;
+      await _cartService.updateQuantity(userId, cartItem.id!, newQuantity);
+      subtotal = _cartItems.fold(
+        0.0,
+        (sum, item) => sum + item.price * item.quantity,
+      );
+
+      emit(CartQuantityUpdated());
+    } catch (e) {
+      emit(CartError(message: "Failed to update quantity: $e"));
     }
   }
 
-  Future<void> removeFromCart({String variantId='', int index=-1}) async {
+  Future<void> removeFromCart({String variantId = '', int index = -1}) async {
     emit(CartItemLoading());
     try {
       String customerId = LocalDatabaseService.getCustomerId();
-      if(index==-1){
+      if (index == -1) {
         index = _cartItems.indexWhere((item) => item.variantId == variantId);
       }
 
@@ -158,27 +148,24 @@ class CartCubit extends Cubit<CartState> {
   }
 
   isInCart(String selectedVariantId) {
-    return _cartItems.any((item) =>
-    item.variantId == selectedVariantId);
+    return _cartItems.any((item) => item.variantId == selectedVariantId);
   }
+
   // *__from product_details page__*
-  Future<void> addToCart(ProductCardModel product, ProductVariant selectedVariant) async{
+  Future<void> addToCart(
+    ProductCardModel product,
+    ProductVariant selectedVariant,
+  ) async {
     emit(CartItemLoading());
     try {
-      String customerId =LocalDatabaseService.getCustomerId() ?? userId;
-      final item = CartItem(
-        productId: product.id,
-        variantId: selectedVariant.id,
-        quantity: 1,
-        brandName: product.brandName,
-        productName: product.name,
-        size: selectedVariant.size ?? '',
-        colors: selectedVariant.colors ?? [],
-        price: selectedVariant.price,
-        imageURL: product.image,
+      String customerId = LocalDatabaseService.getCustomerId();
+      CartItem? itemReturned = await _cartService.addItem(
+        customerId,
+        product.id,
+        selectedVariant.id,
+        1,
       );
-      CartItem? itemReturned = await _cartService.addItem(customerId, product.id, selectedVariant.id, 1);
-      if(itemReturned.id != null){
+      if (itemReturned.id != null) {
         _cartItems.add(itemReturned);
       }
       emit(CartItemSuccess());

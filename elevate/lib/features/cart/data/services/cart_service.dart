@@ -41,16 +41,15 @@ class CartService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to add item to cart. ' + response.body);
+      throw Exception('Failed to add item to cart. ${response.body}');
     }
 
     final data = jsonDecode(response.body);
 
-    // ✅ Extract the items list correctly
     final List<dynamic> items = data['data']['items'];
 
     if (items.isNotEmpty) {
-      // ✅ Map to CartItem and return the first one
+      // return the first item
       return CartItem.fromJson(items.first);
     } else {
       throw Exception('Cart item not found in response.');

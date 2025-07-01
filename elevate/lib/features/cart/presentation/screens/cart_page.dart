@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../widgets/cart_body.dart';
 import '../cubits/cart_cubit.dart';
 import '../cubits/cart_state.dart';
+import '../widgets/cart_item_card.dart';
+import '../widgets/cart_section.dart';
 import '../../../order/presentation/screens/order_page.dart';
 
 class CartPage extends StatelessWidget {
@@ -41,6 +42,14 @@ class CartPage extends StatelessWidget {
                 SnackBar(content: Text('Item removed from cart')),
               );
             }
+            if (state is CartQuantityUpdated) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Quantity updated successfully'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
             if (state is CartCheckoutSuccess) {
               Navigator.push(
                 context,
@@ -55,8 +64,7 @@ class CartPage extends StatelessWidget {
                   ),
                 ),
               ).then((_) {
-                if (context.mounted &&
-                    !context.read<CartCubit>().isClosed) {
+                if (context.mounted && !context.read<CartCubit>().isClosed) {
                   context.read<CartCubit>().fetchCartItems();
                 }
               });
@@ -93,8 +101,7 @@ class CartPage extends StatelessWidget {
                         // TODO: Navigate to the home page via the main page
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                        Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         padding: EdgeInsets.symmetric(
                           vertical: screenHeight * 0.015,
                           horizontal: screenWidth * 0.15,
@@ -118,7 +125,31 @@ class CartPage extends StatelessWidget {
                 ),
               );
             } else {
-              return const CartBody();
+              // CartBody content
+              final cartCubit = context.watch<CartCubit>();
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: cartCubit.cartItems.length,
+                      itemBuilder: (context, index) {
+                        return CartItemCard(
+                          item: cartCubit.cartItems[index],
+                          index: index,
+                          onQuantityChanged: (idx, newQuantity) {
+                            cartCubit.updateQuantity(idx, newQuantity);
+                          },
+                          onRemoveItem: (idx) {
+                            cartCubit.removeFromCart(index: idx);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const CartSection(),
+                ],
+              );
             }
           },
         ),
