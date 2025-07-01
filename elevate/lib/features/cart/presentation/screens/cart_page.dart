@@ -81,10 +81,11 @@ class CartPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.remove_shopping_cart_rounded,
-                      size: screenWidth * 0.3,
-                      color: Theme.of(context).colorScheme.primary,
+                    Image.network(
+                      'https://cdn-icons-png.flaticon.com/512/3681/3681755.png',
+                      width: screenWidth * 0.3,
+                      height: screenWidth * 0.3,
+                      color: Colors.grey[400],
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     Text(

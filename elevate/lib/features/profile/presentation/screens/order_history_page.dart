@@ -40,7 +40,7 @@ class OrderHistoryPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.shopping_cart_outlined,
+                    Icons.shopping_bag_outlined,
                     size: 80,
                     color: Colors.grey[400],
                   ),
