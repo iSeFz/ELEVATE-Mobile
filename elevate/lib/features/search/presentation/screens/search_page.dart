@@ -258,7 +258,7 @@ class SearchPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20 * SizeConfig.verticalBlock),
                     Expanded(
                       child: BlocBuilder<FilterCubit, FilterState>(
                         builder: (context, state) {
