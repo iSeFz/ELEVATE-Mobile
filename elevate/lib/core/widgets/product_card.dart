@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/wishlist/presentation/cubits/wishlist_cubit.dart';
+import '../../features/ai_tryon/presentation/cubits/ai_tryon_cubit.dart';
 import '/../core/utils/size_config.dart';
 import '/../features/product_details/presentation/screens/product_details_page.dart';
 import '/../features/product_details/data/models/product_card_model.dart';
@@ -13,6 +14,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wishlistCubit = context.read<WishlistCubit>();
+    final aiTryOnCubit = context.read<AITryOnCubit>();
     final bool isInWishlist = wishlistCubit.isProductInWishlist(product.id);
 
     return GestureDetector(
@@ -21,13 +23,16 @@ class ProductCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder:
-                (_) => BlocProvider.value(
-                  value: wishlistCubit,
+                (_) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AITryOnCubit>.value(value: aiTryOnCubit),
+                    BlocProvider<WishlistCubit>.value(value: wishlistCubit),
+                  ],
                   child: ProductDetails(
-                      productId: product.id,
-                      userId: userId,
-                      productView: product,
-                    ),
+                    productId: product.id,
+                    userId: userId,
+                    productView: product,
+                  ),
                 ),
           ),
         );

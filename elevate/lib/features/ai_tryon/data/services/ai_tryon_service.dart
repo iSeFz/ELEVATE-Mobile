@@ -12,11 +12,12 @@ class TryOnService {
     String personImg,
     String category,
     String customerID,
+    String platform,
   ) async {
     try {
       final response = await http.post(
         Uri.parse(
-          "$apiBaseURL/v1/utilities/try-on/start?userId=$customerID&platform=replicate",
+          "$apiBaseURL/v1/utilities/try-on/start?userId=$customerID&platform=$platform",
         ),
         headers: {
           testAuthHeader: testAuthValue,
