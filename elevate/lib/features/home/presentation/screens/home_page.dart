@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/size_config.dart';
+import '../../../ai_tryon/presentation/cubits/ai_tryon_cubit.dart';
 import '../cubits/home_cubit.dart';
 import '../cubits/home_state.dart';
 import '/../core/widgets/product_card.dart';
@@ -235,6 +236,7 @@ class HomePage extends StatelessWidget {
                                                 providers: [
                                                   BlocProvider.value(value: context.read<WishlistCubit>()),
                                                   BlocProvider.value(value: context.read<CartCubit>()),
+                                                  BlocProvider.value(value: context.read<AITryOnCubit>()),
                                                 ],
                                                 child: BrandProductsPage(brandId: brand.id, brandName: brand.brandName),
                                               ),
@@ -300,7 +302,7 @@ class HomePage extends StatelessWidget {
                                             // Here we get the userId from the cart cubit which seems to be confusing but we use the provided cubits to get the information we need
                                             // It is not the best practice but it is a workaround to avoid passing the whole profile cubit to the whole app
                                           );
-                                        }
+                                        },
                                       ),
                                     );
                                   },
