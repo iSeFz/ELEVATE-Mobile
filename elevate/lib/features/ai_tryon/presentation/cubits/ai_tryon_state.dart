@@ -16,6 +16,8 @@ class AITryOnSuccess extends AITryOnState {}
 
 class AITryOnResultReady extends AITryOnState {}
 
+class AIModelChanged extends AITryOnState {}
+
 class AITryOnFailure extends AITryOnState {
   final String errorMessage;
 

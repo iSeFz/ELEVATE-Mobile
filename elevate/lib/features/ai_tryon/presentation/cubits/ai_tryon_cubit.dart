@@ -9,12 +9,27 @@ class AITryOnCubit extends Cubit<AITryOnState> {
   AITryOnCubit({required this.productImage, required this.customerID})
     : super(AITryOnInitial());
 
-  final String productImage;
+  String productImage;
   final String customerID;
   final TryOnService _tryOnService = TryOnService();
   File? customerSelectedImage;
   String? customerUploadedImageURL;
   String? resultImageURL;
+  String? platform;
+
+  // Getter for the AI try on model platform
+  bool get aiModelPlatform => platform == 'falAI';
+
+  // Set the product image in the cubit
+  void setProductImage(String newImage) {
+    productImage = newImage;
+  }
+
+  // Set the AI model to be used for try-on
+  void setAITryOnModel(String model) {
+    platform = model;
+    emit(AIModelChanged());
+  }
 
   // Pick an image from the photo library or camera
   Future<void> selectImage(String imageSource) async {
@@ -81,6 +96,7 @@ class AITryOnCubit extends Cubit<AITryOnState> {
         customerUploadedImageURL!,
         'upper_body',
         customerID,
+        platform ?? 'replicate',
       );
 
       if (tryOnResponse == true) {

@@ -11,6 +11,7 @@ import '../cart/presentation/cubits/cart_cubit.dart';
 import '../cart/presentation/cubits/cart_state.dart';
 import '../wishlist/presentation/cubits/wishlist_cubit.dart';
 import '../profile/presentation/screens/profile_page.dart';
+import '../ai_tryon/presentation/cubits/ai_tryon_cubit.dart';
 
 class MainPage extends StatefulWidget {
   final Customer customer;
@@ -62,6 +63,13 @@ class _MainPageState extends State<MainPage> {
         ),
         BlocProvider<WishlistCubit>.value(
           value: WishlistCubit()..fetchWishlist(widget.customer.id!),
+        ),
+        BlocProvider<AITryOnCubit>(
+          create:
+              (context) => AITryOnCubit(
+                productImage: '',
+                customerID: widget.customer.id!,
+              ),
         ),
       ],
       child: Scaffold(

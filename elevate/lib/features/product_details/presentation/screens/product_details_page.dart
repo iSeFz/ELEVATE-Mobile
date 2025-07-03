@@ -196,15 +196,18 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     right: 15 * SizeConfig.horizontalBlock,
                                     child: GestureDetector(
                                       onTap: () {
+                                        // Get the existing AITryOnCubit instance.
+                                        final aiTryOnCubit =
+                                            context.read<AITryOnCubit>();
+
+                                        // Update the product image on the existing cubit.
+                                        aiTryOnCubit.setProductImage(imageUrl);
+
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
-                                            return BlocProvider(
-                                              create:
-                                                  (context) => AITryOnCubit(
-                                                    productImage: imageUrl,
-                                                    customerID: widget.userId,
-                                                  ),
+                                            return BlocProvider.value(
+                                              value: aiTryOnCubit,
                                               child: AITryOnDialog(),
                                             );
                                           },

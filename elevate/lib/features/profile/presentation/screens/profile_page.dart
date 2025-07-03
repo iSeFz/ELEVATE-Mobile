@@ -10,6 +10,7 @@ import '../cubits/profile_cubit.dart';
 import '../cubits/profile_state.dart';
 import '../widgets/profile_page_option.dart';
 import 'order_history_page.dart';
+import '../../../ai_tryon/presentation/cubits/ai_tryon_cubit.dart';
 
 // Profile Page
 class ProfilePage extends StatelessWidget {
@@ -179,10 +180,15 @@ class ProfilePage extends StatelessWidget {
                             icon: Icons.settings_outlined,
                             text: 'Settings',
                             onTap: () {
+                              final aiTryOnCubit = context.read<AITryOnCubit>();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const SettingsPage(),
+                                  builder:
+                                      (context) => BlocProvider.value(
+                                        value: aiTryOnCubit,
+                                        child: const SettingsPage(),
+                                      ),
                                 ),
                               );
                             },
