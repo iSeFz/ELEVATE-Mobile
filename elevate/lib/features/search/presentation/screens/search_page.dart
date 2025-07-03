@@ -265,13 +265,34 @@ class SearchPage extends StatelessWidget {
                           if (state is SearchLoading) {
                             return const Center(child: CircularProgressIndicator());
                           }
-                          else if (state is SearchInitial) {
-                            return const Center(
-                              child: Text(
-                                'Start searching...',
-                                style: TextStyle(fontSize: 20),
+                          else if (state is FilterInitial) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Opacity(
+                                    opacity: 0.3, // Low opacity like a watermark
+                                    child: Image.asset(
+                                      'assets/elevate.png',
+                                      width: 200* SizeConfig.horizontalBlock,
+                                      height: 200 * SizeConfig.horizontalBlock,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  SizedBox(height: 30 * SizeConfig.verticalBlock),
+                                  Text(
+                                    'Explore Now !',
+                                    style: TextStyle(
+                                      fontSize: 24 * SizeConfig.textRatio,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
+
+
                           }
                           else if(state is SearchEmpty) {
                             return const Center(
