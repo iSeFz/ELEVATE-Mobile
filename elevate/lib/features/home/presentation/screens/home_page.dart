@@ -138,7 +138,7 @@ class HomePage extends StatelessWidget {
                                       color: const Color(0xFFA51930).withValues(alpha: 0.6),
                                       fontSize: 40 * SizeConfig.textRatio,
                                       fontWeight: FontWeight.w400,
-                                      letterSpacing: 1.2,
+                                      letterSpacing: 1.2* SizeConfig.textRatio,
                                       shadows: [
                                         Shadow(blurRadius: 4, color: Colors.black12),
                                       ],
