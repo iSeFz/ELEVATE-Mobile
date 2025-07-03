@@ -1,6 +1,7 @@
 abstract class FilterState {}
 
 class SearchLoading extends FilterState {}
+class SearchInitial extends FilterState {}
 class SearchEmpty extends FilterState {}
 class SearchLoaded extends FilterState {}
 class SearchError extends FilterState {

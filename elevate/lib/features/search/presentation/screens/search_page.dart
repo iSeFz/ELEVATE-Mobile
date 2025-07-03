@@ -212,6 +212,22 @@ class SearchPage extends StatelessWidget {
                                         Navigator.of(context).pop('high');
                                       },
                                     ),
+                                    Divider(height: 1, color: Colors.grey.shade200),
+                                    ListTile(
+                                      leading: Icon(Icons.sort_by_alpha_outlined),
+                                      title: Text('Name: A to Z'),
+                                      onTap: () {
+                                        Navigator.of(context).pop('a');
+                                      },
+                                    ),
+                                    Divider(height: 1, color: Colors.grey.shade200),
+                                    ListTile(
+                                      leading: Icon(Icons.sort_by_alpha_outlined),
+                                      title: Text('Name : Z to A'),
+                                      onTap: () {
+                                        Navigator.of(context).pop('z');
+                                      },
+                                    ),
                                   ],
                                 ),
                               ),
@@ -221,6 +237,11 @@ class SearchPage extends StatelessWidget {
                               context.read<FilterCubit>().sortProductsByPrice(ascending: true);
                             } else if (selected == 'high') {
                               context.read<FilterCubit>().sortProductsByPrice(ascending: false);
+                            }
+                            else if (selected == 'a') {
+                              context.read<FilterCubit>().sortProductsByName(ascending: true);
+                            } else if (selected == 'z') {
+                              context.read<FilterCubit>().sortProductsByName(ascending: false);
                             }
                           },
                           child: Icon(
@@ -243,6 +264,14 @@ class SearchPage extends StatelessWidget {
                         builder: (context, state) {
                           if (state is SearchLoading) {
                             return const Center(child: CircularProgressIndicator());
+                          }
+                          else if (state is SearchInitial) {
+                            return const Center(
+                              child: Text(
+                                'Start searching...',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            );
                           }
                           else if(state is SearchEmpty) {
                             return const Center(

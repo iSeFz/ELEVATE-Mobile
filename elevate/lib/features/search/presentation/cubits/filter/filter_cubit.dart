@@ -131,6 +131,18 @@ class FilterCubit extends Cubit<FilterState> {
       emit(SearchError('Sorting failed: $e'));
     }
   }
+  void sortProductsByName({bool ascending = true}) {
+    try {
+      _products.sort((a, b) => ascending
+          ? a.name.toLowerCase().compareTo(b.name.toLowerCase())
+          : b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+
+      emit(SearchLoaded());
+    } catch (e) {
+      emit(SearchError('Sorting by name failed: $e'));
+    }
+  }
+
 
   Future<void> getAllBrands() async {
     emit(FilterLoading());
