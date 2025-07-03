@@ -94,7 +94,6 @@ class AITryOnCubit extends Cubit<AITryOnState> {
       final tryOnResponse = await _tryOnService.tryOnRequest(
         productImage,
         customerUploadedImageURL!,
-        'upper_body',
         customerID,
         platform ?? 'replicate',
       );

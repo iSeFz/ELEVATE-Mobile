@@ -10,7 +10,6 @@ class TryOnService {
   Future<bool> tryOnRequest(
     String productImg,
     String personImg,
-    String category,
     String customerID,
     String platform,
   ) async {
@@ -23,11 +22,7 @@ class TryOnService {
           testAuthHeader: testAuthValue,
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          'productImg': productImg,
-          'personImg': personImg,
-          'category': category,
-        }),
+        body: json.encode({'productImg': productImg, 'personImg': personImg}),
       );
 
       // Return true if the request was sent successfully
