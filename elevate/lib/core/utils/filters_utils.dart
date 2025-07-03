@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../../features/search/presentation/cubits/filter/filter_cubit.dart';
 
 class FilterUtils {
@@ -94,5 +98,21 @@ class FilterUtils {
   static List<String> getshortSizes(List<String> sizesList) {
     return sizesList.map((size) => getShortSize(size)).toList();
   }
+  static Future<String> uploadImage(String customerID, File selectedImage) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child(
+        'image-search/${customerID}_${DateTime.now().millisecondsSinceEpoch}_imageSearch.png',
+      );
 
+      // Upload the file to Firebase Storage
+      final uploadTask = storageRef.putFile(selectedImage);
+      final snapshot = await uploadTask.whenComplete(() {});
+      // Get the download URL of the uploaded image
+      final downloadURL = await snapshot.ref.getDownloadURL();
+      // Return the download URL of the uploaded image
+      return downloadURL;
+    } catch (e) {
+      throw Exception('Error uploading image: $e');
+    }
+  }
 }

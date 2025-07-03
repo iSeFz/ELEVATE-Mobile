@@ -1,13 +1,19 @@
+import 'dart:io';
+
+import 'package:elevate/core/services/local_database_service.dart';
 import 'package:elevate/features/product_details/data/services/product_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../../core/services/algolia_service.dart' show AlgoliaService;
 
+import '../../../../../core/utils/filters_utils.dart';
 import '../../../../product_details/data/models/product_card_model.dart';
 import 'filter_state.dart';
 
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit() : super(FilterInitial());
   final AlgoliaService algoliaService = AlgoliaService();
+  final ProductService productService = ProductService();
 
   List<ProductCardModel> _products = <ProductCardModel>[];
   List<ProductCardModel> get products => List.unmodifiable(_products);
@@ -43,7 +49,7 @@ class FilterCubit extends Cubit<FilterState> {
   List<String> _selectedSizes = [];
   List<String> get selectedSizes => _selectedSizes;
 
-  Future<void> searchProducts({String query = ''}) async {
+  Future<void> searchProductsByAlgolia({String query = ''}) async {
     emit(SearchLoading());
     try {
       final results = await algoliaService.searchProducts(query);
@@ -77,6 +83,54 @@ class FilterCubit extends Cubit<FilterState> {
     }
   }
 
+  Future<void>SearchProductsByImage(String imagePath) async {
+    emit(SearchLoading());
+    try {
+      final results = await productService.getImageSearchProducts(imageUrl: imagePath);
+
+      if (results.isEmpty) {
+        emit(SearchEmpty());
+        return;
+      }
+      _products = List.from(results);
+
+      emit(SearchLoaded());
+    } catch (e) {
+      emit(SearchError('Search failed: $e'));
+    }
+  }
+
+  Future<void> pickImage({bool gallery=true}) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final pickedFile = gallery
+          ? await picker.pickImage(source: ImageSource.gallery)
+          : await picker.pickImage(source: ImageSource.camera);
+      String customerID = LocalDatabaseService.getCustomerId();
+
+      emit(ImageLoading());
+      if (pickedFile != null) {
+        String imagePath = await FilterUtils.uploadImage(customerID, File(pickedFile.path));
+        emit(ImageLoaded());
+        await SearchProductsByImage(imagePath);
+      }
+    } catch (e) {
+      emit(ImageError('Failed to pick image: $e'));
+      print('Failed to pick image: $e');
+    }
+  }
+
+  void sortProductsByPrice({bool ascending = true}) {
+    emit(SearchLoading());
+    try {
+      _products.sort((a, b) => ascending
+          ? a.price.compareTo(b.price)
+          : b.price.compareTo(a.price));
+      emit(SearchLoaded());
+    } catch (e) {
+      emit(SearchError('Sorting failed: $e'));
+    }
+  }
 
   Future<void> getAllBrands() async {
     emit(FilterLoading());

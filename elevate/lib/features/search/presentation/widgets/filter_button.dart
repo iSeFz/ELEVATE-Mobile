@@ -92,7 +92,7 @@ class FilterButton extends StatelessWidget {
         );
         if (selectedOptions != null) {
           FilterUtils.updateSelectedOptions(filterOptions, selectedOptions, cubit);
-          cubit.searchProducts();
+          cubit.searchProductsByAlgolia();
         }
       },
     );

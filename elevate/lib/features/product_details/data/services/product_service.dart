@@ -260,6 +260,30 @@ class ProductService {
     }
   }
 
+  Future<List<ProductCardModel>> getImageSearchProducts({
+    required String imageUrl,
+    int limit = 10,
+  }) async {
+    final response = await http.get(
+      Uri.parse('$apiBaseURL/v1/utilities/image-search')
+          .replace(queryParameters: {
+        'imageUrl': imageUrl,
+        'limit': '$limit',
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+
+      return (jsonResponse['data']['results'] as List)
+          .map((json) => ProductCardModel.fromJson(json['product']))
+          .toList();
+    } else {
+      throw Exception('Failed to search products by image');
+    }
+  }
+
+
 }
 
 

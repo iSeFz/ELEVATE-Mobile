@@ -78,7 +78,7 @@ class SearchPage extends StatelessWidget {
                                   ),
                                   textInputAction: TextInputAction.search,
                                   onSubmitted: (value) {
-                                    context.read<FilterCubit>().searchProducts(query: value);
+                                    context.read<FilterCubit>().searchProductsByAlgolia(query: value);
                                   },
                                 ),
                               ),
@@ -144,18 +144,92 @@ class SearchPage extends StatelessWidget {
                         SizedBox(width: 6 * SizeConfig.horizontalBlock),
 
                         InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const Camera()),
+                          onTap: () async {
+                            final selected = await showDialog<String>(
+                                context: context,
+                                builder: (context) => Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: Icon(Icons.camera_alt_outlined),
+                                    title: Text('Camera'),
+                                    onTap: () {
+                                      Navigator.of(context).pop('Camera');
+                                    },
+                                  ),
+                                  Divider(height: 1, color: Colors.grey.shade200),
+                                  ListTile(
+                                    leading: Icon(Icons.image_outlined),
+                                    title: Text('Gallery'),
+                                    onTap: () {
+                                      Navigator.of(context).pop('Gallery');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                             );
-                      },
-                      child:
-                      Icon(Icons.image_outlined, size: 24 * SizeConfig.verticalBlock),
-                    ),
-                    SizedBox(width: 10 * SizeConfig.horizontalBlock),
-                    Icon(Icons.compare_arrows_outlined, size: 24 * SizeConfig.verticalBlock),
-                  ],
+
+                            if (selected == 'Camera') {
+                              context.read<FilterCubit>().pickImage(gallery: false);
+                            } else if (selected == 'Gallery') {
+                              context.read<FilterCubit>().pickImage(gallery: true);
+                            }
+                          },
+                          child: Icon(
+                            Icons.image_outlined,
+                            size: 24 * SizeConfig.verticalBlock,
+                          ),
+                        ),
+                        SizedBox(width: 10 * SizeConfig.horizontalBlock),
+                        InkWell(
+                          onTap: () async {
+                            final selected = await showDialog<String>(
+                              context: context,
+                              builder: (context) => Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(Icons.arrow_upward),
+                                      title: Text('Price: Low to High'),
+                                      onTap: () {
+                                        Navigator.of(context).pop('low');
+                                      },
+                                    ),
+                                    Divider(height: 1, color: Colors.grey.shade200),
+                                    ListTile(
+                                      leading: Icon(Icons.arrow_downward),
+                                      title: Text('Price: High to Low'),
+                                      onTap: () {
+                                        Navigator.of(context).pop('high');
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+
+                            if (selected == 'low') {
+                              context.read<FilterCubit>().sortProductsByPrice(ascending: true);
+                            } else if (selected == 'high') {
+                              context.read<FilterCubit>().sortProductsByPrice(ascending: false);
+                            }
+                          },
+                          child: Icon(
+                            Icons.compare_arrows_outlined,
+                            size: 24 * SizeConfig.verticalBlock,
+                          ),
+                        )
+
+                      ],
                 ),
               ),
               ]
@@ -178,8 +252,19 @@ class SearchPage extends StatelessWidget {
                               ),
                             );
                           }
-                          else if (state is SearchError) {
-                            return Center(child: Text('Error: ${state.message}'));
+                          else if (state is SearchError || state is ImageError) {
+                            return Center(child: Text('Error happened'));
+                          }else if (state is ImageLoading) {
+                            return Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 16*SizeConfig.verticalBlock),
+                                  Text('Loading image...', style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                            );
                           }
                           else
                           {
