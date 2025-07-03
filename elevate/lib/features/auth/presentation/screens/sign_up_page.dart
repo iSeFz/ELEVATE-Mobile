@@ -216,7 +216,7 @@ class SignUpPage extends StatelessWidget {
                                 controller: signUpCubit.passwordController,
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    state.isPasswordVisible
+                                    !state.isPasswordVisible
                                         ? Icons.visibility_rounded
                                         : Icons.visibility_off_rounded,
                                   ),
@@ -248,7 +248,7 @@ class SignUpPage extends StatelessWidget {
                                 },
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    state.isConfirmPasswordVisible
+                                    !state.isConfirmPasswordVisible
                                         ? Icons.visibility_rounded
                                         : Icons.visibility_off_rounded,
                                   ),

@@ -51,8 +51,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   String get imageURL => '${_customer?.imageURL}';
 
-  String get loyaltyPoints =>
-      '${_customer?.loyaltyPoints == 0 ? "Loyalty" : _customer?.loyaltyPoints.toString()} Points';
+  String get userName => '@${_customer?.username ?? "guest"}';
 
   // --- Orders History Methods ---
 
@@ -402,6 +401,9 @@ class ProfileCubit extends Cubit<ProfileState> {
                     ),
               )
               .toList();
+      // Immediately save addresses to the database
+      // Avoid waiting for user to click save changes at the edit profile page
+      submitProfileUpdate();
       emit(AddressSaved());
     }
   }
@@ -427,6 +429,13 @@ class ProfileCubit extends Cubit<ProfileState> {
     if (_expandedAddressId == addressID) {
       clearAddressControllers();
       _expandedAddressId = null;
+    }
+    if (_addresses
+        .where((addr) => addr.id == addressID && addr.building != 0)
+        .isNotEmpty) {
+      // Immediately save addresses to the database
+      // Avoid waiting for user to click save changes at the edit profile page
+      submitProfileUpdate();
     }
     emit(AddressDeleted());
   }

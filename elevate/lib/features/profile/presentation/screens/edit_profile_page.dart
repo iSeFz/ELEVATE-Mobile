@@ -124,9 +124,19 @@ class EditProfilePage extends StatelessWidget {
                         vertical: screenHeight * 0.01,
                       ),
                       child: CustomTextFormField(
+                        label: 'Email',
+                        controller: profileCubit.emailController,
+                        enabled: false,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.01,
+                      ),
+                      child: CustomTextFormField(
                         label: 'Username',
                         initialValue: profileCubit.customer?.username ?? "",
-                        enabled: false,
+                        validationFunc: validateUsername,
                       ),
                     ),
                     Row(
@@ -167,20 +177,6 @@ class EditProfilePage extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: screenHeight * 0.01,
-                      ),
-                      child: CustomTextFormField(
-                        label: 'Email',
-                        controller: profileCubit.emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        validationFunc: validateEmail,
-                        onChanged:
-                            (value) =>
-                                profileCubit.fieldChanged('email', value),
-                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(

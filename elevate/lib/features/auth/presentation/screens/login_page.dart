@@ -177,7 +177,7 @@ class LoginPage extends StatelessWidget {
                                 validationFunc: validatePasswordLogin,
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    state.isPasswordVisible
+                                    !state.isPasswordVisible
                                         ? Icons.visibility_rounded
                                         : Icons.visibility_off_rounded,
                                   ),
@@ -363,10 +363,26 @@ class LoginPage extends StatelessWidget {
                                         ..onTap = () {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const SignUpPage(),
+                                            PageRouteBuilder(
+                                              pageBuilder:
+                                                  (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) => SignUpPage(),
+                                              transitionsBuilder: (
+                                                context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child,
+                                              ) {
+                                                return FadeTransition(
+                                                  opacity: animation,
+                                                  child: child,
+                                                );
+                                              },
+                                              transitionDuration:
+                                                  const Duration(seconds: 1),
                                             ),
                                           );
                                         },

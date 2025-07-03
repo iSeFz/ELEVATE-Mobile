@@ -33,6 +33,7 @@ class ProfilePage extends StatelessWidget {
             appBar: AppBar(
               centerTitle: true,
               backgroundColor: Colors.white,
+              automaticallyImplyLeading: false,
               shadowColor: Colors.black26,
               title: Text(
                 'Profile',
@@ -96,24 +97,13 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 24,
-                            color: Color(0xFFFFD700),
-                          ),
-                          SizedBox(width: screenWidth * 0.02),
-                          Text(
-                            profileCubit.loyaltyPoints,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.secondary,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        profileCubit.userName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.04),
