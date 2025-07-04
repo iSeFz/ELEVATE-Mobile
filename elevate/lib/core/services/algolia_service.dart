@@ -25,23 +25,34 @@ class AlgoliaService {
     }
     try {
       var response;
-      if (selectedFacets.isNotEmpty) {
-        final facets = buildAlgoliaFilters(selectedFacets.values.toList());
-        print('Applying filters: $facets');
-        response = await index.query(query).setFilters(facets).getObjects();
-      } else {
-        response = await index.query(query).getObjects();
-      }
+      int page = 0;
+      bool hasMore = true;
 
-      if (response == null || response.hits == null || response.hits.isEmpty) {
-        return [];
-      }
+      while (hasMore) {
+        if (selectedFacets.isNotEmpty) {
+          final facets = buildAlgoliaFilters(selectedFacets.values.toList());
+          print('Applying filters: $facets');
+          response = await index.query(query).setFilters(facets).setPage(page).getObjects();
+        } else {
+          response = await index.query(query).setPage(page).getObjects();
+        }
 
-      prod = response.hits
-          .map((hit) => hit.data)
-          .where((hit) => hit != null && hit is Map<String, dynamic>)
-          .cast<Map<String, dynamic>>()
-          .toList();
+        if (response == null || response.hits == null || response.hits.isEmpty) {
+          hasMore = false;
+        } else {
+          prod.addAll(response.hits
+              .map((hit) => hit.data)
+              .where((hit) => hit != null && hit is Map<String, dynamic>)
+              .cast<Map<String, dynamic>>());
+
+          // Check if there are more pages
+          if ((page + 1) >= response.nbPages) {
+            hasMore = false;
+          } else {
+            page++;
+          }
+        }
+      }
 
       return prod;
     } catch (e) {
