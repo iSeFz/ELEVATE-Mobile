@@ -206,7 +206,6 @@ class OrderDetailsPage extends StatelessWidget {
                   );
                 }
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Return'),
             ),
           ],

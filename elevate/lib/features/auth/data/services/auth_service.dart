@@ -4,8 +4,11 @@ import 'dart:convert';
 import '../../../../core/constants/constants.dart';
 import '../models/customer.dart';
 import '../../../../core/utils/google_utils.dart';
+import '../../../../features/profile/data/services/profile_service.dart';
 
 class AuthService {
+  final ProfileService _profileService = ProfileService();
+
   Future<Customer?> registerUser(Customer customerData) async {
     final response = await http.post(
       Uri.parse("$apiBaseURL/v1/customers/signup"),
@@ -54,16 +57,14 @@ class AuthService {
     final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
 
     // Prepare customer data from Google sign-in
-    final customerFromGoogle = Customer(
-      id: user.uid,
-      email: user.email,
-      firstName: user.displayName?.split(' ').first ?? '',
-      lastName:
-          user.displayName != null && user.displayName!.split(' ').length > 1
-              ? user.displayName!.split(' ').sublist(1).join(' ')
-              : '',
-      username: user.email?.split('@').first ?? '',
+    Customer customerFromGoogle = await _profileService.refreshCustomer(
+      user.uid,
     );
+
+    // Extract the image URL from the user
+    if (user.photoURL != null) {
+      customerFromGoogle.imageURL = user.photoURL!;
+    }
 
     if (isNewUser) {
       final response = await http.post(

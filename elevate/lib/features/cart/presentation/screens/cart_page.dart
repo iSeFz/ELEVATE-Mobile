@@ -19,6 +19,7 @@ class CartPage extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
           shadowColor: Colors.black26,
           title: Text(
             'Cart',
@@ -33,14 +34,14 @@ class CartPage extends StatelessWidget {
         body: BlocConsumer<CartCubit, CartState>(
           listener: (context, state) {
             if (state is CartError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
             }
             if (state is CartItemSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Item removed from cart')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Item removed from cart')));
             }
             if (state is CartQuantityUpdated) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -54,14 +55,15 @@ class CartPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<CartCubit>(),
-                    child: OrderScreen(
-                      orderId: context.read<CartCubit>().orderId!,
-                      userId: userID,
-                      cartItems: context.read<CartCubit>().cartItems,
-                    ),
-                  ),
+                  builder:
+                      (_) => BlocProvider.value(
+                        value: context.read<CartCubit>(),
+                        child: OrderScreen(
+                          orderId: context.read<CartCubit>().orderId!,
+                          userId: userID,
+                          cartItems: context.read<CartCubit>().cartItems,
+                        ),
+                      ),
                 ),
               ).then((_) {
                 if (context.mounted && !context.read<CartCubit>().isClosed) {
