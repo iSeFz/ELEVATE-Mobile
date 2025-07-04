@@ -10,7 +10,7 @@ class CartCubit extends Cubit<CartState> {
   final CartService _cartService = CartService();
   final String userId;
 
-  static List<CartItem> _cartItems = [];
+  List<CartItem> _cartItems = [];
   double subtotal = 0.0;
   String? orderId;
 
@@ -24,19 +24,18 @@ class CartCubit extends Cubit<CartState> {
     try {
       _cartItems = await _cartService.fetchCartItems(userId);
 
-      for (final item in _cartItems) {
-        try {
+      await Future.wait(
+        _cartItems.map((item) async {
           item.productStock = await _cartService.fetchProductStock(
             item.productId,
             item.variantId,
           );
-        } catch (_) {
-          item.productStock = 0; // fallback if fetch fails
-        }
-        if (item.productStock != null && item.quantity > item.productStock!) {
-          item.quantity = item.productStock!;
-        }
-      }
+
+          if (item.productStock != null && item.quantity > item.productStock!) {
+            item.quantity = item.productStock!;
+          }
+        }),
+      );
 
       subtotal = _cartItems.fold(
         0.0,
