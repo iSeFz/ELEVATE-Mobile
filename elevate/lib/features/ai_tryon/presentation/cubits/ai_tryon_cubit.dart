@@ -15,7 +15,7 @@ class AITryOnCubit extends Cubit<AITryOnState> {
   File? customerSelectedImage;
   String? customerUploadedImageURL;
   String? resultImageURL;
-  String? platform;
+  String? platform = 'falAI';
 
   // Getter for the AI try on model platform
   bool get aiModelPlatform => platform == 'falAI';
@@ -95,7 +95,7 @@ class AITryOnCubit extends Cubit<AITryOnState> {
         productImage,
         customerUploadedImageURL!,
         customerID,
-        platform ?? 'replicate',
+        platform ?? 'falAI',
       );
 
       if (tryOnResponse == true) {
