@@ -24,18 +24,19 @@ class CartCubit extends Cubit<CartState> {
     try {
       _cartItems = await _cartService.fetchCartItems(userId);
 
-      await Future.wait(
-        _cartItems.map((item) async {
+      for (final item in _cartItems) {
+        try {
           item.productStock = await _cartService.fetchProductStock(
             item.productId,
             item.variantId,
           );
-
-          if (item.productStock != null && item.quantity > item.productStock!) {
-            item.quantity = item.productStock!;
-          }
-        }),
-      );
+        } catch (_) {
+          item.productStock = 0; // fallback if fetch fails
+        }
+        if (item.productStock != null && item.quantity > item.productStock!) {
+          item.quantity = item.productStock!;
+        }
+      }
 
       subtotal = _cartItems.fold(
         0.0,
