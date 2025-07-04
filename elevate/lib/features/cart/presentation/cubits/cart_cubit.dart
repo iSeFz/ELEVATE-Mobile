@@ -11,6 +11,7 @@ class CartCubit extends Cubit<CartState> {
   final String userId;
 
   List<CartItem> _cartItems = [];
+  static List<CartItem> _cartItemsStatic = [];
   double subtotal = 0.0;
   String? orderId;
 
@@ -23,7 +24,7 @@ class CartCubit extends Cubit<CartState> {
     emit(CartLoading());
     try {
       _cartItems = await _cartService.fetchCartItems(userId);
-
+      _cartItemsStatic = List.from(_cartItems);
       await Future.wait(
         _cartItems.map((item) async {
           item.productStock = await _cartService.fetchProductStock(
@@ -94,12 +95,21 @@ class CartCubit extends Cubit<CartState> {
     try {
       String customerId = LocalDatabaseService.getCustomerId();
       if (index == -1) {
-        index = _cartItems.indexWhere((item) => item.variantId == variantId);
-      }
+        int staticIndex = _cartItemsStatic.indexWhere((item) => item.variantId == variantId);
 
-      final cartItem = _cartItems[index];
-      await _cartService.removeItem(customerId, cartItem.id!);
-      _cartItems.removeAt(index);
+        final staticCartItem = _cartItemsStatic[staticIndex];
+        await _cartService.removeItem(customerId, staticCartItem.id!);
+        if(staticIndex != -1) {
+          _cartItemsStatic.removeAt(staticIndex);
+        }
+      }
+      else{
+        final cartItem = _cartItems[index];
+        await _cartService.removeItem(customerId, cartItem.id!);
+        if(index != -1) {
+          _cartItems.removeAt(index);
+        }
+      }
       emit(CartItemSuccess());
 
       if (_cartItems.isEmpty) {
@@ -148,7 +158,7 @@ class CartCubit extends Cubit<CartState> {
   }
 
   isInCart(String selectedVariantId) {
-    return _cartItems.any((item) => item.variantId == selectedVariantId);
+    return _cartItemsStatic.any((item) => item.variantId == selectedVariantId);
   }
 
   // *__from product_details page__*
@@ -167,6 +177,7 @@ class CartCubit extends Cubit<CartState> {
       );
       if (itemReturned.id != null) {
         _cartItems.add(itemReturned);
+        _cartItemsStatic.add(itemReturned);
       }
       emit(CartItemSuccess());
     } catch (e) {
