@@ -106,17 +106,18 @@ class OrderCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10),
-                  if (order.shipment?.method != null)
-                    Text(
-                      order.shipment!.method!.toUpperCase(),
-                      style: TextStyle(
-                        color: Colors.blueGrey[700],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.5,
-                      ),
+                  Text(
+                    order.shipment?.method != null
+                        ? order.shipment!.method!.toUpperCase()
+                        : "PICKUP",
+                    style: TextStyle(
+                      color: Colors.blueGrey[700],
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
                     ),
-                  if (order.shipment?.method != null) SizedBox(height: 10),
+                  ),
+                  SizedBox(height: 10),
                   InkWell(
                     borderRadius: BorderRadius.circular(8),
                     onTap: onViewDetails,

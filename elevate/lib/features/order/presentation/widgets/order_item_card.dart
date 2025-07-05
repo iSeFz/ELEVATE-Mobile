@@ -3,15 +3,8 @@ import '../../../cart/data/models/cart_item.dart';
 
 class OrderItemCard extends StatelessWidget {
   final CartItem item;
-  final bool showReturnButton;
-  final Function()? onReturn;
 
-  const OrderItemCard({
-    super.key,
-    required this.item,
-    this.showReturnButton = false,
-    this.onReturn,
-  });
+  const OrderItemCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -126,28 +119,15 @@ class OrderItemCard extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    if (showReturnButton && onReturn != null)
+                    if (item.refundStatus != null)
                       Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: ElevatedButton(
-                          onPressed: onReturn,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                          ),
-                          child: const Text(
-                            'Return',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          'Refund ${item.refundStatus!}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: _getRefundStatusColor(item.refundStatus!),
                           ),
                         ),
                       ),
@@ -159,5 +139,18 @@ class OrderItemCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getRefundStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

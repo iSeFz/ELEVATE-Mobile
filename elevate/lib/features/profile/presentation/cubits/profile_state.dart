@@ -45,4 +45,4 @@ class OrdersEmpty extends ProfileState {}
 
 class OrderCancelled extends ProfileState {}
 
-class ProductReturned extends ProfileState {}
+class RefundRequested extends ProfileState {}

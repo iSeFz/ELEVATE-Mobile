@@ -6,6 +6,7 @@ class CartItem {
   String brandName;
   String productName;
   int? productStock;
+  String? refundStatus;
   String size;
   List<String> colors;
   int price;
@@ -22,6 +23,7 @@ class CartItem {
     required this.colors,
     required this.price,
     required this.imageURL,
+    this.refundStatus,
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class CartItem {
           [],
       price: json['price'] as int,
       imageURL: json['imageURL'],
+      refundStatus: json['refundStatus'],
     );
   }
 }

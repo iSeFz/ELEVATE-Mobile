@@ -6,6 +6,7 @@ import '../../../order/presentation/widgets/order_section.dart';
 import '../../data/models/order.dart';
 import '../cubits/profile_cubit.dart';
 import '../cubits/profile_state.dart';
+import 'refund_selection_page.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   final Order order;
@@ -19,67 +20,74 @@ class OrderDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        shadowColor: Colors.black26,
-        title: Text(
-          'Order #$orderNumber',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.secondary,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: BlocListener<ProfileCubit, ProfileState>(
-        listenWhen: (previous, current) =>
-            current is ProductReturned ||
-            (current is ProfileError &&
-                previous is! ProfileError &&
-                current is! OrderCancelled),
-        listener: (context, state) {
-          if (state is ProductReturned) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Return request submitted successfully'),
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        // Always get the latest order from the cubit using the order's ID
+        final orders = context.watch<ProfileCubit>().orders;
+        final latestOrder = orders.firstWhere(
+          (o) => o.id == order.id,
+          orElse: () => order,
+        );
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            shadowColor: Colors.black26,
+            title: Text(
+              'Order #$orderNumber',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
-            );
-          } else if (state is ProfileError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.message)));
-          }
-        },
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildOrderSections(context),
-                    _buildItems(context),
-                  ],
-                ),
-              ),
+              textAlign: TextAlign.center,
             ),
-            _buildBottomBar(context),
-          ],
-        ),
-      ),
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          body: BlocListener<ProfileCubit, ProfileState>(
+            listener: (context, state) {
+              if (state is RefundRequested) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Refund request submitted successfully'),
+                  ),
+                );
+              } else if (state is ProfileError) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildOrderSections(context, latestOrder),
+                        _buildItems(context, latestOrder),
+                      ],
+                    ),
+                  ),
+                ),
+                _buildBottomBar(context, latestOrder),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildOrderSections(BuildContext context) {
+  Widget _buildOrderSections(BuildContext context, Order order) {
     final sections = [
       {
         'label': 'Order Date',
@@ -132,17 +140,9 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildItems(BuildContext context) {
+  Widget _buildItems(BuildContext context, Order order) {
     final cartItems = order.products ?? [];
     if (cartItems.isEmpty) return const SizedBox.shrink();
-
-    // Show return button only if:
-    // 1. Order is delivered
-    // 2. Delivery date exists
-    // 3. It's within 14 days of delivery
-    final bool canReturn = order.status == 'delivered' && 
-                          order.shipment?.deliveredAt != null &&
-                          DateTime.now().difference(order.shipment!.deliveredAt!).inDays <= 14;
 
     return Column(
       children: [
@@ -158,15 +158,8 @@ class OrderDetailsPage extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: cartItems.length,
           itemBuilder: (context, index) {
-            return OrderItemCard(
-              item: cartItems[index],
-              showReturnButton: canReturn,
-              onReturn: () => _showReturnConfirmationDialog(
-                context,
-                cartItems[index].productId,
-                cartItems[index].variantId,
-              ),
-            );
+            final item = cartItems[index];
+            return OrderItemCard(item: item);
           },
         ),
         const SizedBox(height: 16),
@@ -174,47 +167,7 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  void _showReturnConfirmationDialog(
-    BuildContext context,
-    String productId,
-    String variantId,
-  ) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Confirm Return'),
-          content: const Text(
-            'Are you sure you want to return this item?',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(); 
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(); 
-
-                if (order.id != null) {
-                  context.read<ProfileCubit>().returnProduct(
-                    order.id!,
-                    productId,
-                    variantId,
-                  );
-                }
-              },
-              child: const Text('Return'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildBottomBar(BuildContext context) {
+  Widget _buildBottomBar(BuildContext context, Order order) {
     final subtotal = order.price ?? 0.0;
     final shipmentFee = order.shipment?.fees ?? 0.0;
     final itemCount = order.products?.length ?? 0;
@@ -235,58 +188,104 @@ class OrderDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (order.status == 'processing')
-            BlocConsumer<ProfileCubit, ProfileState>(
-              listenWhen:
-                  (previous, current) =>
-                      current is OrderCancelled || current is ProfileError,
-              listener: (context, state) {
-                if (state is OrderCancelled) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Order cancelled successfully'),
-                    ),
-                  );
-                  Navigator.of(context).pop();
-                } else if (state is ProfileError) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(state.message)));
-                }
-              },
-              builder: (context, state) {
-                return ElevatedButton(
-                  onPressed:
-                      state is OrdersLoading
-                          ? null
-                          : () {
-                            context.read<ProfileCubit>().cancelOrder(
-                              order.id ?? '',
-                            );
-                          },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child:
-                      state is OrdersLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                            'Cancel order',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                );
-              },
-            ),
+            _buildCancelOrderButton(context, order)
+          else if (_canRequestRefund(order))
+            _buildRequestRefundButton(context, order),
           const SizedBox(height: 10),
         ],
       ),
     );
+  }
+
+  Widget _buildCancelOrderButton(BuildContext context, Order order) {
+    return BlocConsumer<ProfileCubit, ProfileState>(
+      listener: (context, state) {
+        if (state is OrderCancelled) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Order cancelled successfully')),
+          );
+          Navigator.of(context).pop();
+        } else if (state is ProfileError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      builder: (context, state) {
+        return ElevatedButton(
+          onPressed:
+              state is OrdersLoading
+                  ? null
+                  : () {
+                    context.read<ProfileCubit>().cancelOrder(order.id ?? '');
+                  },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+            minimumSize: const Size.fromHeight(50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child:
+              state is OrdersLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                    'Cancel order',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRequestRefundButton(BuildContext context, Order order) {
+    return ElevatedButton(
+      onPressed: () {
+        final profileCubit = context.read<ProfileCubit>();
+        profileCubit.startRefundSelection(order.id ?? '');
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (newContext) => BlocProvider.value(
+                  value: profileCubit,
+                  child: RefundSelectionPage(order: order),
+                ),
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        minimumSize: const Size.fromHeight(50),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: const Text(
+        'Request Refund',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  bool _canRequestRefund(Order order) {
+    // Order is delivered
+    if (order.status != 'delivered') return false;
+
+    // Delivery date exists (Not Pickup)
+    if (order.shipment?.deliveredAt == null) return false;
+
+    // Order is within 14 days of delivery
+    final deliveryDate = order.shipment!.deliveredAt!;
+    final currentDate = DateTime.now();
+    final difference = currentDate.difference(deliveryDate).inDays;
+
+    return difference <= 14;
   }
 }

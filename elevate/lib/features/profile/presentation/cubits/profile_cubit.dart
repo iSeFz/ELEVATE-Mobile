@@ -53,7 +53,76 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   String get userName => '@${_customer?.username ?? "guest"}';
 
-  // --- Orders History Methods ---
+  // --- Orders History and Refund Methods ---
+
+  // Track refund selection
+  String? _refundOrderId;
+  final Map<String, bool> _selectedProductsForRefund = {};
+  String? get refundOrderId => _refundOrderId;
+  Map<String, bool> get selectedProductsForRefund => _selectedProductsForRefund;
+
+  void startRefundSelection(String orderId) {
+    _refundOrderId = orderId;
+    _selectedProductsForRefund.clear();
+  }
+
+  void cancelRefundSelection() {
+    _refundOrderId = null;
+    _selectedProductsForRefund.clear();
+  }
+
+  void toggleProductSelection(String productId, String variantId) {
+    final key = "$productId:$variantId";
+    _selectedProductsForRefund[key] =
+        !(_selectedProductsForRefund[key] ?? false);
+    emit(OrdersLoaded());
+  }
+
+  Future<void> submitRefundRequest(String orderId) async {
+    try {
+      if (_customer?.id == null) {
+        throw Exception("Customer ID is not available");
+      }
+
+      List<Map<String, String>> selectedProducts = [];
+
+      _selectedProductsForRefund.forEach((key, isSelected) {
+        if (isSelected) {
+          final parts = key.split(':');
+          if (parts.length == 2) {
+            selectedProducts.add({
+              'productId': parts[0],
+              'variantId': parts[1],
+            });
+          }
+        }
+      });
+
+      if (selectedProducts.isEmpty) {
+        emit(ProfileError(message: "No products selected for refund"));
+        return;
+      }
+
+      emit(OrdersLoading());
+
+      bool isRefunded = await _profileService.refundProducts(
+        _customer!.id!,
+        orderId,
+        selectedProducts,
+      );
+
+      if (isRefunded) {
+        _refundOrderId = null;
+        _selectedProductsForRefund.clear();
+        await fetchCustomerOrders();
+        emit(RefundRequested());
+      } else {
+        emit(ProfileError(message: "Failed to request refund"));
+      }
+    } catch (e) {
+      emit(ProfileError(message: "Error requesting refund: ${e.toString()}"));
+    }
+  }
 
   // Fetch customer orders
   Future<void> fetchCustomerOrders() async {
@@ -101,38 +170,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       }
     } catch (e) {
       emit(ProfileError(message: "Error canceling order: ${e.toString()}"));
-    }
-  }
-
-  // Refund product from order
-  Future<void> returnProduct(
-    String orderId,
-    String productId,
-    String variantId,
-  ) async {
-    try {
-      if (_customer?.id == null) {
-        throw Exception("Customer ID is not available");
-      }
-
-      emit(OrdersLoading());
-
-      bool isReturned = await _profileService.returnProduct(
-        _customer!.id!,
-        orderId,
-        productId,
-        variantId,
-      );
-
-      if (isReturned) {
-        // Refresh the orders list after successful return
-        await fetchCustomerOrders();
-        emit(ProductReturned());
-      } else {
-        emit(ProfileError(message: "Failed to return product"));
-      }
-    } catch (e) {
-      emit(ProfileError(message: "Error returning product: ${e.toString()}"));
     }
   }
 

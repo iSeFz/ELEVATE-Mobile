@@ -150,33 +150,32 @@ class ProfileService {
     }
   }
 
-  // Return product from order
-  Future<bool> returnProduct(
+  // Refund products
+  Future<bool> refundProducts(
     String userId,
     String orderId,
-    String productId,
-    String variantId,
+    List<Map<String, String>> products,
   ) async {
     try {
       String url =
           "$apiBaseURL/v1/customers/me/orders/$orderId/refund?userId=$userId";
+
       final response = await http.patch(
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           testAuthHeader: testAuthValue,
         },
-        body: json.encode({'productId': productId, 'variantId': variantId}),
+        body: json.encode({'data': products}),
       );
-
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         return responseData['status'] == 'success';
       } else {
-        throw Exception('Failed to return product');
+        throw Exception('Failed to request refund');
       }
     } catch (e) {
-      throw Exception('Error returning product: $e');
+      throw Exception('Error requesting refund: $e');
     }
   }
 }
