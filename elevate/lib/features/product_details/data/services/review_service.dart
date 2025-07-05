@@ -37,6 +37,10 @@ class ReviewService {
       print('Response Body: ${response.body}');
 
       if (response.statusCode != 201) {
+        if(response.statusCode == 403) {
+          review.id = '-1';
+          return;
+        }
         throw Exception('Failed to create review: ${response.body}  ${review.productId}');
       }
       else{

@@ -46,7 +46,7 @@ class ReviewsPage extends StatelessWidget {
               backgroundColor: Colors.white,
               elevation: 0,
             ),
-            body: Center(child: Text('Error: ${state.message}')),
+            body: Center(child: Text('${state.message}')),
           );
         }
 

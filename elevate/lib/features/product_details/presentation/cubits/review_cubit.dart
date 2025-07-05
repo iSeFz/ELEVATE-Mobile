@@ -20,13 +20,6 @@ class ReviewCubit extends Cubit<ReviewState> {
       final fetchedReviews = await ReviewService.getProductReviews(productId);
       _reviews.clear();
       _reviews.addAll(fetchedReviews);
-      // String customerId = LocalDatabaseService.getCustomerId();
-      // //put customer review above
-      // ReviewModel? customerReview = getCustomerReview(customerId);
-      // if(customerReview!= null) {
-      //   _reviews.removeWhere((review) => review.customerId == customerId);
-      //   _reviews.insert(0, customerReview);
-      // }
 
       emit(ReviewSuccess()); // just a generic success state
     } catch (e) {
@@ -51,6 +44,11 @@ Future<void> createReview(ReviewModel review ) async {
     review.customerLastName = LocalDatabaseService.getLastName();
     review.customerImageURL = LocalDatabaseService.getImageURL();
     await ReviewService.createProductReview(review);
+    if(review.id == '-1') {
+      emit(ReviewError('You have to order this product before reviewing it !!!'));
+      emit(ReviewSuccess());
+      return;
+    }
     _reviews.add(review); // Add the new review to the internal list
 
     emit(ReviewSuccess());

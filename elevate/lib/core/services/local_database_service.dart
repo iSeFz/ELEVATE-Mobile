@@ -87,8 +87,11 @@ class LocalDatabaseService {
       if (customer == null) {
         throw Exception('No customer found in local storage');
       }
-      if (customer.imageURL == null || customer.imageURL!.isEmpty) {
-        throw Exception('Customer image URL is null or empty');
+      if (customer.imageURL == null) {
+        return 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
+      }
+      if( customer.imageURL!.isEmpty){
+        return 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
       }
       return customer.imageURL!;
     } catch (e) {

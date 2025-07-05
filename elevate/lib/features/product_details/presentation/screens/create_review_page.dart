@@ -83,14 +83,14 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
       body: BlocConsumer<ReviewCubit, ReviewState>(
         listener: (context, state) {
           if (state is ReviewSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Task done successfully!')),
-            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(content: Text('Task done successfully!')),
+            // );
             Navigator.pop(context, true);
           }
           else if (state is ReviewError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.message}')),
+              SnackBar(content: Text('${state.message}')),
             );
           }
 
@@ -196,7 +196,7 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
                       },
 
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[600],
+                        backgroundColor: theme.colorScheme.primary,
                         padding: EdgeInsets.symmetric(vertical: 10 * SizeConfig.verticalBlock),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
