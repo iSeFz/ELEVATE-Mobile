@@ -3,22 +3,25 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 // Helper to get UserCredential from Google
 Future<UserCredential?> getGoogleUserCredential() async {
-  // Trigger the authentication flow
+  // Trigger the authentication flow - show Google account selection popup
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
+  // If user cancelled the sign-in process
+  if (googleUser == null) {
+    return null;
+  }
 
-  // Create a new credential
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  // Create a new credential for the selected Google account
   final AuthCredential credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
   );
 
-  // Save the user info to Firebase and return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential)
-      as UserCredential?;
+  // Sign in with the selected Google account
+  return await FirebaseAuth.instance.signInWithCredential(credential);
 }
 
 // Sign out of Google

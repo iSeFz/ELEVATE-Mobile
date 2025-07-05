@@ -4,11 +4,8 @@ import 'dart:convert';
 import '../../../../core/constants/constants.dart';
 import '../models/customer.dart';
 import '../../../../core/utils/google_utils.dart';
-import '../../../../features/profile/data/services/profile_service.dart';
 
 class AuthService {
-  final ProfileService _profileService = ProfileService();
-
   Future<Customer?> registerUser(Customer customerData) async {
     final response = await http.post(
       Uri.parse("$apiBaseURL/v1/customers/signup"),
@@ -53,44 +50,46 @@ class AuthService {
       throw Exception('Google Sign-Up was cancelled or failed.');
     }
 
-    final user = userCredential.user!;
-    final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+    final googleUser = userCredential.user!;
 
     // Prepare customer data from Google sign-in
-    Customer customerFromGoogle = await _profileService.refreshCustomer(
-      user.uid,
+    final customerFromGoogle = Customer(
+      id: googleUser.uid,
+      email: googleUser.email,
+      firstName: googleUser.displayName?.split(' ').first ?? 'Guest',
+      lastName:
+          googleUser.displayName != null &&
+                  googleUser.displayName!.split(' ').length > 1
+              ? googleUser.displayName!.split(' ').sublist(1).join(' ')
+              : '',
+      username: googleUser.email?.split('@').first.replaceAll('.', '_') ?? 'guest_user',
+      phoneNumber: googleUser.phoneNumber,
+      imageURL: googleUser.photoURL,
     );
 
-    // Extract the image URL from the user
-    if (user.photoURL != null) {
-      customerFromGoogle.imageURL = user.photoURL!;
-    }
+    final response = await http.post(
+      Uri.parse('$apiBaseURL/v1/customers/third-party-signup'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        ...customerFromGoogle.toJson()..removeWhere(
+          (key, _) =>
+              key == 'addresses' || key == 'loyaltyPoints' || key == 'id',
+        ),
+        'uid': customerFromGoogle.id,
+      }),
+    );
 
-    if (isNewUser) {
-      final response = await http.post(
-        Uri.parse('$apiBaseURL/v1/customers/third-party-signup'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String?>{
-          'uid': user.uid,
-          'email': user.email,
-        }),
-      );
+    final responseData = jsonDecode(response.body);
 
-      final responseData = jsonDecode(response.body);
-      if (response.statusCode == 201 && responseData['status'] == 'success') {
-        return customerFromGoogle;
-      } else {
-        throw Exception(
-          responseData['message'] ??
-              'Failed to register Google user with backend.',
-        );
-      }
-    } else {
-      // If user already exists, just return their data
-      // Potentially fetch updated data from backend if necessary
+    if (response.statusCode == 201 && responseData['status'] == 'success') {
       return customerFromGoogle;
+    } else {
+      throw Exception(
+        responseData['message'] ??
+            'Failed to register Google user with backend.',
+      );
     }
   }
 
@@ -153,6 +152,9 @@ class AuthService {
           responseData['message'] ?? 'User data not found in response',
         );
       }
+    } else if (response.statusCode == 404) {
+      // User not found, return null to indicate no account exists
+      return null;
     } else {
       throw Exception(
         'Failed to get user data from backend: ${responseData['message']}',

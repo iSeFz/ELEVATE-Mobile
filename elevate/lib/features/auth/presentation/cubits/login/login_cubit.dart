@@ -96,10 +96,18 @@ class LoginCubit extends Cubit<LoginState> {
       } else {
         emit(
           LoginFailure(
-            message: 'Google Sign-In failed: No user data returned.',
+            message: 'No account found :( Creating one for you...',
             isPasswordVisible: _isPasswordVisible,
           ),
         );
+        _customer = await _authService.signUpWithGoogle();
+        if (_customer != null) {
+          // Initialize Algolia Insights with the user's ID
+          if (_customer!.id != null) {
+            AlgoliaInsightsService.initializeInsights(_customer!.id!);
+          }
+          emit(LoginWithGoogleSuccess());
+        }
       }
     } catch (e) {
       emit(
